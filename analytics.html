@@ -1,0 +1,373 @@
+<!-- analytics.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Analytics & Insights</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/analytics.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">N</div>
+            <span class="logo-text">NEXUS</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="host-dashboard.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="my-fests.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                My Fests
+            </a>
+            <a href="create-fest.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Create Fest
+            </a>
+            <a href="qr-scanner.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                </svg>
+                QR Scanner
+            </a>
+            <a href="payouts.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Payouts
+            </a>
+            <a href="analytics.html" class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
+                Analytics
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-mini">
+                <div class="user-avatar" id="user-avatar">H</div>
+                <div class="user-info">
+                    <span class="user-name" id="user-name">Loading...</span>
+                    <span class="user-role">Event Host</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h1>Analytics & Insights</h1>
+                <p class="subtitle">Deep dive into your event performance metrics</p>
+            </div>
+            <div class="header-actions">
+                <div class="fest-selector">
+                    <select id="fest-select" onchange="changeFest()">
+                        <option value="all">All Events</option>
+                        <option value="techfest">Tech Fest 2024</option>
+                        <option value="cultural">Cultural Night</option>
+                        <option value="hackathon">Hackathon 2024</option>
+                    </select>
+                </div>
+                <button class="btn-secondary" onclick="exportReport()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Date Range -->
+        <div class="date-bar">
+            <div class="quick-ranges">
+                <button class="range-btn active" onclick="setRange('7d')">Last 7 Days</button>
+                <button class="range-btn" onclick="setRange('30d')">Last 30 Days</button>
+                <button class="range-btn" onclick="setRange('90d')">Last 3 Months</button>
+                <button class="range-btn" onclick="setRange('custom')">Custom Range</button>
+            </div>
+            <div class="date-display" id="date-range">Jan 31 - Feb 07, 2024</div>
+        </div>
+
+        <!-- KPI Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon revenue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Revenue</span>
+                    <div class="kpi-value" id="kpi-revenue">₹1,24,850</div>
+                    <div class="kpi-change up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        <span>+24.5%</span>
+                        <span class="change-label">vs last period</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline" id="spark-revenue"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon tickets">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Tickets Sold</span>
+                    <div class="kpi-value" id="kpi-tickets">1,247</div>
+                    <div class="kpi-change up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        <span>+18.2%</span>
+                        <span class="change-label">vs last period</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline" id="spark-tickets"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon attendees">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Attendees</span>
+                    <div class="kpi-value" id="kpi-attendees">1,089</div>
+                    <div class="kpi-change up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        <span>+12.8%</span>
+                        <span class="change-label">vs last period</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline" id="spark-attendees"></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon conversion">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Conversion Rate</span>
+                    <div class="kpi-value" id="kpi-conversion">87.3%</div>
+                    <div class="kpi-change down">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+                        </svg>
+                        <span>-2.1%</span>
+                        <span class="change-label">vs last period</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline" id="spark-conversion"></div>
+            </div>
+        </section>
+
+        <!-- Main Charts Row -->
+        <div class="charts-row">
+            <!-- Revenue Chart -->
+            <div class="chart-card large">
+                <div class="chart-header">
+                    <div>
+                        <h3>Revenue Trends</h3>
+                        <p class="chart-subtitle">Daily revenue breakdown with projections</p>
+                    </div>
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="dot purple"></span>Actual</span>
+                        <span class="legend-item"><span class="dot pink"></span>Projected</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Ticket Types -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Ticket Types</h3>
+                    <p class="chart-subtitle">Distribution by category</p>
+                </div>
+                <div class="chart-container doughnut">
+                    <canvas id="ticketTypeChart"></canvas>
+                    <div class="doughnut-center">
+                        <span class="center-label">Total</span>
+                        <span class="center-value">1,247</span>
+                    </div>
+                </div>
+                <div class="ticket-legend" id="ticket-legend"></div>
+            </div>
+        </div>
+
+        <!-- Secondary Charts Row -->
+        <div class="charts-row secondary">
+            <!-- Hourly Distribution -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Check-in Patterns</h3>
+                    <p class="chart-subtitle">Entry distribution by hour</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sales Funnel -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Sales Funnel</h3>
+                    <p class="chart-subtitle">Conversion at each stage</p>
+                </div>
+                <div class="funnel-container" id="funnel-chart">
+                    <!-- Funnel bars injected via JS -->
+                </div>
+            </div>
+
+            <!-- Demographics -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Attendee Demographics</h3>
+                    <p class="chart-subtitle">By year & department</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="demographicsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Tables -->
+        <div class="tables-row">
+            <!-- Top Performing Events -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Top Performing Events</h3>
+                    <button class="btn-text">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Date</th>
+                                <th>Tickets</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Recent Activity</h3>
+                    <button class="btn-text">View All</button>
+                </div>
+                <div class="activity-list" id="activity-list">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <section class="insights-section">
+            <h2>AI-Powered Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-card positive">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-content">
+                        <h4>Peak Sales Identified</h4>
+                        <p>Your ticket sales peak at 7 PM on weekdays. Consider launching new events during this window for maximum visibility.</p>
+                        <span class="insight-meta">Based on last 30 days data</span>
+                    </div>
+                </div>
+                <div class="insight-card warning">
+                    <div class="insight-icon">⚠️</div>
+                    <div class="insight-content">
+                        <h4>Conversion Opportunity</h4>
+                        <p>35% of users abandon cart at payment page. Enabling UPI AutoPay could reduce this by 15%.</p>
+                        <span class="insight-meta">Revenue impact: +₹8,500</span>
+                    </div>
+                </div>
+                <div class="insight-card info">
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-content">
+                        <h4>Trending Upward</h4>
+                        <p>VIP ticket sales increased 45% this week. Consider adding premium tiers to upcoming events.</p>
+                        <span class="insight-meta">Week-over-week growth</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Custom Date Modal -->
+    <div id="date-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeDateModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Date Range</h3>
+                <button class="close-btn" onclick="closeDateModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="date-inputs">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="end-date">
+                    </div>
+                </div>
+                <button class="confirm-btn" onclick="applyCustomRange()">Apply Range</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>
