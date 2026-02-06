@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create Fest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/create-fest.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>NEXUS HOST</span>
+            </div>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="host-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Fest</span>
+            </a>
+            <a href="my-fests.html" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>My Fests</span>
+            </a>
+            <a href="qr-scanner.html" class="nav-item">
+                <i class="fas fa-qrcode"></i>
+                <span>QR Scanner</span>
+            </a>
+            <a href="analytics.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-title">
+                <h1>Create New Fest</h1>
+                <p>Set up your college event</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-draft" onclick="saveDraft()">
+                    <i class="fas fa-save"></i>
+                    Save Draft
+                </button>
+            </div>
+        </header>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="festForm" onsubmit="submitFest(event)">
+                
+                <!-- Basic Info Section -->
+                <section class="form-section">
+                    <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Fest Name *</label>
+                            <input type="text" class="input-field" name="festName" placeholder="e.g., TechFest 2025" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Fest Type *</label>
+                            <select class="input-field" name="festType" required>
+                                <option value="">Select Type</option>
+                                <option value="technical">Technical</option>
+                                <option value="cultural">Cultural</option>
+                                <option value="sports">Sports</option>
+                                <option value="literary">Literary</option>
+                                <option value="management">Management</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Expected Attendance *</label>
+                            <input type="number" class="input-field" name="expectedAttendance" placeholder="e.g., 500" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Start Date *</label>
+                            <input type="date" class="input-field" name="startDate" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">End Date *</label>
+                            <input type="date" class="input-field" name="endDate" required>
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label class="input-label">Description *</label>
+                            <textarea class="input-field textarea" name="description" rows="4" placeholder="Describe your fest, events, competitions..." required></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Banner Upload -->
+                <section class="form-section">
+                    <h2><i class="fas fa-image"></i> Fest Banner</h2>
+                    <div class="upload-area" onclick="document.getElementById('bannerInput').click()">
+                        <input type="file" id="bannerInput" accept="image/*" onchange="handleBannerUpload(this)" hidden>
+                        <div class="upload-placeholder" id="bannerPlaceholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload banner image</p>
+                            <span>Recommended: 1200 x 600px, Max 5MB</span>
+                        </div>
+                        <div class="upload-preview" id="bannerPreview" style="display: none;">
+                            <img src="" alt="Banner Preview" id="bannerImg">
+                            <button type="button" class="remove-btn" onclick="removeBanner(event)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ticket Settings -->
+                <section class="form-section">
+                    <h2><i class="fas fa-ticket-alt"></i> Ticket Settings</h2>
+
+                    <!-- Free/Paid Toggle -->
+                    <div class="toggle-card">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>Ticket Type</h4>
+                                <p id="ticketTypeDesc">This is a free event</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="isPaid" onchange="toggleTicketType()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- Price Input (Hidden by default) -->
+                        <div class="price-inputs" id="priceInputs" style="display: none;">
+                            <div class="input-group">
+                                <label class="input-label">Ticket Price (₹) *</label>
+                                <input type="number" class="input-field" name="ticketPrice" placeholder="e.g., 199" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Early Bird Price (Optional)</label>
+                                <input type="number" class="input-field" name="earlyBirdPrice" placeholder="e.g., 149" min="1">
+                                <p class="input-hint">Leave empty if no early bird discount</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Limited/Infinite Seats Toggle -->
+                    <div class="toggle-card">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>Seat Availability</h4>
+                                <p id="seatsDesc">Limited seats available</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="isUnlimited" onchange="toggleSeats()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- Seats Input (Hidden when unlimited) -->
+                        <div class="seats-input" id="seatsInput">
+                            <div class="input-group">
+                                <label class="input-label">Total Seats *</label>
+                                <input type="number" class="input-field" name="totalSeats" placeholder="e.g., 500" min="1" value="500">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audience Settings -->
+                <section class="form-section">
+                    <h2><i class="fas fa-users"></i> Audience Settings</h2>
+
+                    <!-- Same/Outside College Toggle -->
+                    <div class="toggle-card">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>Who can attend?</h4>
+                                <p id="audienceDesc">Only students from my college</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="allowOutside" onchange="toggleAudience()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- Outside College Options -->
+                        <div class="outside-options" id="outsideOptions" style="display: none;">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="otherColleges" name="otherColleges">
+                                <label for="otherColleges">Allow students from other colleges</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="generalPublic" name="generalPublic">
+                                <label for="generalPublic">Allow general public</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ID Card Required Toggle -->
+                    <div class="toggle-card">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>ID Verification Required</h4>
+                                <p>Ask for college ID during registration</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="idRequired" name="idRequired" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- ID Fields Selection -->
+                        <div class="id-fields" id="idFields">
+                            <p class="field-label">Required ID Information:</p>
+                            <div class="checkbox-grid">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="idCardNumber" name="idFields" value="idNumber" checked>
+                                    <label for="idCardNumber">ID Card Number</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="rollNumber" name="idFields" value="rollNumber" checked>
+                                    <label for="rollNumber">Roll/Registration Number</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="department" name="idFields" value="department">
+                                    <label for="department">Department/Branch</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="year" name="idFields" value="year">
+                                    <label for="year">Year of Study</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Info -->
+                <section class="form-section">
+                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Coordinator Name *</label>
+                            <input type="text" class="input-field" name="coordinatorName" placeholder="Primary contact person" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Phone Number *</label>
+                            <input type="tel" class="input-field" name="contactPhone" placeholder="+91 98765 43210" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Email *</label>
+                            <input type="email" class="input-field" name="contactEmail" placeholder="fest@college.edu" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">WhatsApp (Optional)</label>
+                            <input type="tel" class="input-field" name="whatsapp" placeholder="For queries">
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label class="input-label">Venue/Location *</label>
+                            <input type="text" class="input-field" name="venue" placeholder="e.g., College Auditorium, Main Campus" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Terms & Submit -->
+                <section class="form-section">
+                    <div class="checkbox-group terms">
+                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                        <label for="agreeTerms">
+                            I confirm that all information provided is accurate. I have permission from my college to host this event. I agree to Nexus <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>.
+                        </label>
+                    </div>
+
+                    <div class="submit-actions">
+                        <button type="button" class="btn-secondary" onclick="previewFest()">
+                            <i class="fas fa-eye"></i>
+                            Preview
+                        </button>
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit for Approval
+                        </button>
+                    </div>
+                </section>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Fest Preview</h3>
+                <button class="modal-close" onclick="closePreview()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview injected via JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closePreview()">Edit</button>
+                <button class="btn-primary" onclick="submitFromPreview()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-animation">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h3>Fest Submitted!</h3>
+            <p>Your fest has been submitted for approval. We'll review and get back to you within 24-48 hours.</p>
+            <button class="btn-primary" onclick="goToDashboard()">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/create-fest.js"></script>
+</body>
+</html>

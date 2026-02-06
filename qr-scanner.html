@@ -1,0 +1,195 @@
+<!-- qr-scanner.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus - QR Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/qr-scanner.css">
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div id="offline-indicator" class="offline-indicator hidden">
+        <span class="offline-dot"></span>
+        Offline Mode - Scanning Cached Data
+    </div>
+
+    <!-- Header -->
+    <header class="scanner-header">
+        <button class="back-btn" onclick="history.back()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <div class="fest-info">
+            <h1 id="fest-name">Loading...</h1>
+            <span id="fest-status" class="status-badge live">LIVE</span>
+        </div>
+        <button class="flashlight-btn" id="flashlight-btn" onclick="toggleFlashlight()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Main Scanner Area -->
+    <main class="scanner-container">
+        <!-- Camera View -->
+        <div class="camera-wrapper">
+            <video id="camera-feed" autoplay playsinline muted></video>
+            <canvas id="camera-canvas" style="display: none;"></canvas>
+            
+            <!-- Scanner Overlay -->
+            <div class="scanner-overlay">
+                <div class="scan-frame">
+                    <div class="corner top-left"></div>
+                    <div class="corner top-right"></div>
+                    <div class="corner bottom-left"></div>
+                    <div class="corner bottom-right"></div>
+                    <div class="scan-line"></div>
+                </div>
+                <p class="scan-hint">Align QR code within frame</p>
+            </div>
+
+            <!-- Camera Error State -->
+            <div id="camera-error" class="camera-error hidden">
+                <div class="error-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                </div>
+                <h3>Camera Access Denied</h3>
+                <p>Please enable camera permissions or use manual entry</p>
+                <button class="retry-btn" onclick="initCamera()">Retry Camera</button>
+            </div>
+        </div>
+
+        <!-- Manual Entry Toggle -->
+        <button class="manual-toggle" onclick="toggleManualEntry()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Enter Ticket Number Manually
+        </button>
+    </main>
+
+    <!-- Manual Entry Modal -->
+    <div id="manual-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manual Ticket Entry</h2>
+                <button class="close-btn" onclick="toggleManualEntry()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Ticket Number</label>
+                    <input type="text" id="manual-ticket-input" placeholder="e.g., NX-2024-001234" maxlength="20">
+                </div>
+                <button class="verify-btn" onclick="verifyManualTicket()">Verify Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Verification Modal -->
+    <div id="ticket-modal" class="modal hidden">
+        <div class="modal-content ticket-modal-content">
+            <!-- Verification Result Header -->
+            <div id="ticket-result" class="ticket-result">
+                <div class="result-icon">
+                    <svg id="success-icon" class="hidden" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <svg id="error-icon" class="hidden" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    <svg id="warning-icon" class="hidden" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <h2 id="result-title">Valid Ticket</h2>
+                <p id="result-message">Ready to check in</p>
+            </div>
+
+            <!-- Ticket Details -->
+            <div class="ticket-details" id="ticket-details">
+                <div class="detail-row">
+                    <span class="label">Ticket ID</span>
+                    <span class="value" id="detail-ticket-id">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Guest Name</span>
+                    <span class="value" id="detail-name">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Type</span>
+                    <span class="value" id="detail-type">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Purchase Date</span>
+                    <span class="value" id="detail-date">-</span>
+                </div>
+                <div class="detail-row status-row">
+                    <span class="label">Status</span>
+                    <span class="value status" id="detail-status">-</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="ticket-actions" id="ticket-actions">
+                <button class="deny-btn" onclick="denyEntry()">Deny Entry</button>
+                <button class="allow-btn" onclick="allowEntry()">Allow Entry</button>
+            </div>
+
+            <!-- Close Button for already used/invalid -->
+            <button class="close-modal-btn hidden" id="close-modal-btn" onclick="closeTicketModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-value" id="scanned-count">0</span>
+            <span class="stat-label">Checked In</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-value" id="remaining-count">-</span>
+            <span class="stat-label">Remaining</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-value" id="total-count">-</span>
+            <span class="stat-label">Total</span>
+        </div>
+    </div>
+
+    <!-- Recent Scans -->
+    <div class="recent-scans" id="recent-scans-container">
+        <h3>Recent Scans</h3>
+        <div class="scans-list" id="scans-list">
+            <p class="no-scans">No tickets scanned yet</p>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Verifying...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="js/qr-scanner.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | My Fests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/my-fests.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>NEXUS HOST</span>
+            </div>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="host-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="create-fest.html" class="nav-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Fest</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fas fa-calendar-alt"></i>
+                <span>My Fests</span>
+            </a>
+            <a href="qr-scanner.html" class="nav-item">
+                <i class="fas fa-qrcode"></i>
+                <span>QR Scanner</span>
+            </a>
+            <a href="analytics.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-title">
+                <h1>My Fests</h1>
+                <p>Manage all your events</p>
+            </div>
+
+            <div class="header-actions">
+                <a href="create-fest.html" class="btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Create New
+                </a>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Overview -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalFests">0</span>
+                    <span class="stat-label">Total Fests</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="liveFests">0</span>
+                    <span class="stat-label">Live</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="pendingFests">0</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="completedFests">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterFests('all')">
+                    All Fests
+                </button>
+                <button class="filter-tab" onclick="filterFests('live')">
+                    Live
+                </button>
+                <button class="filter-tab" onclick="filterFests('upcoming')">
+                    Upcoming
+                </button>
+                <button class="filter-tab" onclick="filterFests('pending')">
+                    Pending Approval
+                </button>
+                <button class="filter-tab" onclick="filterFests('completed')">
+                    Completed
+                </button>
+                <button class="filter-tab" onclick="filterFests('rejected')">
+                    Rejected
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search your fests..." id="searchInput" onkeyup="searchFests()">
+            </div>
+
+            <!-- Fests Grid -->
+            <div class="fests-container" id="festsContainer">
+                <!-- Fests injected via JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3>No fests found</h3>
+                <p>Create your first fest to get started</p>
+                <a href="create-fest.html" class="btn-primary">Create Fest</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Fest Actions Modal -->
+    <div class="modal" id="actionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Fest Actions</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="actions-list" id="actionsList">
+                <!-- Actions injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content small">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Delete Fest?</h3>
+            <p>This action cannot be undone. All data will be permanently removed.</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Fest</h3>
+                <button class="modal-close" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="share-link-box">
+                <input type="text" class="share-input" id="shareLink" readonly>
+                <button class="btn-copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <div class="share-options">
+                <button class="share-btn whatsapp" onclick="shareTo('whatsapp')">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+                <button class="share-btn instagram" onclick="shareTo('instagram')">
+                    <i class="fab fa-instagram"></i>
+                </button>
+                <button class="share-btn twitter" onclick="shareTo('twitter')">
+                    <i class="fab fa-twitter"></i>
+                </button>
+                <button class="share-btn email" onclick="shareTo('email')">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/my-fests.js"></script>
+</body>
+</html>
