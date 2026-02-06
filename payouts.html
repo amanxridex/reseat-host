@@ -1,0 +1,382 @@
+<!-- payouts.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Payouts & Withdrawals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/payouts.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">N</div>
+            <span class="logo-text">NEXUS</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="host-dashboard.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="my-fests.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                My Fests
+            </a>
+            <a href="create-fest.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Create Fest
+            </a>
+            <a href="qr-scanner.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                </svg>
+                QR Scanner
+            </a>
+            <a href="payouts.html" class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Payouts
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-mini">
+                <div class="user-avatar" id="user-avatar">H</div>
+                <div class="user-info">
+                    <span class="user-name" id="user-name">Loading...</span>
+                    <span class="user-role">Event Host</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h1>Payouts & Withdrawals</h1>
+                <p class="subtitle">Manage your earnings and withdrawal methods</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="showHelp()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Help
+                </button>
+            </div>
+        </header>
+
+        <!-- Balance Cards -->
+        <section class="balance-section">
+            <div class="balance-card primary">
+                <div class="balance-bg"></div>
+                <div class="balance-content">
+                    <div class="balance-header">
+                        <span class="balance-label">Available Balance</span>
+                        <button class="eye-btn" onclick="toggleBalance()">
+                            <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="balance-amount" id="available-balance">₹45,250.00</div>
+                    <div class="balance-meta">
+                        <span class="pending-label">
+                            <span class="dot"></span>
+                            ₹12,500 pending clearance
+                        </span>
+                    </div>
+                    <button class="withdraw-btn" onclick="openWithdrawModal()">
+                        Withdraw Now
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="19" x2="12" y2="5"/>
+                            <polyline points="5 12 12 5 19 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="balance-card secondary">
+                <div class="balance-content">
+                    <span class="balance-label">Total Earnings</span>
+                    <div class="balance-amount small" id="total-earnings">₹1,24,850.00</div>
+                    <div class="trend up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                            <polyline points="17 6 23 6 23 12"/>
+                        </svg>
+                        +24% this month
+                    </div>
+                </div>
+            </div>
+
+            <div class="balance-card secondary">
+                <div class="balance-content">
+                    <span class="balance-label">Next Payout Date</span>
+                    <div class="balance-amount small" id="next-payout">Feb 15, 2024</div>
+                    <div class="trend info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Auto-withdrawal enabled
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Chart -->
+        <section class="analytics-section">
+            <div class="section-header">
+                <h2>Earnings Overview</h2>
+                <div class="period-selector">
+                    <button class="period-btn active" data-period="7d">7 Days</button>
+                    <button class="period-btn" data-period="30d">30 Days</button>
+                    <button class="period-btn" data-period="90d">3 Months</button>
+                    <button class="period-btn" data-period="1y">1 Year</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="earningsChart"></canvas>
+                <div class="chart-overlay" id="chart-tooltip"></div>
+            </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+            <!-- Transaction History -->
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Transaction History</h2>
+                    <div class="filter-group">
+                        <select class="filter-select" id="type-filter">
+                            <option value="all">All Types</option>
+                            <option value="ticket">Ticket Sales</option>
+                            <option value="withdrawal">Withdrawals</option>
+                            <option value="refund">Refunds</option>
+                        </select>
+                        <button class="btn-icon" onclick="exportTransactions()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="transactions-list" id="transactions-list">
+                    <!-- Transactions injected via JS -->
+                </div>
+
+                <div class="pagination">
+                    <button class="page-btn" onclick="changePage(-1)">Previous</button>
+                    <span class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">5</span></span>
+                    <button class="page-btn" onclick="changePage(1)">Next</button>
+                </div>
+            </section>
+
+            <!-- Bank Accounts & Methods -->
+            <section class="methods-section">
+                <div class="section-header">
+                    <h2>Withdrawal Methods</h2>
+                    <button class="btn-text" onclick="addNewMethod()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add New
+                    </button>
+                </div>
+
+                <div class="methods-list" id="methods-list">
+                    <!-- Methods injected via JS -->
+                </div>
+
+                <div class="withdrawal-settings">
+                    <h3>Auto-Withdrawal Settings</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Automatic Transfers</span>
+                            <span class="setting-desc">Withdraw daily to primary account</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="auto-withdraw" checked onchange="toggleAutoWithdraw()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Minimum Balance</span>
+                            <span class="setting-desc">Only withdraw above ₹1,000</span>
+                        </div>
+                        <span class="setting-value">₹1,000</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeWithdrawModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Withdraw Funds</h2>
+                <button class="close-btn" onclick="closeWithdrawModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="withdraw-summary">
+                    <div class="summary-item">
+                        <span>Available Balance</span>
+                        <strong id="modal-balance">₹45,250.00</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Withdrawal Fee (2%)</span>
+                        <strong class="fee" id="modal-fee">-₹905.00</strong>
+                    </div>
+                    <div class="summary-item total">
+                        <span>You Receive</span>
+                        <strong id="modal-receive">₹44,345.00</strong>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount to Withdraw</label>
+                    <div class="amount-input-wrapper">
+                        <span class="currency">₹</span>
+                        <input type="number" id="withdraw-amount" class="amount-input" placeholder="0.00" max="45250" oninput="calculateWithdrawal()">
+                        <button class="max-btn" onclick="setMaxAmount()">MAX</button>
+                    </div>
+                    <span class="input-hint">Minimum withdrawal: ₹500</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Account</label>
+                    <div class="account-select" id="account-options">
+                        <!-- Account options injected via JS -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Withdrawal Purpose (Optional)</label>
+                    <input type="text" id="withdraw-purpose" placeholder="e.g., Event expenses, Venue booking">
+                </div>
+
+                <div class="security-check">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span>Secured by 256-bit encryption</span>
+                </div>
+
+                <button class="confirm-btn" id="confirm-withdraw" onclick="processWithdrawal()" disabled>
+                    Confirm Withdrawal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Method Modal -->
+    <div id="method-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeMethodModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Bank Account</h2>
+                <button class="close-btn" onclick="closeMethodModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="method-tabs">
+                    <button class="method-tab active" data-method="bank">Bank Account</button>
+                    <button class="method-tab" data-method="upi">UPI ID</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Account Holder Name</label>
+                    <input type="text" id="account-name" placeholder="Full name as per bank records">
+                </div>
+
+                <div id="bank-fields">
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" id="account-number" placeholder="Enter 9-18 digit account number">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                            <input type="text" id="ifsc-code" placeholder="SBIN0001234" maxlength="11">
+                        </div>
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <input type="text" id="bank-name" placeholder="e.g., State Bank of India">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="upi-fields" class="hidden">
+                    <div class="form-group">
+                        <label>UPI ID</label>
+                        <input type="text" id="upi-id" placeholder="name@upi">
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox">
+                        <input type="checkbox" id="primary-account">
+                        <span class="checkmark"></span>
+                        Set as primary account
+                    </label>
+                </div>
+
+                <button class="confirm-btn" onclick="saveMethod()">Save Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <div class="toast-icon" id="toast-icon"></div>
+            <div class="toast-message" id="toast-message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/payouts.js"></script>
+</body>
+</html>
