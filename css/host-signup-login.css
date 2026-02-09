@@ -439,3 +439,21 @@ body {
         font-size: 0.9rem;
     }
 }
+
+/* Add to host-signup-login.css */
+.toast-notification {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+  max-width: 90%;
+  text-align: center;
+}
