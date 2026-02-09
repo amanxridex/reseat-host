@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="css/host-signup-login.css">
 </head>
 <body>
-    <!-- Background -->
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
 
@@ -40,19 +39,19 @@
                 <form onsubmit="handleLogin(event)">
                     <div class="input-group">
                         <label class="input-label">Email Address</label>
-                        <input type="email" class="input-field" placeholder="host@college.edu" required>
+                        <input type="email" id="loginEmail" class="input-field" placeholder="host@college.edu" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Password</label>
-                        <input type="password" class="input-field" placeholder="Enter your password" required>
+                        <input type="password" id="loginPassword" class="input-field" placeholder="Enter your password" required>
                     </div>
 
                     <div class="forgot-link">
                         <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
                     </div>
 
-                    <button type="submit" class="btn-primary">
+                    <button type="submit" class="btn-primary" id="loginBtn">
                         <i class="fas fa-sign-in-alt"></i>
                         Login to Dashboard
                     </button>
@@ -61,102 +60,93 @@
                 <div class="divider">or continue with</div>
 
                 <div class="social-login">
-                    <button class="social-btn" onclick="socialLogin('google')">
+                    <button class="social-btn" onclick="googleLogin()">
                         <i class="fab fa-google"></i>
                         Google
-                    </button>
-                    <button class="social-btn" onclick="socialLogin('microsoft')">
-                        <i class="fab fa-microsoft"></i>
-                        Outlook
                     </button>
                 </div>
             </div>
 
             <!-- SIGNUP FORM -->
             <div class="form-section" id="signupForm">
-                <h2 class="form-title">Become a Host</h2>
-                <p class="form-subtitle">Register to create college fests on Nexus</p>
+                <h2 class="form-title">Create Account</h2>
+                <p class="form-subtitle">Join as a college fest host</p>
 
                 <form onsubmit="handleSignup(event)">
                     <div class="input-group">
                         <label class="input-label">Full Name *</label>
-                        <input type="text" class="input-field" placeholder="Your full name" required>
+                        <input type="text" id="signupName" class="input-field" placeholder="Your full name" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Email Address *</label>
-                        <input type="email" class="input-field" placeholder="your@college.edu" required>
-                        <p class="input-hint">Use your college email for faster verification</p>
+                        <input type="email" id="signupEmail" class="input-field" placeholder="your@college.edu" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Phone Number *</label>
-                        <input type="tel" class="input-field" placeholder="+91 98765 43210" required>
+                        <input type="tel" id="signupPhone" class="input-field" placeholder="+91 98765 43210" required>
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">College/University Name *</label>
-                        <input type="text" class="input-field" placeholder="e.g., Delhi University" required>
+                        <label class="input-label">College/University *</label>
+                        <select id="signupCollege" class="input-field" required>
+                            <option value="">Select your college</option>
+                            <option value="Christ University - Bangalore">Christ University - Bangalore</option>
+                            <option value="Christ University - Delhi NCR">Christ University - Delhi NCR</option>
+                            <option value="Symbiosis Noida">Symbiosis Noida</option>
+                            <option value="LPU Jalandhar">LPU Jalandhar</option>
+                            <option value="IIT Bombay">IIT Bombay</option>
+                            <option value="IIT Delhi">IIT Delhi</option>
+                            <option value="BITS Pilani">BITS Pilani</option>
+                            <option value="VIT Vellore">VIT Vellore</option>
+                            <option value="SRM University">SRM University</option>
+                            <option value="Manipal University">Manipal University</option>
+                            <option value="NMIMS Mumbai">NMIMS Mumbai</option>
+                            <option value="Ashoka University">Ashoka University</option>
+                        </select>
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Registration/Roll Number *</label>
-                        <input type="text" class="input-field" placeholder="Your college ID number" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">College ID Card *</label>
-                        <div class="file-upload" onclick="document.getElementById('idProof').click()">
-                            <input type="file" id="idProof" accept="image/*,.pdf" onchange="handleFileUpload(this)" required>
-                            <div class="file-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                            </div>
-                            <div class="file-text">Click to upload ID card</div>
-                            <div class="file-hint">JPG, PNG or PDF (Max 5MB)</div>
-                        </div>
-                        <div class="file-preview" id="filePreview">
-                            <i class="fas fa-check-circle"></i>
-                            <span id="fileName">document.pdf</span>
-                        </div>
+                        <label class="input-label">Registration Number *</label>
+                        <input type="text" id="signupReg" class="input-field" placeholder="Your college ID number" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Create Password *</label>
-                        <input type="password" class="input-field" placeholder="Min 8 characters" minlength="8" required>
+                        <input type="password" id="signupPassword" class="input-field" placeholder="Min 6 characters" minlength="6" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Confirm Password *</label>
-                        <input type="password" class="input-field" placeholder="Re-enter password" required>
+                        <input type="password" id="signupConfirm" class="input-field" placeholder="Re-enter password" required>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="terms" required>
-                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>. I confirm that I am an authorized representative of my college.</label>
+                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a></label>
                     </div>
 
                     <button type="submit" class="btn-primary" id="signupBtn">
                         <i class="fas fa-user-plus"></i>
-                        Submit for Verification
+                        Create Account
                     </button>
                 </form>
-            </div>
 
-            <!-- SUCCESS MESSAGE -->
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <h3 class="success-title">Application Submitted!</h3>
-                <p class="success-text">Your host application is under review. We'll verify your college details and get back to you within 24-48 hours.</p>
-                <button class="btn-primary" onclick="switchTab('login')">
-                    Go to Login
+                <div class="divider">or</div>
+
+                <button class="social-btn" onclick="googleLogin()" style="width: 100%;">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
                 </button>
             </div>
 
         </div>
     </div>
 
-    <script src="js/host-signup-login.js"></script>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script type="module" src="js/host-signup-login.js"></script>
 </body>
 </html>

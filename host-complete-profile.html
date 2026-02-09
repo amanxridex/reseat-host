@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile | Nexus Host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #050508;
+            --card-bg: #0a0a12;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        input:read-only {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            color: white;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="host-signup-login.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Login
+        </a>
+
+        <h1>Complete Your Profile</h1>
+        <p class="subtitle">Become a Host - Register to create college fests on Nexus</p>
+
+        <div class="form-card">
+            <form id="profileForm" onsubmit="completeProfile(event)">
+                <div class="input-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="email" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="phone" placeholder="+91 98765 43210" required>
+                </div>
+
+                <div class="input-group">
+                    <label>College/University Name *</label>
+                    <select id="college" required>
+                        <option value="">Select your college</option>
+                        <option value="Christ University - Bangalore">Christ University - Bangalore</option>
+                        <option value="Christ University - Delhi NCR">Christ University - Delhi NCR</option>
+                        <option value="Symbiosis Noida">Symbiosis Noida</option>
+                        <option value="LPU Jalandhar">LPU Jalandhar</option>
+                        <option value="IIT Bombay">IIT Bombay</option>
+                        <option value="IIT Delhi">IIT Delhi</option>
+                        <option value="BITS Pilani">BITS Pilani</option>
+                        <option value="VIT Vellore">VIT Vellore</option>
+                        <option value="SRM University">SRM University</option>
+                        <option value="Manipal University">Manipal University</option>
+                        <option value="NMIMS Mumbai">NMIMS Mumbai</option>
+                        <option value="Ashoka University">Ashoka University</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Registration/Roll Number *</label>
+                    <input type="text" id="regNumber" placeholder="Your college ID number" required>
+                </div>
+
+                <div class="input-group">
+                    <label>College ID Card *</label>
+                    <div class="file-upload" onclick="document.getElementById('idCard').click()">
+                        <input type="file" id="idCard" accept="image/*,.pdf" onchange="handleFile(this)" required>
+                        <div class="file-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="file-text" id="fileText">Click to upload ID card<br>JPG, PNG or PDF (Max 5MB)</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    Complete Profile
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = 'https://nexus-host-backend.onrender.com/api';
+
+        // Load temp data from signup/google
+        const tempData = JSON.parse(sessionStorage.getItem('host_temp_data') || '{}');
+        
+        if (!tempData.token) {
+            window.location.href = 'host-signup-login.html';
+        }
+
+        // Pre-fill form
+        document.getElementById('fullName').value = tempData.name || '';
+        document.getElementById('email').value = tempData.email || '';
+        document.getElementById('phone').value = tempData.phone || '';
+        if (tempData.college) {
+            document.getElementById('college').value = tempData.college;
+        }
+        if (tempData.reg) {
+            document.getElementById('regNumber').value = tempData.reg;
+        }
+
+        let idCardFile = null;
+
+        function handleFile(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('File too large. Max 5MB.');
+                    return;
+                }
+                idCardFile = file;
+                document.getElementById('fileText').innerHTML = `<i class="fas fa-check" style="color: var(--success)"></i> ${file.name}`;
+            }
+        }
+
+        async function completeProfile(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<div class="spinner"></div> Saving...';
+            btn.disabled = true;
+
+            try {
+                // Upload ID card first
+                let idCardUrl = null;
+                if (idCardFile) {
+                    const formData = new FormData();
+                    formData.append('file', idCardFile);
+
+                    const uploadRes = await fetch(`${API_URL}/upload/id-card`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${tempData.token}`
+                        },
+                        body: formData
+                    });
+
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.success) {
+                        idCardUrl = uploadData.url;
+                    }
+                }
+
+                // Create host profile
+                const profileData = {
+                    full_name: document.getElementById('fullName').value,
+                    phone: document.getElementById('phone').value,
+                    college_name: document.getElementById('college').value,
+                    registration_number: document.getElementById('regNumber').value,
+                    id_card_url: idCardUrl
+                };
+
+                const res = await fetch(`${API_URL}/host/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${tempData.token}`
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create profile');
+                }
+
+                // Save and redirect
+                localStorage.setItem('nexus_host', JSON.stringify(data.data));
+                localStorage.setItem('nexus_token', tempData.token);
+                
+                showToast('Profile created! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'host-dashboard.html';
+                }, 1500);
+
+            } catch (err) {
+                showToast(err.message);
+                btn.innerHTML = 'Complete Profile';
+                btn.disabled = false;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
