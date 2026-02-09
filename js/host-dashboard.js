@@ -1,164 +1,116 @@
-// Host Data
-let hostData = {
-    name: 'Alex Kumar',
-    email: 'alex@college.edu',
-    college: 'Delhi University',
-    isVerified: true,
-    fests: [
-        {
-            id: 'fest_001',
-            name: 'TechFest 2025',
-            date: 'Mar 15-17, 2025',
-            image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
-            status: 'live',
-            ticketsSold: 456,
-            revenue: 45600,
-            scans: 234
-        },
-        {
-            id: 'fest_002',
-            name: 'Cultural Night',
-            date: 'Apr 5, 2025',
-            image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
-            status: 'upcoming',
-            ticketsSold: 128,
-            revenue: 12800,
-            scans: 0
-        },
-        {
-            id: 'fest_003',
-            name: 'Sports Meet',
-            date: 'Feb 20-22, 2025',
-            image: 'https://images.unsplash.com/photo-1461896836934- voices?w=400',
-            status: 'live',
-            ticketsSold: 312,
-            revenue: 15600,
-            scans: 189
-        }
-    ],
-    activities: [
-        { type: 'ticket', title: 'New ticket booked', desc: 'Rahul Sharma booked 2 tickets for TechFest', time: '2 min ago' },
-        { type: 'money', title: 'Revenue update', desc: '₹1,200 added to your wallet', time: '15 min ago' },
-        { type: 'scan', title: 'Entry scanned', desc: 'Ticket #1234 scanned at gate', time: '1 hour ago' },
-        { type: 'ticket', title: 'New ticket booked', desc: 'Priya Verma booked 1 ticket', time: '2 hours ago' }
-    ]
-};
+const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    loadHostData();
-    renderFests();
-    renderActivities();
-    updateStats();
+// Check Auth & Load Real Data
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('nexus_token');
+    const host = localStorage.getItem('nexus_host');
     
-    // Check verification status
-    if (!hostData.isVerified) {
-        document.getElementById('verificationBanner').style.display = 'flex';
-    }
-});
-
-// Check Auth
-function checkAuth() {
-    const host = sessionStorage.getItem('nexus_host');
-    if (!host) {
+    if (!token || !host) {
         window.location.href = 'host-signup-login.html';
         return;
     }
     
-    const data = JSON.parse(host);
-    document.getElementById('hostName').textContent = data.email.split('@')[0];
-}
+    try {
+        // Verify token & get fresh data from backend
+        const res = await fetch(`${API_URL}/host/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!res.ok) {
+            throw new Error('Session expired');
+        }
+        
+        const data = await res.json();
+        
+        // Update UI with real data
+        updateUI(data.data);
+        
+        // Load dashboard stats
+        loadStats(data.data);
+        
+    } catch (err) {
+        console.error('Auth error:', err);
+        // Clear invalid session
+        localStorage.removeItem('nexus_token');
+        localStorage.removeItem('nexus_host');
+        window.location.href = 'host-signup-login.html';
+    }
+});
 
-// Load Host Data
-function loadHostData() {
-    const saved = sessionStorage.getItem('nexus_host_data');
-    if (saved) {
-        hostData = JSON.parse(saved);
+// Update UI with real host data
+function updateUI(hostData) {
+    // Update name
+    const nameElement = document.getElementById('hostName');
+    if (nameElement) {
+        nameElement.textContent = hostData.full_name || hostData.email.split('@')[0];
+    }
+    
+    // Update profile image if available
+    const profileImg = document.getElementById('profileImg');
+    if (profileImg && hostData.avatar_url) {
+        profileImg.src = hostData.avatar_url;
+    }
+    
+    // Show verification banner if needed
+    const banner = document.getElementById('verificationBanner');
+    if (banner && !hostData.is_active) {
+        banner.style.display = 'flex';
     }
 }
 
-// Update Stats
-function updateStats() {
-    const totalFests = hostData.fests.length;
-    const totalTickets = hostData.fests.reduce((sum, f) => sum + f.ticketsSold, 0);
-    const totalRevenue = hostData.fests.reduce((sum, f) => sum + f.revenue, 0);
-    const totalAttendees = hostData.fests.reduce((sum, f) => sum + f.scans, 0);
+// Load stats (mock for now, replace with real API)
+function loadStats(hostData) {
+    // TODO: Replace with real stats API call
+    document.getElementById('totalFests').textContent = '0';
+    document.getElementById('totalTickets').textContent = '0';
+    document.getElementById('totalRevenue').textContent = '₹0';
+    document.getElementById('totalAttendees').textContent = '0';
     
-    document.getElementById('totalFests').textContent = totalFests;
-    document.getElementById('totalTickets').textContent = totalTickets.toLocaleString();
-    document.getElementById('totalRevenue').textContent = '₹' + (totalRevenue / 1000).toFixed(1) + 'K';
-    document.getElementById('totalAttendees').textContent = totalAttendees.toLocaleString();
+    // Load fests from backend
+    loadFests();
+    
+    // Load activities
+    loadActivities();
 }
 
-// Render Fests
-function renderFests() {
-    const container = document.getElementById('liveFests');
+// Load fests from backend
+async function loadFests() {
+    const token = localStorage.getItem('nexus_token');
     
-    let html = '';
-    hostData.fests.forEach(fest => {
-        const statusClass = fest.status === 'live' ? 'status-live' : 'status-upcoming';
-        const statusText = fest.status === 'live' ? 'LIVE' : 'UPCOMING';
+    try {
+        // TODO: Replace with real endpoint when available
+        // const res = await fetch(`${API_URL}/host/fests`, {
+        //     headers: { 'Authorization': `Bearer ${token}` }
+        // });
         
-        html += `
-            <div class="fest-card" onclick="openFest('${fest.id}')">
-                <div class="fest-image">
-                    <img src="${fest.image}" alt="${fest.name}">
-                    <span class="fest-status ${statusClass}">${statusText}</span>
-                </div>
-                <div class="fest-info">
-                    <h3>${fest.name}</h3>
-                    <div class="fest-date">
-                        <i class="fas fa-calendar"></i>
-                        ${fest.date}
-                    </div>
-                    <div class="fest-stats">
-                        <div class="fest-stat">
-                            <span>${fest.ticketsSold}</span>
-                            <span>Tickets</span>
-                        </div>
-                        <div class="fest-stat">
-                            <span>₹${(fest.revenue / 1000).toFixed(1)}K</span>
-                            <span>Revenue</span>
-                        </div>
-                        <div class="fest-stat">
-                            <span>${fest.scans}</span>
-                            <span>Scans</span>
-                        </div>
-                    </div>
-                </div>
+        // For now, show empty state
+        const container = document.getElementById('liveFests');
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                <h3>No Fests Yet</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first college fest!</p>
+                <a href="create-fest.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
+                    Create Fest
+                </a>
             </div>
         `;
-    });
-    
-    container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Failed to load fests:', err);
+    }
 }
 
-// Render Activities
-function renderActivities() {
+// Load activities
+function loadActivities() {
     const container = document.getElementById('activityList');
-    
-    let html = '';
-    hostData.activities.forEach(activity => {
-        const iconClass = activity.type;
-        const icon = activity.type === 'ticket' ? 'fa-ticket-alt' : 
-                    activity.type === 'money' ? 'fa-rupee-sign' : 'fa-qrcode';
-        
-        html += `
-            <div class="activity-item">
-                <div class="activity-icon ${iconClass}">
-                    <i class="fas ${icon}"></i>
-                </div>
-                <div class="activity-info">
-                    <h4>${activity.title}</h4>
-                    <p>${activity.desc}</p>
-                </div>
-                <span class="activity-time">${activity.time}</span>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
+    container.innerHTML = `
+        <div class="activity-item" style="justify-content: center; color: var(--text-muted);">
+            No recent activity
+        </div>
+    `;
 }
 
 // Toggle Sidebar
@@ -166,15 +118,9 @@ function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
-// Open Fest
-function openFest(festId) {
-    sessionStorage.setItem('nexus_current_fest', festId);
-    window.location.href = 'fest-details.html?id=' + festId;
-}
-
 // Show Notifications
 function showNotifications() {
-    showToast('3 new notifications');
+    showToast('No new notifications');
 }
 
 // Share Modal
@@ -204,12 +150,14 @@ function shareTo(platform) {
 
 // Check Status
 function checkStatus() {
-    showToast('Your application is under review. Expected approval: 24 hours');
+    showToast('Your account is active and verified!');
 }
 
 // Logout
 function logout() {
-    sessionStorage.removeItem('nexus_host');
+    localStorage.removeItem('nexus_token');
+    localStorage.removeItem('nexus_host');
+    sessionStorage.clear();
     window.location.href = 'host-signup-login.html';
 }
 
@@ -222,6 +170,12 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
+}
+
+// Open Fest
+function openFest(festId) {
+    sessionStorage.setItem('nexus_current_fest', festId);
+    window.location.href = 'fest-details.html?id=' + festId;
 }
 
 // Close modal on outside click
