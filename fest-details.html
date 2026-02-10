@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Fest Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/fest-details.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>NEXUS HOST</span>
+            </div>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="host-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="create-fest.html" class="nav-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Fest</span>
+            </a>
+            <a href="my-fests.html" class="nav-item active">
+                <i class="fas fa-calendar-alt"></i>
+                <span>My Fests</span>
+            </a>
+            <a href="qr-scanner.html" class="nav-item">
+                <i class="fas fa-qrcode"></i>
+                <span>QR Scanner</span>
+            </a>
+            <a href="analytics.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-title">
+                <h1>Fest Details</h1>
+                <p>Manage your event</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="shareFest()">
+                    <i class="fas fa-share-alt"></i>
+                    Share
+                </button>
+                <button class="btn-primary" onclick="editFest()">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>Loading fest details...</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content" id="content" style="display: none;">
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <img src="" alt="Fest Banner" id="festBanner">
+                <div class="banner-overlay">
+                    <span class="status-badge" id="festStatus">LIVE</span>
+                </div>
+            </div>
+
+            <!-- Fest Info Card -->
+            <div class="info-card">
+                <h1 class="fest-name" id="festName">Fest Name</h1>
+                <p class="fest-type" id="festType">Technical Fest</p>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <span class="label">Date</span>
+                            <span class="value" id="festDate">Mar 15-17, 2025</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <span class="label">Venue</span>
+                            <span class="value" id="festVenue">Main Auditorium</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <span class="label">Expected</span>
+                            <span class="value" id="festAttendance">500 attendees</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        <div>
+                            <span class="label">Type</span>
+                            <span class="value" id="ticketType">Free</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-section">
+                <h2><i class="fas fa-chart-pie"></i> Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTickets">0</h3>
+                            <p>Tickets Sold</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statRevenue">₹0</h3>
+                            <p>Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statViews">0</h3>
+                            <p>Page Views</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statScans">0</h3>
+                            <p>QR Scans</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="description-section">
+                <h2><i class="fas fa-align-left"></i> About</h2>
+                <p class="description-text" id="festDescription">
+                    Description goes here...
+                </p>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-section">
+                <h2><i class="fas fa-address-card"></i> Contact</h2>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <i class="fas fa-user"></i>
+                        <div>
+                            <span class="label">Coordinator</span>
+                            <span class="value" id="coordinatorName">Name</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <span class="label">Phone</span>
+                            <span class="value" id="contactPhone">+91 98765 43210</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <span class="label">Email</span>
+                            <span class="value" id="contactEmail">email@example.com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="actions-section">
+                <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                <div class="actions-grid">
+                    <button class="action-card" onclick="openScanner()">
+                        <div class="action-icon green">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <span>Scan Tickets</span>
+                    </button>
+                    <button class="action-card" onclick="viewAnalytics()">
+                        <div class="action-icon purple">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span>View Analytics</span>
+                    </button>
+                    <button class="action-card" onclick="shareFest()">
+                        <div class="action-icon blue">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <span>Share Fest</span>
+                    </button>
+                    <button class="action-card" onclick="downloadReport()">
+                        <div class="action-icon orange">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <span>Download Report</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-state" id="errorState" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Failed to load fest</h3>
+            <p id="errorMessage">Something went wrong</p>
+            <button class="btn-primary" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </button>
+        </div>
+    </main>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Fest</h3>
+                <button class="modal-close" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="share-link-box">
+                <input type="text" class="share-input" id="shareLink" readonly>
+                <button class="btn-copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <div class="share-options">
+                <button class="share-btn whatsapp" onclick="shareTo('whatsapp')">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+                <button class="share-btn instagram" onclick="shareTo('instagram')">
+                    <i class="fab fa-instagram"></i>
+                </button>
+                <button class="share-btn twitter" onclick="shareTo('twitter')">
+                    <i class="fab fa-twitter"></i>
+                </button>
+                <button class="share-btn email" onclick="shareTo('email')">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/fest-details.js"></script>
+</body>
+</html>
