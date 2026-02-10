@@ -329,7 +329,7 @@
                     id_card_url: idCardUrl
                 };
 
-                const res = await fetch(`${API_URL}/host/create`, {
+                const res = await fetch(`${API_URL}/auth/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
