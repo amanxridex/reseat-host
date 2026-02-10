@@ -29,28 +29,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ============================================
 async function checkAuth() {
     try {
-        // Try sessionStorage first (current session)
-        let hostData = sessionStorage.getItem('nexus_host');
-        
-        // If not in session, try localStorage (remember me)
-        if (!hostData) {
-            hostData = localStorage.getItem('nexus_host');
-            if (hostData) {
-                sessionStorage.setItem('nexus_host', hostData);
-            }
-        }
+        // Get token from localStorage (saved separately)
+        const token = localStorage.getItem('nexus_token');
+        let hostData = localStorage.getItem('nexus_host');
 
-        if (!hostData) {
+        if (!token || !hostData) {
             redirectToLogin();
             return;
         }
 
         formState.currentHost = JSON.parse(hostData);
-        
+        formState.currentHost.token = token; // Add token to host object
+
         // Verify token is still valid with backend
         const response = await fetch(`${API_URL}/host/profile`, {
             headers: {
-                'Authorization': `Bearer ${formState.currentHost.token}`
+                'Authorization': `Bearer ${token}`
             }
         });
 
@@ -68,6 +62,7 @@ async function checkAuth() {
 function clearAuthData() {
     sessionStorage.removeItem('nexus_host');
     localStorage.removeItem('nexus_host');
+    localStorage.removeItem('nexus_token'); // Add this
     formState.currentHost = null;
 }
 
