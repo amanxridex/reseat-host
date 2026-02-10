@@ -1,4 +1,5 @@
 // API URL
+// ✅ FIXED: Removed trailing space
 const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
 // Firebase Config
@@ -67,8 +68,8 @@ window.handleLogin = async (e) => {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const token = await result.user.getIdToken();
 
-        // Get host from backend
-        const res = await fetch(`${API_URL}/host/login`, {
+        // ✅ FIXED: Changed /host/login to /auth/login
+        const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -150,8 +151,8 @@ window.googleLogin = async () => {
         const result = await signInWithPopup(auth, provider);
         const token = await result.user.getIdToken();
 
-        // Check if host exists
-        const res = await fetch(`${API_URL}/host/check`, {
+        // ✅ FIXED: Changed /host/check to /auth/check
+        const res = await fetch(`${API_URL}/auth/check`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -159,7 +160,18 @@ window.googleLogin = async () => {
 
         if (data.exists) {
             // Existing user - login
-            localStorage.setItem('nexus_host', JSON.stringify(data.host));
+            // ✅ FIXED: Fetch full profile using /auth/login
+            const loginRes = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            const loginData = await loginRes.json();
+            
+            localStorage.setItem('nexus_host', JSON.stringify(loginData.data));
             localStorage.setItem('nexus_token', token);
             window.location.href = 'host-dashboard.html';
         } else {
