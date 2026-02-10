@@ -1,57 +1,6 @@
-// Sample Data
-let fests = [
-    {
-        id: 'fest_001',
-        name: 'TechFest 2025',
-        date: 'Mar 15-17, 2025',
-        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
-        status: 'live',
-        ticketsSold: 456,
-        revenue: 45600,
-        scans: 234
-    },
-    {
-        id: 'fest_002',
-        name: 'Cultural Night - Annual Fest',
-        date: 'Apr 5, 2025',
-        image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
-        status: 'upcoming',
-        ticketsSold: 128,
-        revenue: 12800,
-        scans: 0
-    },
-    {
-        id: 'fest_003',
-        name: 'Sports Meet 2025',
-        date: 'Feb 20-22, 2025',
-        image: 'https://images.unsplash.com/photo-1461896836934- voices?w=400',
-        status: 'completed',
-        ticketsSold: 312,
-        revenue: 15600,
-        scans: 298
-    },
-    {
-        id: 'fest_004',
-        name: 'Literary Fest - Wordsmith',
-        date: 'May 10-12, 2025',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400',
-        status: 'pending',
-        ticketsSold: 0,
-        revenue: 0,
-        scans: 0
-    },
-    {
-        id: 'fest_005',
-        name: 'Management Summit',
-        date: 'Jan 15, 2025',
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
-        status: 'rejected',
-        ticketsSold: 0,
-        revenue: 0,
-        scans: 0
-    }
-];
+const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
+let fests = [];
 let currentFilter = 'all';
 let selectedFestId = null;
 
@@ -59,25 +8,95 @@ let selectedFestId = null;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadFests();
-    updateStats();
-    renderFests();
 });
 
 // Check Auth
 function checkAuth() {
-    const host = sessionStorage.getItem('nexus_host');
-    if (!host) {
+    const token = localStorage.getItem('nexus_token');
+    if (!token) {
         window.location.href = 'host-signup-login.html';
     }
 }
 
-// Load Fests from storage
-function loadFests() {
-    const pending = JSON.parse(sessionStorage.getItem('nexus_pending_fests') || '[]');
-    if (pending.length > 0) {
-        fests = [...pending, ...fests];
-        sessionStorage.removeItem('nexus_pending_fests');
+// Load Fests from Backend
+async function loadFests() {
+    const token = localStorage.getItem('nexus_token');
+    
+    try {
+        const response = await fetch(`${API_URL}/fest/my-fests`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch fests');
+        }
+
+        const data = await response.json();
+        fests = data.fests || [];
+        
+        // Process fests to add computed status and format dates
+        fests = fests.map(fest => {
+            const now = new Date();
+            const startDate = new Date(fest.start_date);
+            const endDate = new Date(fest.end_date);
+            
+            // Determine status based on dates
+            let computedStatus;
+            if (fest.status === 'rejected') {
+                computedStatus = 'rejected';
+            } else if (fest.status === 'pending_approval') {
+                computedStatus = 'pending';
+            } else if (endDate < now) {
+                computedStatus = 'completed';
+            } else if (startDate <= now && endDate >= now) {
+                computedStatus = 'live';
+            } else {
+                computedStatus = 'upcoming';
+            }
+            
+            // Format date range
+            const dateStr = formatDateRange(startDate, endDate);
+            
+            // Get stats from fest_analytics
+            const stats = fest.fest_analytics || {};
+            
+            return {
+                id: fest.id,
+                name: fest.fest_name,
+                date: dateStr,
+                image: fest.banner_url || 'https://placehold.co/400x300/8b5cf6/ffffff?text=No+Banner',
+                status: computedStatus,
+                originalStatus: fest.status,
+                ticketsSold: stats.total_tickets_sold || 0,
+                revenue: stats.total_revenue || 0,
+                scans: 0, // You can add this field later
+                startDate: fest.start_date,
+                endDate: fest.end_date
+            };
+        });
+        
+        updateStats();
+        renderFests();
+        
+    } catch (error) {
+        console.error('Error loading fests:', error);
+        showToast('Failed to load fests');
+        document.getElementById('emptyState').style.display = 'block';
     }
+}
+
+// Format date range
+function formatDateRange(start, end) {
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const startStr = start.toLocaleDateString('en-US', options);
+    const endStr = end.toLocaleDateString('en-US', options);
+    
+    if (startStr === endStr) {
+        return startStr;
+    }
+    return `${startStr} - ${endStr}`;
 }
 
 // Update Stats
@@ -265,10 +284,17 @@ function viewFest(id) {
     window.location.href = 'fest-details.html?id=' + id;
 }
 
+// Open Fest (Manage)
+function openFest(id) {
+    sessionStorage.setItem('nexus_current_fest', id);
+    window.location.href = 'fest-details.html?id=' + id;
+}
+
 // Edit Fest
 function editFest(id) {
     closeModal();
     showToast('Opening fest editor...');
+    // TODO: Redirect to edit page
 }
 
 // Open Scanner
@@ -360,13 +386,28 @@ function closeDeleteModal() {
 }
 
 // Confirm Delete
-function confirmDelete() {
-    if (selectedFestId) {
+async function confirmDelete() {
+    if (!selectedFestId) return;
+    
+    const token = localStorage.getItem('nexus_token');
+    
+    try {
+        // TODO: Add delete endpoint to backend
+        // const response = await fetch(`${API_URL}/fest/${selectedFestId}`, {
+        //     method: 'DELETE',
+        //     headers: { 'Authorization': `Bearer ${token}` }
+        // });
+        
+        // For now, just remove from UI
         fests = fests.filter(f => f.id !== selectedFestId);
         renderFests();
         updateStats();
         showToast('Fest deleted successfully');
+        
+    } catch (error) {
+        showToast('Failed to delete fest');
     }
+    
     closeDeleteModal();
 }
 
@@ -377,7 +418,9 @@ function toggleSidebar() {
 
 // Logout
 function logout() {
-    sessionStorage.removeItem('nexus_host');
+    localStorage.removeItem('nexus_token');
+    localStorage.removeItem('nexus_host');
+    sessionStorage.clear();
     window.location.href = 'host-signup-login.html';
 }
 
