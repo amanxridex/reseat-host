@@ -22,7 +22,7 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">
+            <a href="host-dashboard.html" class="nav-item active">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
@@ -49,7 +49,7 @@
         </nav>
 
         <div class="sidebar-footer">
-            <a href="#" class="nav-item">
+            <a href="settings.html" class="nav-item">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>
@@ -70,16 +70,16 @@
             
             <div class="header-title">
                 <h1>Dashboard</h1>
-                <p>Welcome back, <span id="hostName">Alex</span></p>
+                <p>Welcome back, <span id="hostName">Host</span></p>
             </div>
 
             <div class="header-actions">
                 <button class="icon-btn" onclick="showNotifications()">
                     <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
+                    <span class="badge" id="notifBadge" style="display: none;">0</span>
                 </button>
-                <div class="profile">
-                    <img src="https://i.pravatar.cc/150?u=host" alt="Profile" id="profileImg">
+                <div class="profile" onclick="goToSettings()">
+                    <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=H" alt="Profile" id="profileImg">
                 </div>
             </div>
         </header>
@@ -94,7 +94,7 @@
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="totalFests">5</h3>
+                        <h3 id="totalFests">0</h3>
                         <p>Total Fests</p>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                         <i class="fas fa-ticket-alt"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="totalTickets">1,247</h3>
+                        <h3 id="totalTickets">0</h3>
                         <p>Tickets Sold</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                         <i class="fas fa-rupee-sign"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="totalRevenue">₹45.6K</h3>
+                        <h3 id="totalRevenue">₹0</h3>
                         <p>Total Revenue</p>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="totalAttendees">892</h3>
+                        <h3 id="totalAttendees">0</h3>
                         <p>Attendees</p>
                     </div>
                 </div>
@@ -139,6 +139,14 @@
 
                 <div class="fests-grid" id="liveFests">
                     <!-- Injected via JS -->
+                    <div class="empty-state" id="emptyFests">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <h4>No Fests Yet</h4>
+                        <p>Create your first college fest and start selling tickets!</p>
+                        <a href="create-fest.html" class="btn-primary">Create Fest</a>
+                    </div>
                 </div>
             </section>
 
@@ -185,6 +193,10 @@
                 
                 <div class="activity-list" id="activityList">
                     <!-- Injected via JS -->
+                    <div class="activity-item empty">
+                        <i class="fas fa-info-circle"></i>
+                        <span>No recent activity</span>
+                    </div>
                 </div>
             </section>
 
@@ -198,6 +210,19 @@
                     </div>
                 </div>
                 <button class="btn-secondary" onclick="checkStatus()">Check Status</button>
+            </div>
+
+            <!-- Create Fest CTA (when no fests) -->
+            <div class="create-fest-cta" id="createFestCTA" style="display: none;">
+                <div class="cta-content">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Ready to host your first fest?</h3>
+                    <p>Create an event in minutes and start selling tickets to students across colleges.</p>
+                    <a href="create-fest.html" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Your First Fest
+                    </a>
+                </div>
             </div>
 
         </div>
@@ -229,8 +254,28 @@
         </div>
     </div>
 
+    <!-- Notifications Modal -->
+    <div class="modal" id="notifModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="modal-close" onclick="closeNotifModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notifications-list" id="notifList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
 
     <script src="js/host-dashboard.js"></script>
 </body>
