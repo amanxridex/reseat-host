@@ -1,7 +1,7 @@
 // ============================================
 // CONFIGURATION
 // ============================================
-const API_URL = "https://nexus-host-backend.onrender.com/api";
+const API_URL = "https://nexus-host-backend.onrender.com/api"; // Remove space
 const SUPABASE_URL = "https://okskhrcvmjpxpegpewca.supabase.co";
 
 // ============================================
