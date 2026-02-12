@@ -41,15 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Get Firebase token from host auth
 function getAuthToken() {
     try {
-        const authData = localStorage.getItem('nexus_host');
-        if (authData) {
-            const parsed = JSON.parse(authData);
-            return parsed.idToken || null;
-        }
+        // Your token is stored as 'nexus_token'
+        return localStorage.getItem('nexus_token');
     } catch (e) {
-        console.error('Error parsing auth:', e);
+        console.error('Error getting auth:', e);
     }
     return null;
+}
+
+// Redirect to correct login page
+function redirectToLogin() {
+    window.location.href = 'host-signup-login.html';
 }
 
 // Load fest details
