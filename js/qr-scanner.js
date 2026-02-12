@@ -1,481 +1,471 @@
-// js/qr-scanner.js
+// qr-scanner.js - Complete Functional QR Scanner
 
-// Global State
-let currentStream = null;
-let isScanning = true;
-let currentFest = null;
-let scannedTickets = new Set();
-let recentScans = [];
-let isFlashlightOn = false;
+const API_BASE_URL = 'https://nexus-host-backend.onrender.com/api';
+
+// Get fest ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const festId = urlParams.get('festId');
+
+if (!festId) {
+    alert('No fest selected. Please select a fest first.');
+    window.location.href = 'host-dashboard.html';
+}
+
+// Global variables
+let video = null;
+let canvas = null;
+let canvasContext = null;
+let scanning = false;
 let scanInterval = null;
+let currentTicket = null;
 
-// Mock Data for Demo (Replace with API calls)
-const mockTickets = {
-    'NX-2024-001234': {
-        id: 'NX-2024-001234',
-        name: 'Rahul Sharma',
-        type: 'VIP',
-        date: '2024-02-07',
-        status: 'valid',
-        used: false
-    },
-    'NX-2024-001235': {
-        id: 'NX-2024-001235',
-        name: 'Priya Patel',
-        type: 'General',
-        date: '2024-02-06',
-        status: 'valid',
-        used: true,
-        usedAt: '2024-02-07 14:30'
-    },
-    'NX-2024-001236': {
-        id: 'NX-2024-001236',
-        name: 'Amit Kumar',
-        type: 'Early Bird',
-        date: '2024-02-05',
-        status: 'valid',
-        used: false
-    }
-};
-
-// Initialize
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
+    video = document.getElementById('camera-feed');
+    canvas = document.getElementById('camera-canvas');
+    canvasContext = canvas.getContext('2d');
+    
+    // Load fest details
+    loadFestDetails();
+    
+    // Load stats
+    loadStats();
+    
+    // Load recent scans
+    loadRecentScans();
+    
+    // Initialize camera
+    initCamera();
 });
 
-function initializeApp() {
-    loadFestData();
-    initCamera();
-    loadStats();
-    checkOnlineStatus();
-    
-    // Check online status periodically
-    setInterval(checkOnlineStatus, 5000);
-    
-    // Setup input enter key
-    document.getElementById('manual-ticket-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') verifyManualTicket();
-    });
-}
-
-// Load Fest Data from Session Storage
-function loadFestData() {
-    const festData = sessionStorage.getItem('nexus_scan_fest') || sessionStorage.getItem('nexus_current_fest');
-    
-    if (festData) {
-        try {
-            currentFest = JSON.parse(festData);
-            document.getElementById('fest-name').textContent = currentFest.name || 'Unnamed Fest';
-        } catch (e) {
-            console.error('Error parsing fest data:', e);
-            document.getElementById('fest-name').textContent = 'Tech Fest 2024';
-        }
-    } else {
-        document.getElementById('fest-name').textContent = 'Tech Fest 2024';
-        currentFest = {
-            id: 'fest-001',
-            name: 'Tech Fest 2024',
-            totalTickets: 500,
-            checkedIn: 0
-        };
-    }
-}
-
-// Camera Initialization
-async function initCamera() {
-    const video = document.getElementById('camera-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const errorDiv = document.getElementById('camera-error');
-    
+// Get Firebase token from host auth
+function getAuthToken() {
     try {
-        // Stop existing stream
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
+        const authData = localStorage.getItem('nexus_host_auth');
+        if (authData) {
+            const parsed = JSON.parse(authData);
+            return parsed.idToken || null;
         }
-        
-        // Get camera access
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: 'environment',
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            }
-        });
-        
-        currentStream = stream;
-        video.srcObject = stream;
-        
-        video.onloadedmetadata = () => {
-            video.play();
-            errorDiv.classList.add('hidden');
-            startQRScanning();
-        };
-        
-    } catch (err) {
-        console.error('Camera error:', err);
-        errorDiv.classList.remove('hidden');
-        showNotification('Camera access denied. Use manual entry.', 'error');
+    } catch (e) {
+        console.error('Error parsing auth:', e);
     }
-}
-
-// QR Code Scanning Loop
-function startQRScanning() {
-    const video = document.getElementById('camera-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (scanInterval) clearInterval(scanInterval);
-    
-    scanInterval = setInterval(() => {
-        if (!isScanning || video.paused || video.ended) return;
-        
-        // Set canvas size to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        // Draw video frame to canvas
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Get image data
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        // Decode QR
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'attemptBoth'
-        });
-        
-        if (code && code.data) {
-            handleQRCode(code.data);
-        }
-    }, 200); // Scan every 200ms
-}
-
-// Handle Scanned QR Code
-function handleQRCode(data) {
-    // Prevent duplicate scans within 3 seconds
-    if (scannedTickets.has(data)) return;
-    
-    scannedTickets.add(data);
-    setTimeout(() => scannedTickets.delete(data), 3000);
-    
-    // Pause scanning
-    isScanning = false;
-    
-    // Verify ticket
-    verifyTicket(data);
-}
-
-// Verify Ticket (API or Local)
-async function verifyTicket(ticketId) {
-    showLoading(true);
-    
-    try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Check if offline
-        const isOffline = !navigator.onLine;
-        
-        // Get ticket data (from API or cache)
-        const ticket = await getTicketData(ticketId, isOffline);
-        
-        showLoading(false);
-        
-        if (ticket) {
-            showTicketModal(ticket);
-        } else {
-            showTicketModal({
-                id: ticketId,
-                status: 'invalid',
-                name: 'Unknown',
-                type: 'N/A',
-                date: 'N/A',
-                error: 'Ticket not found'
-            });
-        }
-        
-    } catch (error) {
-        showLoading(false);
-        showNotification('Verification failed. Try again.', 'error');
-        isScanning = true;
-    }
-}
-
-// Get Ticket Data
-async function getTicketData(ticketId, isOffline) {
-    // In real app, fetch from API or IndexedDB cache
-    // For demo, use mock data
-    
-    const ticket = mockTickets[ticketId];
-    
-    if (ticket) {
-        return { ...ticket };
-    }
-    
-    // If not in mock data, create invalid ticket
     return null;
 }
 
-// Show Ticket Modal
-function showTicketModal(ticket) {
-    const modal = document.getElementById('ticket-modal');
-    const resultDiv = document.getElementById('ticket-result');
-    const actionsDiv = document.getElementById('ticket-actions');
-    const closeBtn = document.getElementById('close-modal-btn');
-    
-    // Reset classes
-    resultDiv.className = 'ticket-result';
-    
-    // Set content
-    document.getElementById('detail-ticket-id').textContent = ticket.id;
-    document.getElementById('detail-name').textContent = ticket.name;
-    document.getElementById('detail-type').textContent = ticket.type;
-    document.getElementById('detail-date').textContent = ticket.date;
-    
-    const statusEl = document.getElementById('detail-status');
-    const successIcon = document.getElementById('success-icon');
-    const errorIcon = document.getElementById('error-icon');
-    const warningIcon = document.getElementById('warning-icon');
-    
-    // Hide all icons
-    successIcon.classList.add('hidden');
-    errorIcon.classList.add('hidden');
-    warningIcon.classList.add('hidden');
-    
-    // Determine state
-    if (ticket.status === 'invalid' || !ticket.status) {
-        // Invalid ticket
-        resultDiv.classList.add('error');
-        document.getElementById('result-title').textContent = 'Invalid Ticket';
-        document.getElementById('result-message').textContent = ticket.error || 'This ticket is not recognized';
-        errorIcon.classList.remove('hidden');
-        statusEl.textContent = 'INVALID';
-        statusEl.className = 'value status invalid';
-        actionsDiv.classList.add('hidden');
-        closeBtn.classList.remove('hidden');
-        
-    } else if (ticket.used) {
-        // Already used
-        resultDiv.classList.add('warning');
-        document.getElementById('result-title').textContent = 'Already Checked In';
-        document.getElementById('result-message').textContent = `Used at ${ticket.usedAt || 'earlier today'}`;
-        warningIcon.classList.remove('hidden');
-        statusEl.textContent = 'USED';
-        statusEl.className = 'value status used';
-        actionsDiv.classList.add('hidden');
-        closeBtn.classList.remove('hidden');
-        
-    } else {
-        // Valid ticket
-        resultDiv.classList.add('success');
-        document.getElementById('result-title').textContent = 'Valid Ticket';
-        document.getElementById('result-message').textContent = 'Ready to check in';
-        successIcon.classList.remove('hidden');
-        statusEl.textContent = 'VALID';
-        statusEl.className = 'value status valid';
-        actionsDiv.classList.remove('hidden');
-        closeBtn.classList.add('hidden');
-        
-        // Store current ticket for actions
-        modal.dataset.currentTicket = JSON.stringify(ticket);
-    }
-    
-    modal.classList.remove('hidden');
-}
-
-// Close Ticket Modal
-function closeTicketModal() {
-    document.getElementById('ticket-modal').classList.add('hidden');
-    isScanning = true;
-}
-
-// Allow Entry
-function allowEntry() {
-    const modal = document.getElementById('ticket-modal');
-    const ticketData = modal.dataset.currentTicket;
-    
-    if (!ticketData) return;
-    
-    const ticket = JSON.parse(ticketData);
-    
-    // Update ticket status
-    ticket.used = true;
-    ticket.usedAt = new Date().toLocaleString();
-    mockTickets[ticket.id] = ticket; // Update mock data
-    
-    // Add to recent scans
-    addToRecentScans(ticket, 'allowed');
-    
-    // Update stats
-    updateStats(1);
-    
-    // Close modal and resume scanning
-    closeTicketModal();
-    
-    // Show success notification
-    showNotification(`✓ ${ticket.name} checked in successfully`, 'success');
-}
-
-// Deny Entry
-function denyEntry() {
-    const modal = document.getElementById('ticket-modal');
-    const ticketData = modal.dataset.currentTicket;
-    
-    if (!ticketData) return;
-    
-    const ticket = JSON.parse(ticketData);
-    
-    // Add to recent scans
-    addToRecentScans(ticket, 'denied');
-    
-    closeTicketModal();
-    showNotification(`✗ Entry denied for ${ticket.name}`, 'error');
-}
-
-// Manual Entry Toggle
-function toggleManualEntry() {
-    const modal = document.getElementById('manual-modal');
-    const isHidden = modal.classList.contains('hidden');
-    
-    if (isHidden) {
-        modal.classList.remove('hidden');
-        isScanning = false;
-        setTimeout(() => document.getElementById('manual-ticket-input').focus(), 100);
-    } else {
-        modal.classList.add('hidden');
-        isScanning = true;
-        document.getElementById('manual-ticket-input').value = '';
-    }
-}
-
-// Verify Manual Ticket
-function verifyManualTicket() {
-    const input = document.getElementById('manual-ticket-input');
-    const ticketId = input.value.trim().toUpperCase();
-    
-    if (!ticketId) {
-        showNotification('Please enter a ticket number', 'error');
+// Load fest details
+async function loadFestDetails() {
+    const token = getAuthToken();
+    if (!token) {
+        redirectToLogin();
         return;
     }
-    
-    toggleManualEntry();
-    verifyTicket(ticketId);
-}
 
-// Flashlight Toggle
-async function toggleFlashlight() {
-    const btn = document.getElementById('flashlight-btn');
-    
-    if (!currentStream) return;
-    
     try {
-        const track = currentStream.getVideoTracks()[0];
-        const capabilities = track.getCapabilities();
-        
-        if (!capabilities.torch) {
-            showNotification('Flashlight not supported on this device', 'error');
-            return;
-        }
-        
-        isFlashlightOn = !isFlashlightOn;
-        await track.applyConstraints({
-            advanced: [{ torch: isFlashlightOn }]
+        const response = await fetch(`${API_BASE_URL}/fests/${festId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
+
+        if (!response.ok) throw new Error('Failed to load fest');
+
+        const data = await response.json();
+        document.getElementById('fest-name').textContent = data.name || 'Event';
         
-        btn.classList.toggle('active', isFlashlightOn);
-        
-    } catch (err) {
-        console.error('Flashlight error:', err);
-        showNotification('Unable to toggle flashlight', 'error');
+    } catch (error) {
+        console.error('Error loading fest:', error);
+        document.getElementById('fest-name').textContent = 'Unknown Event';
     }
 }
 
-// Add to Recent Scans
-function addToRecentScans(ticket, status) {
-    const scan = {
-        ticket: ticket,
-        status: status,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    recentScans.unshift(scan);
-    if (recentScans.length > 5) recentScans.pop();
-    
-    renderRecentScans();
+// Load stats
+async function loadStats() {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/scan/fest-stats/${festId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            const validScans = data.scans?.valid || 0;
+            const total = data.fest?.capacity || 0; // You may need to add capacity to fests table
+            
+            document.getElementById('scanned-count').textContent = validScans;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('remaining-count').textContent = Math.max(0, total - validScans);
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
 }
 
-// Render Recent Scans
-function renderRecentScans() {
+// Load recent scans
+async function loadRecentScans() {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/scan/recent-scans/${festId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.scans?.length > 0) {
+            renderRecentScans(data.scans);
+        }
+    } catch (error) {
+        console.error('Error loading recent scans:', error);
+    }
+}
+
+// Render recent scans
+function renderRecentScans(scans) {
     const container = document.getElementById('scans-list');
     
-    if (recentScans.length === 0) {
-        container.innerHTML = '<p class="no-scans">No tickets scanned yet</p>';
-        return;
-    }
-    
-    container.innerHTML = recentScans.map(scan => `
+    container.innerHTML = scans.map(scan => `
         <div class="scan-item">
             <div class="scan-info">
-                <div class="scan-avatar">${scan.ticket.name.charAt(0)}</div>
+                <div class="scan-avatar">${(scan.attendee_name || 'G').charAt(0).toUpperCase()}</div>
                 <div class="scan-details">
-                    <h4>${scan.ticket.name}</h4>
-                    <p>${scan.ticket.id} • ${scan.time}</p>
+                    <h4>${scan.attendee_name || 'Guest'}</h4>
+                    <p>${new Date(scan.scanned_at).toLocaleTimeString()}</p>
                 </div>
             </div>
-            <span class="scan-status ${scan.status}">${scan.status}</span>
+            <span class="scan-status ${scan.status === 'valid' ? 'allowed' : 'denied'}">
+                ${scan.status === 'valid' ? 'Allowed' : 'Denied'}
+            </span>
         </div>
     `).join('');
 }
 
-// Update Statistics
-function updateStats(increment) {
-    if (!currentFest) return;
-    
-    currentFest.checkedIn = (currentFest.checkedIn || 0) + increment;
-    
-    // Save to session
-    sessionStorage.setItem('nexus_scan_fest', JSON.stringify(currentFest));
-    
-    renderStats();
-}
-
-// Load Stats
-function loadStats() {
-    renderStats();
-}
-
-// Render Stats
-function renderStats() {
-    const checkedIn = currentFest?.checkedIn || 0;
-    const total = currentFest?.totalTickets || 500;
-    const remaining = total - checkedIn;
-    
-    document.getElementById('scanned-count').textContent = checkedIn;
-    document.getElementById('remaining-count').textContent = remaining;
-    document.getElementById('total-count').textContent = total;
-}
-
-// Check Online Status
-function checkOnlineStatus() {
-    const indicator = document.getElementById('offline-indicator');
-    const isOffline = !navigator.onLine;
-    
-    if (isOffline) {
-        indicator.classList.remove('hidden');
-    } else {
-        indicator.classList.add('hidden');
-        // Sync offline data if needed
-        syncOfflineData();
+// Initialize camera
+async function initCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }
+        });
+        
+        video.srcObject = stream;
+        video.play();
+        
+        scanning = true;
+        document.getElementById('camera-error').classList.add('hidden');
+        
+        // Start scanning loop
+        scanInterval = setInterval(scanQRCode, 200);
+        
+    } catch (error) {
+        console.error('Camera error:', error);
+        document.getElementById('camera-error').classList.remove('hidden');
+        scanning = false;
     }
 }
 
-// Sync Offline Data (Placeholder)
-async function syncOfflineData() {
-    // In real app, sync scanned tickets with server
-    console.log('Syncing offline data...');
+// Scan QR code from video frame
+function scanQRCode() {
+    if (!scanning || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+    
+    // Set canvas size to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw video frame to canvas
+    canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Get image data
+    const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Try to decode QR
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert'
+    });
+    
+    if (code) {
+        // QR found - stop scanning temporarily
+        scanning = false;
+        clearInterval(scanInterval);
+        
+        // Process the QR data
+        handleQRCode(code.data);
+    }
 }
 
-// Show/Hide Loading
+// Handle scanned QR code
+async function handleQRCode(qrData) {
+    showLoading(true);
+    
+    try {
+        // Parse QR data
+        let ticketData;
+        try {
+            ticketData = JSON.parse(qrData);
+        } catch (e) {
+            // If not JSON, treat as plain ticket ID
+            ticketData = { ticketId: qrData };
+        }
+        
+        const ticketId = ticketData.ticketId || ticketData.ticket_id || qrData;
+        
+        // Verify ticket with backend
+        await verifyTicket(ticketId);
+        
+    } catch (error) {
+        console.error('QR processing error:', error);
+        showTicketResult('error', 'Invalid QR Code', 'Could not read ticket data');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Verify ticket with backend
+async function verifyTicket(ticketId) {
+    const token = getAuthToken();
+    if (!token) {
+        redirectToLogin();
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/scan/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                ticketId: ticketId,
+                festId: festId
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            currentTicket = data.ticket;
+            
+            if (data.valid) {
+                // Valid ticket - show success with allow/deny buttons
+                showTicketResult('success', 'Valid Ticket', 'Ready to check in', data.ticket);
+            } else {
+                // Already used
+                showTicketResult('warning', 'Already Used', 'This ticket was already scanned', data.ticket);
+            }
+        } else {
+            // Invalid ticket
+            showTicketResult('error', 'Invalid Ticket', data.error || 'Ticket verification failed');
+        }
+        
+        // Refresh stats and recent scans
+        loadStats();
+        loadRecentScans();
+        
+    } catch (error) {
+        console.error('Verification error:', error);
+        showTicketResult('error', 'Network Error', 'Could not verify ticket. Try again.');
+    }
+}
+
+// Show ticket verification result modal
+function showTicketResult(type, title, message, ticket = null) {
+    const modal = document.getElementById('ticket-modal');
+    
+    // Hide all icons first
+    document.getElementById('success-icon').classList.add('hidden');
+    document.getElementById('error-icon').classList.add('hidden');
+    document.getElementById('warning-icon').classList.add('hidden');
+    
+    // Show appropriate icon
+    if (type === 'success') {
+        document.getElementById('success-icon').classList.remove('hidden');
+    } else if (type === 'error') {
+        document.getElementById('error-icon').classList.remove('hidden');
+    } else {
+        document.getElementById('warning-icon').classList.remove('hidden');
+    }
+    
+    // Set text
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('result-message').textContent = message;
+    
+    // Set result styling
+    const resultDiv = document.getElementById('ticket-result');
+    resultDiv.className = 'ticket-result ' + type;
+    
+    // Show/hide ticket details
+    const detailsDiv = document.getElementById('ticket-details');
+    const actionsDiv = document.getElementById('ticket-actions');
+    const closeBtn = document.getElementById('close-modal-btn');
+    
+    if (ticket) {
+        // Show details
+        document.getElementById('detail-ticket-id').textContent = ticket.ticket_id || '-';
+        document.getElementById('detail-name').textContent = ticket.attendee_name || 'Unknown';
+        document.getElementById('detail-type').textContent = 'College Fest';
+        document.getElementById('detail-date').textContent = ticket.created_at 
+            ? new Date(ticket.created_at).toLocaleDateString() 
+            : '-';
+        
+        const statusEl = document.getElementById('detail-status');
+        if (type === 'success') {
+            statusEl.textContent = 'Valid';
+            statusEl.className = 'value status valid';
+        } else if (type === 'warning') {
+            statusEl.textContent = 'Already Used';
+            statusEl.className = 'value status used';
+        } else {
+            statusEl.textContent = 'Invalid';
+            statusEl.className = 'value status invalid';
+        }
+        
+        detailsDiv.classList.remove('hidden');
+        
+        if (type === 'success') {
+            // Show allow/deny buttons for valid tickets
+            actionsDiv.classList.remove('hidden');
+            closeBtn.classList.add('hidden');
+        } else {
+            // Just close button for already used/invalid
+            actionsDiv.classList.add('hidden');
+            closeBtn.classList.remove('hidden');
+        }
+    } else {
+        // No ticket data - error state
+        detailsDiv.classList.add('hidden');
+        actionsDiv.classList.add('hidden');
+        closeBtn.classList.remove('hidden');
+    }
+    
+    // Show modal
+    modal.classList.remove('hidden');
+}
+
+// Allow entry
+async function allowEntry() {
+    if (!currentTicket) return;
+    
+    showLoading(true);
+    
+    // Log as allowed (already marked used by backend, just update UI)
+    showLoading(false);
+    closeTicketModal();
+    
+    // Show success toast
+    showToast('Entry allowed for ' + (currentTicket.attendee_name || 'Guest'));
+    
+    // Resume scanning
+    resumeScanning();
+}
+
+// Deny entry
+async function denyEntry() {
+    if (!currentTicket) return;
+    
+    showLoading(true);
+    
+    const token = getAuthToken();
+    
+    try {
+        // Log denied entry
+        await fetch(`${API_BASE_URL}/scan/log-denied`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                ticketId: currentTicket.ticket_id,
+                festId: festId,
+                attendeeName: currentTicket.attendee_name
+            })
+        });
+    } catch (e) {
+        console.error('Error logging denied:', e);
+    }
+    
+    showLoading(false);
+    closeTicketModal();
+    showToast('Entry denied');
+    
+    // Resume scanning
+    resumeScanning();
+}
+
+// Close ticket modal
+function closeTicketModal() {
+    document.getElementById('ticket-modal').classList.add('hidden');
+    currentTicket = null;
+    resumeScanning();
+}
+
+// Resume scanning
+function resumeScanning() {
+    if (!scanning) {
+        scanning = true;
+        scanInterval = setInterval(scanQRCode, 200);
+    }
+}
+
+// Toggle manual entry modal
+function toggleManualEntry() {
+    const modal = document.getElementById('manual-modal');
+    modal.classList.toggle('hidden');
+    
+    if (!modal.classList.contains('hidden')) {
+        document.getElementById('manual-ticket-input').focus();
+    }
+}
+
+// Verify manual ticket entry
+async function verifyManualTicket() {
+    const input = document.getElementById('manual-ticket-input');
+    const ticketId = input.value.trim();
+    
+    if (!ticketId) {
+        showToast('Please enter ticket number');
+        return;
+    }
+    
+    toggleManualEntry();
+    await verifyTicket(ticketId);
+    input.value = '';
+}
+
+// Toggle flashlight (if supported)
+async function toggleFlashlight() {
+    const btn = document.getElementById('flashlight-btn');
+    
+    try {
+        const stream = video.srcObject;
+        const track = stream.getVideoTracks()[0];
+        
+        // Check if torch is supported
+        const capabilities = track.getCapabilities();
+        
+        if (capabilities.torch) {
+            const torch = !btn.classList.contains('active');
+            await track.applyConstraints({
+                advanced: [{ torch }]
+            });
+            btn.classList.toggle('active', torch);
+        } else {
+            showToast('Flashlight not supported on this device');
+        }
+    } catch (error) {
+        console.error('Flashlight error:', error);
+        showToast('Could not toggle flashlight');
+    }
+}
+
+// Show/hide loading
 function showLoading(show) {
     const overlay = document.getElementById('loading-overlay');
     if (show) {
@@ -485,62 +475,47 @@ function showLoading(show) {
     }
 }
 
-// Notification System
-function showNotification(message, type = 'info') {
-    // Create notification element
-    const notif = document.createElement('div');
-    notif.style.cssText = `
-        position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%) translateY(-20px);
-        background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' : type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(139, 92, 246, 0.9)'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 12px;
-        font-weight: 600;
-        z-index: 3000;
-        opacity: 0;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-    `;
-    notif.textContent = message;
-    document.body.appendChild(notif);
+// Show toast message
+function showToast(message) {
+    // Create toast if not exists
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-purple);
+            z-index: 3000;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        `;
+        document.body.appendChild(toast);
+    }
     
-    // Animate in
-    requestAnimationFrame(() => {
-        notif.style.opacity = '1';
-        notif.style.transform = 'translateX(-50%) translateY(0)';
-    });
+    toast.textContent = message;
+    toast.style.opacity = '1';
     
-    // Remove after 3 seconds
     setTimeout(() => {
-        notif.style.opacity = '0';
-        notif.style.transform = 'translateX(-50%) translateY(-20px)';
-        setTimeout(() => notif.remove(), 300);
+        toast.style.opacity = '0';
     }, 3000);
 }
 
-// Handle Visibility Change (Pause/Resume Camera)
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        isScanning = false;
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.enabled = false);
-        }
-    } else {
-        isScanning = true;
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.enabled = true);
-        }
-    }
-});
+// Redirect to login
+function redirectToLogin() {
+    window.location.href = 'host-login.html';
+}
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
+// Handle Enter key in manual input
+document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !document.getElementById('manual-modal').classList.contains('hidden')) {
+        verifyManualTicket();
     }
-    if (scanInterval) clearInterval(scanInterval);
 });
