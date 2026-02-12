@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Get Firebase token from host auth
 function getAuthToken() {
     try {
-        const authData = localStorage.getItem('nexus_host_auth');
+        const authData = localStorage.getItem('nexus_host');
         if (authData) {
             const parsed = JSON.parse(authData);
             return parsed.idToken || null;
@@ -510,7 +510,7 @@ function showToast(message) {
 
 // Redirect to login
 function redirectToLogin() {
-    window.location.href = 'host-login.html';
+    window.location.href = 'host-signup-login.html';
 }
 
 // Handle Enter key in manual input
