@@ -300,7 +300,7 @@ function editFest(id) {
 // Open Scanner
 function openScanner(id) {
     sessionStorage.setItem('nexus_scan_fest', id);
-    window.location.href = 'qr-scanner.html?fest=' + id;
+    `<a href="qr-scanner.html?fest=${fest.id}" class="btn-scan">Scan</a>`
 }
 
 // View Analytics

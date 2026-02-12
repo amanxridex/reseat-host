@@ -4,11 +4,11 @@ const API_BASE_URL = 'https://nexus-host-backend.onrender.com/api';
 
 // Get fest ID from URL
 const urlParams = new URLSearchParams(window.location.search);
-const festId = urlParams.get('festId');
+const festId = urlParams.get('fest') || urlParams.get('festId');
 
 if (!festId) {
     alert('No fest selected. Please select a fest first.');
-    window.location.href = 'host-dashboard.html';
+    window.location.href = 'my-fests.html';
 }
 
 // Global variables
