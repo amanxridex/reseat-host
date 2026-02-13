@@ -229,6 +229,7 @@ async function handleQRCode(qrData) {
 }
 
 // Verify ticket with backend
+// Verify ticket with backend
 async function verifyTicket(ticketId, retryCount = 0) {
     const token = getAuthToken();
     if (!token) {
@@ -251,21 +252,19 @@ async function verifyTicket(ticketId, retryCount = 0) {
 
         const data = await response.json();
         
-        console.log('Verify response:', data); // Debug
-        
-        if (!data.success) {
-            // Show error, not "Already Used"
-            showTicketResult('error', 'Error', data.error || 'Verification failed');
+        console.log('Verify response:', data);
+
+        // ✅ FIXED: Handle both invalid and error cases
+        if (!data.success || !data.valid) {
+            // Show proper error message from backend
+            const errorMsg = data.error || 'Invalid ticket';
+            showTicketResult('error', 'Invalid Ticket', errorMsg);
             return;
         }
         
-        if (data.valid) {
-            currentTicket = data.ticket;
-            const offlineMsg = data.offline ? ' (Offline Mode)' : '';
-            showTicketResult('success', 'Valid Ticket' + offlineMsg, 'Ready to check in', data.ticket);
-        } else {
-            showTicketResult('warning', 'Already Used', 'This ticket was already scanned', data.ticket);
-        }
+        // Valid ticket
+        currentTicket = data.ticket;
+        showTicketResult('success', 'Valid Ticket', 'Ready to check in', data.ticket);
         
         loadStats();
         loadRecentScans();
