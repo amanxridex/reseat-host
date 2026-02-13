@@ -229,7 +229,8 @@ async function handleQRCode(qrData) {
 }
 
 // Verify ticket with backend
-async function verifyTicket(ticketId) {
+// Verify ticket with backend (with retry)
+async function verifyTicket(ticketId, retryCount = 0) {
     const token = getAuthToken();
     if (!token) {
         redirectToLogin();
@@ -249,24 +250,27 @@ async function verifyTicket(ticketId) {
             })
         });
 
+        // If rate limited, retry after delay
+        if (response.status === 429 && retryCount < 3) {
+            showToast('Too many scans, retrying...');
+            await new Promise(r => setTimeout(r, 2000));
+            return verifyTicket(ticketId, retryCount + 1);
+        }
+
         const data = await response.json();
         
         if (data.success) {
             currentTicket = data.ticket;
             
             if (data.valid) {
-                // Valid ticket - show success with allow/deny buttons
                 showTicketResult('success', 'Valid Ticket', 'Ready to check in', data.ticket);
             } else {
-                // Already used
                 showTicketResult('warning', 'Already Used', 'This ticket was already scanned', data.ticket);
             }
         } else {
-            // Invalid ticket
-            showTicketResult('error', 'Invalid Ticket', data.error || 'Ticket verification failed');
+            showTicketResult('error', 'Error', data.error || 'Verification failed');
         }
         
-        // Refresh stats and recent scans
         loadStats();
         loadRecentScans();
         
