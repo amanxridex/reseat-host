@@ -133,69 +133,44 @@ function renderRecentScans(scans) {
 }
 
 // Initialize camera
-// Initialize camera - FORCE BACK CAMERA with proper error handling
 async function initCamera() {
     try {
-        // First check if camera API is available
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Camera API not supported');
-        }
-
-        // Request camera permission with back camera preference
-        const constraints = {
-            video: {
-                facingMode: { ideal: "environment" },  // Back camera preferred
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            },
-            audio: false
-        };
-
-        console.log('Requesting back camera...');
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        
-        // Set video source
-        video.srcObject = stream;
-        
-        // Wait for video to be ready
-        await new Promise((resolve) => {
-            video.onloadedmetadata = () => {
-                resolve();
-            };
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }
         });
         
-        await video.play();
+        video.srcObject = stream;
+        video.play();
         
         scanning = true;
         document.getElementById('camera-error').classList.add('hidden');
         scanInterval = setInterval(scanQRCode, 200);
         
-        console.log('✅ Back camera started');
-        
     } catch (error) {
-        console.error('❌ Camera error:', error.name, error.message);
-        
-        // Show specific error message
-        const errorDiv = document.getElementById('camera-error');
-        const errorTitle = errorDiv.querySelector('h3');
-        const errorText = errorDiv.querySelector('p');
-        
-        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            errorTitle.textContent = 'Camera Permission Denied';
-            errorText.textContent = 'Please allow camera access in your browser settings and refresh the page.';
-        } else if (error.name === 'NotFoundError') {
-            errorTitle.textContent = 'Camera Not Found';
-            errorText.textContent = 'No camera detected on your device.';
-        } else if (error.name === 'NotReadableError') {
-            errorTitle.textContent = 'Camera In Use';
-            errorText.textContent = 'Camera is being used by another app. Please close other apps.';
-        } else {
-            errorTitle.textContent = 'Camera Error';
-            errorText.textContent = error.message || 'Could not access camera.';
-        }
-        
-        errorDiv.classList.remove('hidden');
+        console.error('Camera error:', error);
+        document.getElementById('camera-error').classList.remove('hidden');
         scanning = false;
+    }
+}
+
+// Scan QR code
+function scanQRCode() {
+    if (!scanning || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+    
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert'
+    });
+    
+    if (code) {
+        scanning = false;
+        clearInterval(scanInterval);
+        handleQRCode(code.data);
     }
 }
 
