@@ -1,5 +1,4 @@
 // API URL
-// ✅ FIXED: Removed trailing space
 const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
 // Firebase Config
@@ -25,11 +24,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Check if logged in
-const host = localStorage.getItem('nexus_host');
-if (host) {
-    window.location.href = 'host-dashboard.html';
-}
+// ✅ NEW: Check session cookie instead of localStorage
+const checkSession = async () => {
+    try {
+        const res = await fetch(`${API_URL}/auth/check`, {
+            method: 'GET',
+            credentials: 'include', // ✅ IMPORTANT: Send cookies
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.exists) {
+                window.location.href = 'host-dashboard.html';
+            }
+        }
+    } catch (err) {
+        console.log('No active session');
+    }
+};
+
+// Check session on load
+checkSession();
 
 // Switch tabs
 window.switchTab = (tab) => {
@@ -53,6 +69,22 @@ const showToast = (msg) => {
     setTimeout(() => toast.classList.remove('show'), 3000);
 };
 
+// ✅ NEW: Create session after Firebase auth
+const createHostSession = async (idToken) => {
+    const res = await fetch(`${API_URL}/auth/session`, {
+        method: 'POST',
+        credentials: 'include', // ✅ IMPORTANT: Receive cookies
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
+    });
+    
+    if (!res.ok) {
+        throw new Error('Failed to create session');
+    }
+    
+    return await res.json();
+};
+
 // Login
 window.handleLogin = async (e) => {
     e.preventDefault();
@@ -68,13 +100,14 @@ window.handleLogin = async (e) => {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const token = await result.user.getIdToken();
 
-        // ✅ FIXED: Changed /host/login to /auth/login
+        // ✅ NEW: Create session cookie (30 days)
+        await createHostSession(token);
+
+        // ✅ NEW: Fetch profile using cookie (no Authorization header needed)
         const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
+            credentials: 'include', // ✅ Cookie automatically sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await res.json();
@@ -83,9 +116,9 @@ window.handleLogin = async (e) => {
             throw new Error(data.error || 'Login failed');
         }
 
-        // Save to localStorage
+        // ✅ Keep localStorage for UI data only (not token)
         localStorage.setItem('nexus_host', JSON.stringify(data.data));
-        localStorage.setItem('nexus_token', token);
+        // ❌ REMOVED: localStorage.setItem('nexus_token', token);
 
         showToast('Login successful!');
         setTimeout(() => {
@@ -123,10 +156,12 @@ window.handleSignup = async (e) => {
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const token = await result.user.getIdToken();
 
+        // ✅ NEW: Create session cookie immediately
+        await createHostSession(token);
+
         // Save temp data for profile completion
         sessionStorage.setItem('host_temp_data', JSON.stringify({
             uid: result.user.uid,
-            token: token,
             email: email,
             name: name,
             phone: phone,
@@ -151,34 +186,35 @@ window.googleLogin = async () => {
         const result = await signInWithPopup(auth, provider);
         const token = await result.user.getIdToken();
 
-        // ✅ FIXED: Changed /host/check to /auth/check
+        // ✅ NEW: Create session cookie first
+        await createHostSession(token);
+
+        // Check if host exists (cookie automatically sent)
         const res = await fetch(`${API_URL}/auth/check`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include', // ✅ Cookie sent automatically
+            headers: { 'Content-Type': 'application/json' }
         });
         
         const data = await res.json();
 
         if (data.exists) {
-            // Existing user - login
-            // ✅ FIXED: Fetch full profile using /auth/login
+            // Existing user - fetch profile
             const loginRes = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include', // ✅ Cookie sent automatically
+                headers: { 'Content-Type': 'application/json' }
             });
             
             const loginData = await loginRes.json();
             
             localStorage.setItem('nexus_host', JSON.stringify(loginData.data));
-            localStorage.setItem('nexus_token', token);
+            // ❌ REMOVED: localStorage.setItem('nexus_token', token);
+            
             window.location.href = 'host-dashboard.html';
         } else {
             // New user - complete profile
             sessionStorage.setItem('host_temp_data', JSON.stringify({
                 uid: result.user.uid,
-                token: token,
                 email: result.user.email,
                 name: result.user.displayName || '',
                 photo: result.user.photoURL

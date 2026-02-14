@@ -259,113 +259,135 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const API_URL = 'https://nexus-host-backend.onrender.com/api';
+        // API URL
+const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
-        // Load temp data from signup/google
-        const tempData = JSON.parse(sessionStorage.getItem('host_temp_data') || '{}');
+// Check if session exists (cookie automatically sent)
+async function checkSession() {
+    try {
+        const res = await fetch(`${API_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
         
-        if (!tempData.token) {
-            window.location.href = 'host-signup-login.html';
+        if (res.ok) {
+            const data = await res.json();
+            if (data.exists) {
+                window.location.href = 'host-dashboard.html';
+                return true;
+            }
         }
+        return false;
+    } catch (err) {
+        console.log('No session');
+        return false;
+    }
+}
 
-        // Pre-fill form
-        document.getElementById('fullName').value = tempData.name || '';
-        document.getElementById('email').value = tempData.email || '';
-        document.getElementById('phone').value = tempData.phone || '';
-        if (tempData.college) {
-            document.getElementById('college').value = tempData.college;
+// Load temp data from signup/google
+const tempData = JSON.parse(sessionStorage.getItem('host_temp_data') || '{}');
+
+// Check session first, then temp data
+checkSession().then(hasSession => {
+    if (!hasSession && !tempData.uid) {
+        window.location.href = 'host-signup-login.html';
+    }
+});
+
+// Pre-fill form
+document.getElementById('fullName').value = tempData.name || '';
+document.getElementById('email').value = tempData.email || '';
+document.getElementById('phone').value = tempData.phone || '';
+if (tempData.college) {
+    document.getElementById('college').value = tempData.college;
+}
+if (tempData.reg) {
+    document.getElementById('regNumber').value = tempData.reg;
+}
+
+let idCardFile = null;
+
+function handleFile(input) {
+    const file = input.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('File too large. Max 5MB.');
+            return;
         }
-        if (tempData.reg) {
-            document.getElementById('regNumber').value = tempData.reg;
-        }
+        idCardFile = file;
+        document.getElementById('fileText').innerHTML = `<i class="fas fa-check" style="color: var(--success)"></i> ${file.name}`;
+    }
+}
 
-        let idCardFile = null;
+async function completeProfile(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<div class="spinner"></div> Saving...';
+    btn.disabled = true;
 
-        function handleFile(input) {
-            const file = input.files[0];
-            if (file) {
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast('File too large. Max 5MB.');
-                    return;
-                }
-                idCardFile = file;
-                document.getElementById('fileText').innerHTML = `<i class="fas fa-check" style="color: var(--success)"></i> ${file.name}`;
+    try {
+        // Upload ID card first (cookie automatically sent)
+        let idCardUrl = null;
+        if (idCardFile) {
+            const formData = new FormData();
+            formData.append('file', idCardFile);
+
+            const uploadRes = await fetch(`${API_URL}/upload/id-card`, {
+                method: 'POST',
+                credentials: 'include', // ✅ Cookie sent
+                body: formData
+            });
+
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) {
+                idCardUrl = uploadData.url;
             }
         }
 
-        async function completeProfile(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerHTML = '<div class="spinner"></div> Saving...';
-            btn.disabled = true;
+        // Create host profile (cookie automatically sent)
+        const profileData = {
+            full_name: document.getElementById('fullName').value,
+            phone: document.getElementById('phone').value,
+            college_name: document.getElementById('college').value,
+            registration_number: document.getElementById('regNumber').value,
+            id_card_url: idCardUrl
+        };
 
-            try {
-                // Upload ID card first
-                let idCardUrl = null;
-                if (idCardFile) {
-                    const formData = new FormData();
-                    formData.append('file', idCardFile);
+        const res = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileData)
+        });
 
-                    const uploadRes = await fetch(`${API_URL}/upload/id-card`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${tempData.token}`
-                        },
-                        body: formData
-                    });
+        const data = await res.json();
 
-                    const uploadData = await uploadRes.json();
-                    if (uploadData.success) {
-                        idCardUrl = uploadData.url;
-                    }
-                }
-
-                // Create host profile
-                const profileData = {
-                    full_name: document.getElementById('fullName').value,
-                    phone: document.getElementById('phone').value,
-                    college_name: document.getElementById('college').value,
-                    registration_number: document.getElementById('regNumber').value,
-                    id_card_url: idCardUrl
-                };
-
-                const res = await fetch(`${API_URL}/auth/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${tempData.token}`
-                    },
-                    body: JSON.stringify(profileData)
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.error || 'Failed to create profile');
-                }
-
-                // Save and redirect
-                localStorage.setItem('nexus_host', JSON.stringify(data.data));
-                localStorage.setItem('nexus_token', tempData.token);
-                
-                showToast('Profile created! Redirecting...');
-                setTimeout(() => {
-                    window.location.href = 'host-dashboard.html';
-                }, 1500);
-
-            } catch (err) {
-                showToast(err.message);
-                btn.innerHTML = 'Complete Profile';
-                btn.disabled = false;
-            }
+        if (!res.ok) {
+            throw new Error(data.error || 'Failed to create profile');
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+        // ✅ Keep localStorage for UI data only (not token)
+        localStorage.setItem('nexus_host', JSON.stringify(data.data));
+        // ❌ REMOVED: localStorage.setItem('nexus_token', tempData.token);
+        
+        showToast('Profile created! Redirecting...');
+        setTimeout(() => {
+            window.location.href = 'host-dashboard.html';
+        }, 1500);
+
+    } catch (err) {
+        showToast(err.message);
+        btn.innerHTML = 'Complete Profile';
+        btn.disabled = false;
+    }
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
     </script>
 </body>
 </html>

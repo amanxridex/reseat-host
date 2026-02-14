@@ -1,8 +1,7 @@
 // ============================================
 // CONFIGURATION
 // ============================================
-const API_URL = "https://nexus-host-backend.onrender.com/api"; // Remove space
-const SUPABASE_URL = "https://okskhrcvmjpxpegpewca.supabase.co";
+const API_URL = "https://nexus-host-backend.onrender.com/api";
 
 // ============================================
 // STATE MANAGEMENT
@@ -19,51 +18,57 @@ let formState = {
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
-    await checkAuth();
+    const hasSession = await checkAuth();
+    if (!hasSession) return;
+    
     await loadDraftFromServer();
     setupEventListeners();
 });
 
 // ============================================
-// AUTHENTICATION
+// AUTHENTICATION (COOKIE-BASED)
 // ============================================
 async function checkAuth() {
     try {
-        // Get token from localStorage (saved separately)
-        const token = localStorage.getItem('nexus_token');
-        let hostData = localStorage.getItem('nexus_host');
-
-        if (!token || !hostData) {
-            redirectToLogin();
-            return;
-        }
-
-        formState.currentHost = JSON.parse(hostData);
-        formState.currentHost.token = token; // Add token to host object
-
-        // Verify token is still valid with backend
-        const response = await fetch(`${API_URL}/host/profile`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+        // ✅ Check session cookie first
+        const res = await fetch(`${API_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
-
-        if (!response.ok) {
-            throw new Error('Session expired');
+        
+        if (!res.ok) {
+            throw new Error('No session');
         }
+        
+        const data = await res.json();
+        if (!data.exists) {
+            throw new Error('Host not found');
+        }
+        
+        // ✅ Get host profile using cookie
+        const profileRes = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!profileRes.ok) {
+            throw new Error('Failed to load profile');
+        }
+        
+        const profileData = await profileRes.json();
+        formState.currentHost = profileData.data;
+        
+        // ✅ Keep in localStorage for UI only (no token)
+        localStorage.setItem('nexus_host', JSON.stringify(profileData.data));
+        
+        return true;
 
     } catch (error) {
         console.error('Auth check failed:', error);
-        clearAuthData();
         redirectToLogin();
+        return false;
     }
-}
-
-function clearAuthData() {
-    sessionStorage.removeItem('nexus_host');
-    localStorage.removeItem('nexus_host');
-    localStorage.removeItem('nexus_token'); // Add this
-    formState.currentHost = null;
 }
 
 function redirectToLogin() {
@@ -140,13 +145,11 @@ function handleBannerUpload(input) {
     const file = input.files[0];
     if (!file) return;
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
         showToast('File size must be less than 5MB', 'error');
         return;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
         showToast('Please upload an image file', 'error');
         return;
@@ -179,19 +182,18 @@ let draftSaveTimeout;
 
 function autoSaveDraft() {
     clearTimeout(draftSaveTimeout);
-    draftSaveTimeout = setTimeout(() => saveDraft(true), 2000); // Auto-save after 2s
+    draftSaveTimeout = setTimeout(() => saveDraft(true), 2000);
 }
 
 async function saveDraft(silent = false) {
     try {
         const formData = collectFormData();
         
+        // ✅ Cookie automatically sent
         const response = await fetch(`${API_URL}/fest/draft`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${formState.currentHost.token}`
-            },
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
 
@@ -202,7 +204,6 @@ async function saveDraft(silent = false) {
         }
     } catch (error) {
         console.error('Save draft error:', error);
-        // Fallback to localStorage if server fails
         localStorage.setItem('nexus_fest_draft_backup', JSON.stringify(collectFormData()));
         if (!silent) {
             showToast('Saved locally (server error)', 'warning');
@@ -212,11 +213,10 @@ async function saveDraft(silent = false) {
 
 async function loadDraftFromServer() {
     try {
-        // Try server first
+        // ✅ Cookie automatically sent
         const response = await fetch(`${API_URL}/fest/draft`, {
-            headers: {
-                'Authorization': `Bearer ${formState.currentHost.token}`
-            }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.ok) {
@@ -227,7 +227,6 @@ async function loadDraftFromServer() {
             }
         }
 
-        // Fallback to localStorage
         const localDraft = localStorage.getItem('nexus_fest_draft') || 
                           localStorage.getItem('nexus_fest_draft_backup');
         if (localDraft) {
@@ -255,7 +254,6 @@ function collectFormData() {
         }
     });
 
-    // Add toggle states
     data.isPaid = formState.isPaid;
     data.isUnlimited = formState.isUnlimited;
     data.allowOutside = formState.allowOutside;
@@ -269,7 +267,6 @@ function collectFormData() {
 }
 
 function populateForm(data) {
-    // Populate text inputs
     Object.keys(data).forEach(key => {
         if (key === 'idFields' || key === 'isPaid' || key === 'isUnlimited' || 
             key === 'allowOutside' || key === 'bannerImage' || key === 'otherColleges' || 
@@ -281,7 +278,6 @@ function populateForm(data) {
         }
     });
 
-    // Restore toggles
     if (data.isPaid) {
         document.getElementById('isPaid').checked = true;
         toggleTicketType();
@@ -304,14 +300,12 @@ function populateForm(data) {
         document.getElementById('idRequired').checked = true;
     }
 
-    // Restore ID fields
     if (data.idFields) {
         document.querySelectorAll('input[name="idFields"]').forEach(cb => {
             cb.checked = data.idFields.includes(cb.value);
         });
     }
 
-    // Restore banner
     if (data.bannerImage) {
         formState.bannerImage = data.bannerImage;
         document.getElementById('bannerImg').src = data.bannerImage;
@@ -402,7 +396,7 @@ function submitFromPreview() {
 }
 
 // ============================================
-// SUBMIT FEST (LIVE BACKEND)
+// SUBMIT FEST (COOKIE-BASED)
 // ============================================
 async function submitFest(e) {
     e.preventDefault();
@@ -416,12 +410,11 @@ async function submitFest(e) {
     try {
         const festData = collectFormData();
 
+        // ✅ Cookie automatically sent
         const response = await fetch(`${API_URL}/fest/create`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${formState.currentHost.token}`
-            },
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(festData)
         });
 
@@ -431,10 +424,7 @@ async function submitFest(e) {
             throw new Error(result.error || 'Failed to create fest');
         }
 
-        // Clear drafts on success
         await clearDrafts();
-
-        // Show success
         document.getElementById('successModal').classList.add('active');
 
     } catch (error) {
@@ -448,18 +438,15 @@ async function submitFest(e) {
 
 async function clearDrafts() {
     try {
-        // Clear server draft
+        // ✅ Cookie automatically sent
         await fetch(`${API_URL}/fest/draft`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${formState.currentHost.token}`
-            }
+            credentials: 'include' // ✅ Cookie sent
         });
     } catch (e) {
         console.log('Server draft clear failed');
     }
     
-    // Clear local drafts
     localStorage.removeItem('nexus_fest_draft');
     localStorage.removeItem('nexus_fest_draft_backup');
     sessionStorage.removeItem('nexus_fest_draft');
@@ -476,20 +463,20 @@ function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
+// ✅ UPDATED: Logout with backend call
 async function logout() {
     try {
-        // Optional: Call backend to invalidate token
         await fetch(`${API_URL}/auth/logout`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${formState.currentHost?.token}`
-            }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
     } catch (e) {
         console.log('Logout API call failed');
     }
     
-    clearAuthData();
+    localStorage.removeItem('nexus_host');
+    sessionStorage.clear();
     window.location.href = 'host-signup-login.html';
 }
 
@@ -501,7 +488,6 @@ function showToast(message, type = 'success') {
     toast.textContent = message;
     toast.className = `toast show ${type}`;
     
-    // Color coding
     if (type === 'error') {
         toast.style.borderColor = '#ef4444';
     } else if (type === 'warning') {
@@ -516,7 +502,6 @@ function showToast(message, type = 'success') {
 }
 
 function setupEventListeners() {
-    // Close modal on outside click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -525,7 +510,6 @@ function setupEventListeners() {
         });
     });
 
-    // Auto-save on input change
     document.querySelectorAll('.input-field').forEach(field => {
         field.addEventListener('change', () => autoSaveDraft());
     });

@@ -1,21 +1,38 @@
 const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
-// Check Auth & Load Real Data
+// Check Auth & Load Real Data (cookie-based)
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('nexus_token');
-    const host = localStorage.getItem('nexus_host');
-    
-    if (!token || !host) {
+    // ✅ Check session cookie instead of localStorage token
+    try {
+        const res = await fetch(`${API_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!res.ok) {
+            throw new Error('No session');
+        }
+        
+        const checkData = await res.json();
+        
+        if (!checkData.exists) {
+            throw new Error('Host not found');
+        }
+        
+    } catch (err) {
+        console.error('Auth error:', err);
+        // Clear invalid session
+        localStorage.removeItem('nexus_host');
         window.location.href = 'host-signup-login.html';
         return;
     }
     
     try {
-        // Verify token & get fresh data from backend
-        const res = await fetch(`${API_URL}/host/profile`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+        // Get fresh data from backend (cookie automatically sent)
+        const res = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
         
         if (!res.ok) {
@@ -31,61 +48,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadStats(data.data);
         
     } catch (err) {
-        console.error('Auth error:', err);
-        // Clear invalid session
-        localStorage.removeItem('nexus_token');
-        localStorage.removeItem('nexus_host');
-        window.location.href = 'host-signup-login.html';
+        console.error('Failed to load profile:', err);
+        showToast('Failed to load dashboard');
     }
 });
 
 // Update UI with real host data
 function updateUI(hostData) {
-    // Update name
     const nameElement = document.getElementById('hostName');
     if (nameElement) {
         nameElement.textContent = hostData.full_name || hostData.email.split('@')[0];
     }
     
-    // Update profile image if available
     const profileImg = document.getElementById('profileImg');
     if (profileImg && hostData.avatar_url) {
         profileImg.src = hostData.avatar_url;
     }
     
-    // Show verification banner if needed
     const banner = document.getElementById('verificationBanner');
     if (banner && !hostData.is_active) {
         banner.style.display = 'flex';
     }
 }
 
-// Load stats (mock for now, replace with real API)
-function loadStats(hostData) {
+// Load stats (cookie automatically sent)
+async function loadStats(hostData) {
     // TODO: Replace with real stats API call
     document.getElementById('totalFests').textContent = '0';
     document.getElementById('totalTickets').textContent = '0';
     document.getElementById('totalRevenue').textContent = '₹0';
     document.getElementById('totalAttendees').textContent = '0';
     
-    // Load fests from backend
     loadFests();
-    
-    // Load activities
     loadActivities();
 }
 
-// Load fests from backend
+// Load fests from backend (cookie automatically sent)
 async function loadFests() {
-    const token = localStorage.getItem('nexus_token');
-    
     try {
         // TODO: Replace with real endpoint when available
         // const res = await fetch(`${API_URL}/host/fests`, {
-        //     headers: { 'Authorization': `Bearer ${token}` }
+        //     credentials: 'include', // ✅ Cookie sent
+        //     headers: { 'Content-Type': 'application/json' }
         // });
         
-        // For now, show empty state
         const container = document.getElementById('liveFests');
         container.innerHTML = `
             <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
@@ -153,9 +159,20 @@ function checkStatus() {
     showToast('Your account is active and verified!');
 }
 
-// Logout
-function logout() {
-    localStorage.removeItem('nexus_token');
+// ✅ UPDATED: Logout with backend call
+async function logout() {
+    try {
+        // Call backend to clear cookie
+        await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (err) {
+        console.error('Logout error:', err);
+    }
+    
+    // Clear localStorage
     localStorage.removeItem('nexus_host');
     sessionStorage.clear();
     window.location.href = 'host-signup-login.html';

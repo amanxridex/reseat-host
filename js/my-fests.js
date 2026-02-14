@@ -10,23 +10,35 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFests();
 });
 
-// Check Auth
-function checkAuth() {
-    const token = localStorage.getItem('nexus_token');
-    if (!token) {
+// ✅ UPDATED: Check Auth with cookie
+async function checkAuth() {
+    try {
+        const res = await fetch(`${API_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!res.ok) {
+            throw new Error('No session');
+        }
+        
+        const data = await res.json();
+        if (!data.exists) {
+            throw new Error('Host not found');
+        }
+        
+    } catch (err) {
+        console.error('Auth error:', err);
         window.location.href = 'host-signup-login.html';
     }
 }
 
-// Load Fests from Backend
+// Load Fests from Backend (cookie automatically sent)
 async function loadFests() {
-    const token = localStorage.getItem('nexus_token');
-    
     try {
         const response = await fetch(`${API_URL}/fest/my-fests`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) {
@@ -36,13 +48,12 @@ async function loadFests() {
         const data = await response.json();
         fests = data.fests || [];
         
-        // Process fests to add computed status and format dates
+        // Process fests (same logic as before)
         fests = fests.map(fest => {
             const now = new Date();
             const startDate = new Date(fest.start_date);
             const endDate = new Date(fest.end_date);
             
-            // Determine status based on dates
             let computedStatus;
             if (fest.status === 'rejected') {
                 computedStatus = 'rejected';
@@ -56,10 +67,7 @@ async function loadFests() {
                 computedStatus = 'upcoming';
             }
             
-            // Format date range
             const dateStr = formatDateRange(startDate, endDate);
-            
-            // Get stats from fest_analytics
             const stats = fest.fest_analytics || {};
             
             return {
@@ -71,7 +79,7 @@ async function loadFests() {
                 originalStatus: fest.status,
                 ticketsSold: stats.total_tickets_sold || 0,
                 revenue: stats.total_revenue || 0,
-                scans: 0, // You can add this field later
+                scans: 0,
                 startDate: fest.start_date,
                 endDate: fest.end_date
             };
@@ -87,7 +95,7 @@ async function loadFests() {
     }
 }
 
-// Format date range
+// Format date range (same as before)
 function formatDateRange(start, end) {
     const options = { month: 'short', day: 'numeric', year: 'numeric' };
     const startStr = start.toLocaleDateString('en-US', options);
@@ -99,7 +107,7 @@ function formatDateRange(start, end) {
     return `${startStr} - ${endStr}`;
 }
 
-// Update Stats
+// Update Stats (same as before)
 function updateStats() {
     const total = fests.length;
     const live = fests.filter(f => f.status === 'live').length;
@@ -112,11 +120,10 @@ function updateStats() {
     document.getElementById('completedFests').textContent = completed;
 }
 
-// Filter Fests
+// Filter Fests (same as before)
 function filterFests(status) {
     currentFilter = status;
     
-    // Update tabs
     document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.classList.remove('active');
     });
@@ -125,24 +132,22 @@ function filterFests(status) {
     renderFests();
 }
 
-// Search Fests
+// Search Fests (same as before)
 function searchFests() {
     renderFests();
 }
 
-// Render Fests
+// Render Fests (same as before)
 function renderFests() {
     const container = document.getElementById('festsContainer');
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     
     let filtered = fests;
     
-    // Apply status filter
     if (currentFilter !== 'all') {
         filtered = filtered.filter(f => f.status === currentFilter);
     }
     
-    // Apply search
     if (searchTerm) {
         filtered = filtered.filter(f => 
             f.name.toLowerCase().includes(searchTerm) ||
@@ -150,7 +155,6 @@ function renderFests() {
         );
     }
     
-    // Show empty state
     if (filtered.length === 0) {
         container.style.display = 'none';
         document.getElementById('emptyState').style.display = 'block';
@@ -160,13 +164,11 @@ function renderFests() {
     container.style.display = 'grid';
     document.getElementById('emptyState').style.display = 'none';
     
-    // Render cards
     let html = '';
     filtered.forEach(fest => {
         const badgeClass = `badge-${fest.status}`;
         const badgeText = fest.status.toUpperCase();
         
-        // Different buttons based on status
         let primaryBtn = '';
         let secondaryBtn = '';
         
@@ -228,7 +230,7 @@ function renderFests() {
     container.innerHTML = html;
 }
 
-// Open Actions Modal
+// Open Actions Modal (same as before)
 function openActions(festId) {
     selectedFestId = festId;
     const fest = fests.find(f => f.id === festId);
@@ -236,7 +238,6 @@ function openActions(festId) {
     const actionsList = document.getElementById('actionsList');
     let actions = '';
     
-    // Common actions
     actions += `
         <button class="action-item" onclick="viewFest('${festId}')">
             <i class="fas fa-eye"></i>
@@ -248,7 +249,6 @@ function openActions(festId) {
         </button>
     `;
     
-    // Status-specific actions
     if (fest.status === 'live' || fest.status === 'upcoming') {
         actions += `
             <button class="action-item" onclick="editFest('${festId}')">
@@ -271,45 +271,44 @@ function openActions(festId) {
     document.getElementById('actionsModal').classList.add('active');
 }
 
-// Close Modal
+// Close Modal (same as before)
 function closeModal() {
     document.getElementById('actionsModal').classList.remove('active');
     selectedFestId = null;
 }
 
-// View Fest
+// View Fest (same as before)
 function viewFest(id) {
     closeModal();
     sessionStorage.setItem('nexus_current_fest', id);
     window.location.href = 'fest-details.html?id=' + id;
 }
 
-// Open Fest (Manage)
+// Open Fest (same as before)
 function openFest(id) {
     sessionStorage.setItem('nexus_current_fest', id);
     window.location.href = 'fest-details.html?id=' + id;
 }
 
-// Edit Fest
+// Edit Fest (same as before)
 function editFest(id) {
     closeModal();
     showToast('Opening fest editor...');
-    // TODO: Redirect to edit page
 }
 
-// Open Scanner
+// Open Scanner (same as before)
 function openScanner(id) {
     sessionStorage.setItem('nexus_scan_fest', id);
     window.location.href = 'qr-scanner.html?fest=' + id;
 }
 
-// View Analytics
+// View Analytics (same as before)
 function viewAnalytics(id) {
     sessionStorage.setItem('nexus_analytics_fest', id);
     window.location.href = 'analytics.html?fest=' + id;
 }
 
-// Share Fest
+// Share Fest (same as before)
 function shareFest(id) {
     closeModal();
     const fest = fests.find(f => f.id === id);
@@ -319,12 +318,12 @@ function shareFest(id) {
     document.getElementById('shareModal').classList.add('active');
 }
 
-// Close Share Modal
+// Close Share Modal (same as before)
 function closeShareModal() {
     document.getElementById('shareModal').classList.remove('active');
 }
 
-// Copy Link
+// Copy Link (same as before)
 function copyLink() {
     const input = document.getElementById('shareLink');
     input.select();
@@ -332,7 +331,7 @@ function copyLink() {
     showToast('Link copied to clipboard!');
 }
 
-// Share To
+// Share To (same as before)
 function shareTo(platform) {
     const link = document.getElementById('shareLink').value;
     const text = `Check out this amazing college fest!`;
@@ -352,53 +351,51 @@ function shareTo(platform) {
     }
 }
 
-// View Status
+// View Status (same as before)
 function viewStatus(id) {
     showToast('Your fest is under review. Expected approval: 24 hours');
 }
 
-// View Report
+// View Report (same as before)
 function viewReport(id) {
     showToast('Generating event report...');
 }
 
-// Duplicate Fest
+// Duplicate Fest (same as before)
 function duplicateFest(id) {
     showToast('Duplicating fest...');
 }
 
-// View Reason (for rejected)
+// View Reason (same as before)
 function viewReason(id) {
     showToast('Reason: Incomplete venue information provided');
 }
 
-// Delete Fest
+// Delete Fest (same as before)
 function deleteFest(id) {
     closeModal();
     selectedFestId = id;
     document.getElementById('deleteModal').classList.add('active');
 }
 
-// Close Delete Modal
+// Close Delete Modal (same as before)
 function closeDeleteModal() {
     document.getElementById('deleteModal').classList.remove('active');
     selectedFestId = null;
 }
 
-// Confirm Delete
+// ✅ UPDATED: Confirm Delete (cookie automatically sent)
 async function confirmDelete() {
     if (!selectedFestId) return;
-    
-    const token = localStorage.getItem('nexus_token');
     
     try {
         // TODO: Add delete endpoint to backend
         // const response = await fetch(`${API_URL}/fest/${selectedFestId}`, {
         //     method: 'DELETE',
-        //     headers: { 'Authorization': `Bearer ${token}` }
+        //     credentials: 'include', // ✅ Cookie sent
+        //     headers: { 'Content-Type': 'application/json' }
         // });
         
-        // For now, just remove from UI
         fests = fests.filter(f => f.id !== selectedFestId);
         renderFests();
         updateStats();
@@ -411,20 +408,29 @@ async function confirmDelete() {
     closeDeleteModal();
 }
 
-// Toggle Sidebar
+// Toggle Sidebar (same as before)
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
-// Logout
-function logout() {
-    localStorage.removeItem('nexus_token');
+// ✅ UPDATED: Logout with backend call
+async function logout() {
+    try {
+        await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (err) {
+        console.error('Logout error:', err);
+    }
+    
     localStorage.removeItem('nexus_host');
     sessionStorage.clear();
     window.location.href = 'host-signup-login.html';
 }
 
-// Toast
+// Toast (same as before)
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -435,7 +441,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// Close modals on outside click
+// Close modals on outside click (same as before)
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {

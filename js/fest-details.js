@@ -5,21 +5,40 @@ let festId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    loadFestDetails();
+    checkAuth().then(valid => {
+        if (valid) {
+            loadFestDetails();
+        }
+    });
 });
 
-// Check Auth
-function checkAuth() {
-    const token = localStorage.getItem('nexus_token');
-    if (!token) {
+// ✅ UPDATED: Check Auth with cookie
+async function checkAuth() {
+    try {
+        const res = await fetch(`${API_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!res.ok) {
+            throw new Error('No session');
+        }
+        
+        const data = await res.json();
+        if (!data.exists) {
+            throw new Error('Host not found');
+        }
+        
+        return true;
+    } catch (err) {
+        console.error('Auth error:', err);
         window.location.href = 'host-signup-login.html';
+        return false;
     }
 }
 
 // Load Fest Details
 async function loadFestDetails() {
-    // Get fest ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     festId = urlParams.get('id');
     
@@ -28,13 +47,11 @@ async function loadFestDetails() {
         return;
     }
     
-    const token = localStorage.getItem('nexus_token');
-    
     try {
+        // ✅ Cookie automatically sent
         const response = await fetch(`${API_URL}/fest/${festId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
         
         if (!response.ok) {
@@ -55,15 +72,13 @@ async function loadFestDetails() {
     }
 }
 
-// Render Fest Details
+// Render Fest Details (same as before)
 function renderFestDetails() {
     if (!currentFest) return;
     
-    // Hide loading, show content
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('content').style.display = 'block';
     
-    // Determine status based on dates
     const now = new Date();
     const startDate = new Date(currentFest.start_date);
     const endDate = new Date(currentFest.end_date);
@@ -86,36 +101,28 @@ function renderFestDetails() {
         statusText = 'Upcoming';
     }
     
-    // Banner
     const bannerUrl = currentFest.banner_url || 'https://placehold.co/1200x400/8b5cf6/ffffff?text=No+Banner';
     document.getElementById('festBanner').src = bannerUrl;
     
-    // Status badge
     const badge = document.getElementById('festStatus');
     badge.className = `status-badge ${statusClass}`;
     badge.textContent = statusText;
     
-    // Basic info
     document.getElementById('festName').textContent = currentFest.fest_name;
     document.getElementById('festType').textContent = `${currentFest.fest_type} Fest`;
     
-    // Date
     const dateStr = formatDateRange(startDate, endDate);
     document.getElementById('festDate').textContent = dateStr;
     
-    // Venue
     document.getElementById('festVenue').textContent = currentFest.venue;
     
-    // Attendance
     document.getElementById('festAttendance').textContent = 
         `${currentFest.expected_attendance} attendees`;
     
-    // Ticket type
     const ticketType = currentFest.is_paid ? 
         `₹${currentFest.ticket_price}` : 'Free';
     document.getElementById('ticketType').textContent = ticketType;
     
-    // Stats from analytics
     const stats = currentFest.fest_analytics || {};
     document.getElementById('statTickets').textContent = 
         stats.total_tickets_sold || 0;
@@ -123,13 +130,11 @@ function renderFestDetails() {
         `₹${(stats.total_revenue || 0).toLocaleString()}`;
     document.getElementById('statViews').textContent = 
         stats.total_views || 0;
-    document.getElementById('statScans').textContent = '0'; // Add when available
+    document.getElementById('statScans').textContent = '0';
     
-    // Description
     document.getElementById('festDescription').textContent = 
         currentFest.description || 'No description provided';
     
-    // Contact info
     document.getElementById('coordinatorName').textContent = 
         currentFest.coordinator_name;
     document.getElementById('contactPhone').textContent = 
@@ -137,11 +142,10 @@ function renderFestDetails() {
     document.getElementById('contactEmail').textContent = 
         currentFest.contact_email;
     
-    // Update page title
     document.title = `${currentFest.fest_name} | Nexus Host`;
 }
 
-// Format date range
+// Format date range (same)
 function formatDateRange(start, end) {
     const options = { month: 'short', day: 'numeric', year: 'numeric' };
     const startStr = start.toLocaleDateString('en-US', options);
@@ -153,7 +157,7 @@ function formatDateRange(start, end) {
     return `${startStr} - ${endStr}`;
 }
 
-// Show Error
+// Show Error (same)
 function showError(message) {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('content').style.display = 'none';
@@ -161,41 +165,39 @@ function showError(message) {
     document.getElementById('errorMessage').textContent = message;
 }
 
-// Go Back
+// Go Back (same)
 function goBack() {
     window.location.href = 'my-fests.html';
 }
 
-// Edit Fest
+// Edit Fest (same)
 function editFest() {
     showToast('Edit feature coming soon!');
-    // TODO: Redirect to edit page
-    // window.location.href = `edit-fest.html?id=${festId}`;
 }
 
-// Open Scanner
+// Open Scanner (same)
 function openScanner() {
     window.location.href = `qr-scanner.html?fest=${festId}`;
 }
 
-// View Analytics
+// View Analytics (same)
 function viewAnalytics() {
     window.location.href = `analytics.html?fest=${festId}`;
 }
 
-// Share Fest
+// Share Fest (same)
 function shareFest() {
     const link = `https://nexus.app/fest/${festId}`;
     document.getElementById('shareLink').value = link;
     document.getElementById('shareModal').classList.add('active');
 }
 
-// Close Share Modal
+// Close Share Modal (same)
 function closeShareModal() {
     document.getElementById('shareModal').classList.remove('active');
 }
 
-// Copy Link
+// Copy Link (same)
 function copyLink() {
     const input = document.getElementById('shareLink');
     input.select();
@@ -203,7 +205,7 @@ function copyLink() {
     showToast('Link copied to clipboard!');
 }
 
-// Share To
+// Share To (same)
 function shareTo(platform) {
     const link = document.getElementById('shareLink').value;
     const text = `Check out ${currentFest?.fest_name || 'this amazing college fest'}!`;
@@ -223,26 +225,34 @@ function shareTo(platform) {
     }
 }
 
-// Download Report
+// Download Report (same)
 function downloadReport() {
     showToast('Generating report...');
-    // TODO: Implement report generation
 }
 
-// Toggle Sidebar
+// Toggle Sidebar (same)
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
-// Logout
-function logout() {
-    localStorage.removeItem('nexus_token');
+// ✅ UPDATED: Logout with backend call
+async function logout() {
+    try {
+        await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (e) {
+        console.log('Logout API call failed');
+    }
+    
     localStorage.removeItem('nexus_host');
     sessionStorage.clear();
     window.location.href = 'host-signup-login.html';
 }
 
-// Toast
+// Toast (same)
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -253,7 +263,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// Close modal on outside click
+// Close modal on outside click (same)
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {

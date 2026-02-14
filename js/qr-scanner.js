@@ -1,6 +1,5 @@
 // qr-scanner.js - Complete Functional QR Scanner
 
-// ✅ FIXED: Removed trailing space
 const API_BASE_URL = 'https://nexus-host-backend.onrender.com/api';
 
 // Get fest ID from URL
@@ -26,38 +25,55 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas = document.getElementById('camera-canvas');
     canvasContext = canvas.getContext('2d');
     
-    loadFestDetails();
-    loadStats();
-    loadRecentScans();
-    initCamera();
+    // ✅ Check session first
+    checkSession().then(valid => {
+        if (valid) {
+            loadFestDetails();
+            loadStats();
+            loadRecentScans();
+            initCamera();
+        }
+    });
 });
 
-// Get Firebase token
-function getAuthToken() {
+// ✅ NEW: Check session cookie
+async function checkSession() {
     try {
-        return localStorage.getItem('nexus_token');
-    } catch (e) {
-        console.error('Error getting auth:', e);
+        const res = await fetch(`${API_BASE_URL}/auth/check`, {
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!res.ok) {
+            throw new Error('No session');
+        }
+        
+        const data = await res.json();
+        if (!data.exists) {
+            throw new Error('Host not found');
+        }
+        
+        return true;
+    } catch (err) {
+        console.error('Auth error:', err);
+        window.location.href = 'host-signup-login.html';
+        return false;
     }
-    return null;
 }
+
+// ✅ REMOVED: getAuthToken() function - no longer needed
 
 // Redirect to login
 function redirectToLogin() {
     window.location.href = 'host-signup-login.html';
 }
 
-// Load fest details
+// Load fest details (cookie automatically sent)
 async function loadFestDetails() {
-    const token = getAuthToken();
-    if (!token) {
-        redirectToLogin();
-        return;
-    }
-
     try {
         const response = await fetch(`${API_BASE_URL}/fests/${festId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) throw new Error('Failed to load fest');
@@ -71,14 +87,12 @@ async function loadFestDetails() {
     }
 }
 
-// Load stats
+// Load stats (cookie automatically sent)
 async function loadStats() {
-    const token = getAuthToken();
-    if (!token) return;
-
     try {
         const response = await fetch(`${API_BASE_URL}/scan/fest-stats/${festId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
@@ -92,14 +106,12 @@ async function loadStats() {
     }
 }
 
-// Load recent scans
+// Load recent scans (cookie automatically sent)
 async function loadRecentScans() {
-    const token = getAuthToken();
-    if (!token) return;
-
     try {
         const response = await fetch(`${API_BASE_URL}/scan/recent-scans/${festId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
@@ -112,7 +124,7 @@ async function loadRecentScans() {
     }
 }
 
-// Render recent scans
+// Render recent scans (same as before)
 function renderRecentScans(scans) {
     const container = document.getElementById('scans-list');
     
@@ -132,7 +144,7 @@ function renderRecentScans(scans) {
     `).join('');
 }
 
-// Initialize camera
+// Initialize camera (same as before)
 async function initCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -153,7 +165,7 @@ async function initCamera() {
     }
 }
 
-// Scan QR code
+// Scan QR code (same as before)
 function scanQRCode() {
     if (!scanning || video.readyState !== video.HAVE_ENOUGH_DATA) return;
     
@@ -174,7 +186,7 @@ function scanQRCode() {
     }
 }
 
-// Handle scanned QR
+// Handle scanned QR (same as before)
 async function handleQRCode(qrData) {
     showLoading(true);
     
@@ -197,35 +209,25 @@ async function handleQRCode(qrData) {
     }
 }
 
-// ✅ FIXED: Verify ticket with proper error handling
+// ✅ UPDATED: Verify ticket (cookie automatically sent)
 async function verifyTicket(ticketId) {
-    const token = getAuthToken();
-    if (!token) {
-        redirectToLogin();
-        return;
-    }
-
     try {
         const response = await fetch(`${API_BASE_URL}/scan/verify`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticketId, festId })
         });
 
         const data = await response.json();
         console.log('Verify response:', data);
 
-        // ✅ FIXED: Proper error handling
         if (!data.success || !data.valid) {
             const errorMsg = data.error || 'Invalid ticket';
             showTicketResult('error', 'Invalid Ticket', errorMsg);
             return;
         }
         
-        // Valid ticket
         currentTicket = data.ticket;
         showTicketResult('success', 'Valid Ticket', 'Ready to check in', data.ticket);
         
@@ -238,7 +240,7 @@ async function verifyTicket(ticketId) {
     }
 }
 
-// Show ticket result
+// Show ticket result (same as before)
 function showTicketResult(type, title, message, ticket = null) {
     const modal = document.getElementById('ticket-modal');
     
@@ -299,7 +301,7 @@ function showTicketResult(type, title, message, ticket = null) {
     modal.classList.remove('hidden');
 }
 
-// Allow entry
+// Allow entry (same as before)
 async function allowEntry() {
     if (!currentTicket) return;
     
@@ -310,20 +312,17 @@ async function allowEntry() {
     resumeScanning();
 }
 
-// Deny entry
+// Deny entry (cookie automatically sent)
 async function denyEntry() {
     if (!currentTicket) return;
     
     showLoading(true);
-    const token = getAuthToken();
     
     try {
         await fetch(`${API_BASE_URL}/scan/log-denied`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
+            credentials: 'include', // ✅ Cookie sent
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 ticketId: currentTicket.ticket_id,
                 festId: festId,
@@ -340,14 +339,14 @@ async function denyEntry() {
     resumeScanning();
 }
 
-// Close modal
+// Close modal (same as before)
 function closeTicketModal() {
     document.getElementById('ticket-modal').classList.add('hidden');
     currentTicket = null;
     resumeScanning();
 }
 
-// Resume scanning
+// Resume scanning (same as before)
 function resumeScanning() {
     if (!scanning) {
         scanning = true;
@@ -355,7 +354,7 @@ function resumeScanning() {
     }
 }
 
-// Toggle manual entry
+// Toggle manual entry (same as before)
 function toggleManualEntry() {
     const modal = document.getElementById('manual-modal');
     modal.classList.toggle('hidden');
@@ -365,7 +364,7 @@ function toggleManualEntry() {
     }
 }
 
-// Verify manual ticket
+// Verify manual ticket (same as before)
 async function verifyManualTicket() {
     const input = document.getElementById('manual-ticket-input');
     const ticketId = input.value.trim();
@@ -380,7 +379,7 @@ async function verifyManualTicket() {
     input.value = '';
 }
 
-// Toggle flashlight
+// Toggle flashlight (same as before)
 async function toggleFlashlight() {
     const btn = document.getElementById('flashlight-btn');
     
@@ -402,7 +401,7 @@ async function toggleFlashlight() {
     }
 }
 
-// Show/hide loading
+// Show/hide loading (same as before)
 function showLoading(show) {
     const overlay = document.getElementById('loading-overlay');
     if (show) {
@@ -412,7 +411,7 @@ function showLoading(show) {
     }
 }
 
-// Show toast
+// Show toast (same as before)
 function showToast(message) {
     let toast = document.getElementById('toast');
     if (!toast) {
@@ -444,7 +443,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// Handle Enter key
+// Handle Enter key (same as before)
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !document.getElementById('manual-modal').classList.contains('hidden')) {
         verifyManualTicket();
