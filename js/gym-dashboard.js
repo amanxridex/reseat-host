@@ -94,17 +94,53 @@ async function loadGyms() {
         const container = document.getElementById('liveGyms');
         if (!container) return; // Silent return if element missing
 
-        container.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-                <h3>No Gyms Yet</h3>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first college gym!</p>
-                <a href="create-gym.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
-                    Create Gym
-                </a>
-            </div>
-        `;
+        const response = await fetch(`${API_URL}/gyms/mine`, {
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
         
+        const resData = await response.json();
+        
+        if (response.ok && resData.data && resData.data.length > 0) {
+            const gyms = resData.data;
+            const el = document.getElementById('totalGyms');
+            if (el) el.textContent = gyms.length;
+            
+            // Calculate mock revenue or subs based on rules (0 subscribers as requested)
+            const activeSubsEl = document.getElementById('activeSubs');
+            if (activeSubsEl) activeSubsEl.textContent = '0';
+            const totalRevenueEl = document.getElementById('totalRevenue');
+            if (totalRevenueEl) totalRevenueEl.textContent = '₹0';
+            
+            // Render first 3 gyms
+            container.innerHTML = gyms.slice(0, 3).map(gym => {
+                let imgUrl = gym.images && gym.images.length > 0 ? gym.images[0] : 'https://placehold.co/400x300/1f113a/ffffff?text=Gym';
+                return `
+                    <div style="display: flex; gap: 15px; background: var(--bg-main); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border);">
+                        <img src="${imgUrl}" alt="${gym.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-main); font-size: 1.05rem;">${gym.name}</h4>
+                            <p style="margin: 0 0 8px 0; color: var(--text-muted); font-size: 0.85rem;"><i class="fas fa-map-marker-alt"></i> ${gym.address}</p>
+                            <span style="font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${gym.status === 'published' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)'}; color: ${gym.status === 'published' ? '#10b981' : '#f59e0b'}; margin-right: 10px;">${gym.status.toUpperCase()}</span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);"><i class="fas fa-users"></i> 0 Subs</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            const el = document.getElementById('totalGyms');
+            if (el) el.textContent = '0';
+            container.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                    <h3>No Gyms Yet</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first college gym!</p>
+                    <a href="create-gym.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        Create Gym
+                    </a>
+                </div>
+            `;
+        }
     } catch (err) {
         console.error('Failed to load gyms:', err);
     }

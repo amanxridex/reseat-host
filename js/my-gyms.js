@@ -71,9 +71,9 @@ function renderGyms(data) {
             imgUrl = gym.images[0];
         }
         
-        // Mock stats (can be augmented by DB later)
-        const subscribers = Math.floor(Math.random() * 50); 
-        const revenue = subscribers * 1500;
+        // Setup 0 subscribers as requested
+        const subscribers = 0; 
+        const revenue = 0;
         
         const card = document.createElement('div');
         card.className = 'gym-card';
