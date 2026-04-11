@@ -195,7 +195,7 @@
         </a>
 
         <h1>Complete Your Profile</h1>
-        <p class="subtitle">Become a Host - Register to create college fests on Nexus</p>
+        <p class="subtitle" id="pageSubtitle">One last step — tell us about your business</p>
 
         <div class="form-card">
             <form id="profileForm" onsubmit="completeProfile(event)">
@@ -242,33 +242,35 @@
         // API URL
 const API_URL = 'https://nexus-host-backend.onrender.com/api';
 
-// Check if session exists (cookie automatically sent)
+// Load temp data from signup/google
+const tempData = JSON.parse(sessionStorage.getItem('host_temp_data') || '{}');
+
+// Check session - only redirect to dashboard if profile is COMPLETE
+// (i.e., host row exists in Supabase and they don't need signup)
 async function checkSession() {
     try {
         const res = await fetch(`${API_URL}/auth/check`, {
-            credentials: 'include', // ✅ Cookie sent
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' }
         });
         
         if (res.ok) {
             const data = await res.json();
-            if (data.exists) {
+            // Only redirect to dashboard if the host already has a complete profile
+            if (data.exists && !tempData.uid) {
                 window.location.href = 'host-dashboard.html';
                 return true;
             }
         }
         return false;
     } catch (err) {
-        console.log('No session');
+        console.log('No session found, continuing to profile form');
         return false;
     }
 }
 
-// Load temp data from signup/google
-const tempData = JSON.parse(sessionStorage.getItem('host_temp_data') || '{}');
-
-// Check session first, then temp data
 checkSession().then(hasSession => {
+    // If no session AND no temp data from signup flow, send to login
     if (!hasSession && !tempData.uid) {
         window.location.href = 'host-signup-login.html';
     }
@@ -281,6 +283,18 @@ document.getElementById('phone').value = tempData.phone || '';
 
 const dynamicFields = document.getElementById('dynamicFields');
 const fileUploadLabel = document.getElementById('fileUploadLabel');
+const pageSubtitle = document.getElementById('pageSubtitle');
+
+const typeLabels = {
+    'fest': 'College Events & Fests',
+    'property': 'Rental Properties',
+    'gym': 'Gym & Fitness',
+    'restaurant': 'Restaurant & Dining'
+};
+
+if (tempData.host_type) {
+    pageSubtitle.textContent = `Setting up your ${typeLabels[tempData.host_type] || ''} portal`;
+}
 
 if (tempData.host_type === 'fest') {
     fileUploadLabel.innerText = 'College ID Card *';
@@ -296,10 +310,36 @@ if (tempData.host_type === 'fest') {
     `;
 } else if (tempData.host_type === 'property') {
     fileUploadLabel.innerText = 'Property Layout / Ownership Proof *';
+    dynamicFields.innerHTML = `
+        <div class="input-group">
+            <label>Business / Property Name *</label>
+            <input type="text" id="businessName" placeholder="e.g. Green Valley Apartments" required>
+        </div>
+    `;
 } else if (tempData.host_type === 'gym') {
     fileUploadLabel.innerText = 'Gym Registration / Trade License *';
+    dynamicFields.innerHTML = `
+        <div class="input-group">
+            <label>Gym Name *</label>
+            <input type="text" id="businessName" placeholder="e.g. Ironclad Fitness" required>
+        </div>
+        <div class="input-group">
+            <label>City / Location</label>
+            <input type="text" id="city" placeholder="e.g. Bengaluru, HSR Layout">
+        </div>
+    `;
 } else if (tempData.host_type === 'restaurant') {
     fileUploadLabel.innerText = 'FSSAI License / Menu PDF *';
+    dynamicFields.innerHTML = `
+        <div class="input-group">
+            <label>Restaurant Name *</label>
+            <input type="text" id="businessName" placeholder="e.g. The Spice Route" required>
+        </div>
+        <div class="input-group">
+            <label>Cuisine Type</label>
+            <input type="text" id="cuisineType" placeholder="e.g. North Indian, Multi-Cuisine">
+        </div>
+    `;
 }
 
 let idCardFile = null;
@@ -348,8 +388,12 @@ async function completeProfile(e) {
             host_type: tempData.host_type || 'fest',
             college_name: document.getElementById('college') ? document.getElementById('college').value : null,
             registration_number: document.getElementById('regNumber') ? document.getElementById('regNumber').value : null,
+            business_name: document.getElementById('businessName') ? document.getElementById('businessName').value : null,
+            city: document.getElementById('city') ? document.getElementById('city').value : null,
             id_card_url: idCardUrl
         };
+
+        console.log('Submitting profile data:', profileData); // Debug
 
         const res = await fetch(`${API_URL}/auth/signup`, {
             method: 'POST',
