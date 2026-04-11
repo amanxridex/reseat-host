@@ -1,0 +1,29 @@
+{
+    "name": "Nexus Host",
+    "short_name": "NexusHost",
+    "description": "Manage your gym listings, subscriptions and members on Nexus Host.",
+    "start_url": "/gym-dashboard.html",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f3f5f8",
+    "theme_color": "#156637",
+    "lang": "en",
+    "categories": ["business", "fitness"],
+    "icons": [
+        {
+            "src": "nexushostlogo.jpeg",
+            "sizes": "192x192",
+            "type": "image/jpeg",
+            "purpose": "any"
+        },
+        {
+            "src": "nexushostlogo.jpeg",
+            "sizes": "512x512",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [],
+    "prefer_related_applications": false
+}

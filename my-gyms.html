@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus Host | Manage Gyms</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Nexus Host">
+    <meta name="description" content="Manage your gym listings on Nexus Host">
+    <meta name="theme-color" content="#156637">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Nexus Host">
+    <link rel="apple-touch-icon" href="nexushostlogo.jpeg">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/jpeg" href="nexushostlogo.jpeg">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/gym-theme.css">
     <style>
@@ -161,5 +178,15 @@
     <!-- App Logic -->
     <script src="js/config.js"></script>
     <script src="js/my-gyms.js"></script>
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[SW] Registered:', reg.scope))
+                    .catch(err => console.warn('[SW] Registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
