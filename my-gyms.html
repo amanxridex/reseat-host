@@ -2,163 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus Host | Manage Gyms</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/gym-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
-
-        :root {
-            --bg-dark: #120822; /* Core dark mode */
-            --sidebar-bg: #1a0f2e;
-            --card-bg: #1f113a;
-            --card-border: rgba(255, 255, 255, 0.05);
-            --neon-pink: #ff2a6d;
-            --neon-cyan: #05d9e8;
-            --neon-lime: #01ffc3;
-            --neon-purple: #b122e5;
-            --text-main: #ffffff;
-            --text-muted: #8b7d9e;
-        }
-
-        body { 
-            background: var(--bg-dark); 
-            color: var(--text-main); 
-            display: flex; 
-            min-height: 100vh;
-        }
-
-        /* ─── Sidebar ─── */
-        .sidebar {
-            width: 250px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--card-border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-            transition: transform 0.3s ease;
-            z-index: 100;
-        }
-
-        .brand {
-            padding: 0 24px 30px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex; align-items: center; gap: 12px;
-            letter-spacing: 1px;
-        }
-
-        .brand-icon {
-            width: 36px; height: 36px;
-            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .nav-item {
-            padding: 15px 24px; display: flex; align-items: center; gap: 15px;
-            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
-            transition: all 0.2s; border-left: 3px solid transparent;
-        }
-
-        .nav-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
-        .nav-item.active { color: var(--neon-pink); border-left-color: var(--neon-pink); background: rgba(255, 42, 109, 0.05); }
-        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
-
-        /* ─── Mobile Toggle ─── */
-        .mobile-toggle {
-            display: none; position: fixed; top: 20px; right: 20px;
-            background: var(--card-bg); border: 1px solid var(--neon-pink); color: var(--neon-pink);
-            width: 45px; height: 45px; border-radius: 12px; z-index: 1000; cursor: pointer; font-size: 1.2rem;
-        }
-
-        /* ─── Main Content ─── */
-        .main-content { flex: 1; padding: 30px; height: 100vh; overflow-y: auto; scroll-behavior: smooth; }
-
-        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
-        .page-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-main); font-weight: 600; }
-        .page-title span { color: var(--text-muted); }
-
-        .btn-glow {
-            background: var(--neon-cyan); color: #000; border: none; padding: 10px 20px;
-            border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
-            box-shadow: 0 0 15px rgba(5, 217, 232, 0.4); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-glow:hover { box-shadow: 0 0 25px rgba(5, 217, 232, 0.6); transform: translateY(-2px); }
-
         /* Filters */
-        .filters { display: flex; gap: 15px; margin-bottom: 30px; }
-        .search-box {
-            flex: 1; max-width: 300px; position: relative;
+        .filters-panel {
+            background: var(--card-bg); border-radius: 16px; padding: 15px 25px;
+            display: flex; gap: 15px; margin-bottom: 30px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);
         }
+        
+        .search-box { flex: 1; max-width: 400px; position: relative; }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .search-box input {
-            width: 100%; background: var(--card-bg); border: 1px solid var(--card-border);
-            padding: 12px 15px 12px 40px; border-radius: 8px; color: white; outline: none; transition: 0.2s;
+            width: 100%; background: #f9fafb; border: 1px solid var(--border);
+            padding: 12px 15px 12px 40px; border-radius: 10px; color: var(--text-main);
+            font-family: 'Inter', sans-serif; outline: none; transition: 0.2s;
         }
-        .search-box input:focus { border-color: var(--neon-pink); }
+        .search-box input:focus { border-color: var(--primary); background: #fff; }
         
         .filter-select {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            padding: 0 15px; border-radius: 8px; color: white; outline: none; cursor: pointer;
+            background: #f9fafb; border: 1px solid var(--border); font-family: 'Inter', sans-serif;
+            padding: 0 15px; border-radius: 10px; color: var(--text-main); outline: none; cursor: pointer; transition: 0.2s;
         }
+        .filter-select:focus { border-color: var(--primary); background: #fff; }
 
         /* Gym Grid */
-        .gyms-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px;
-        }
+        .gyms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
         
         .gym-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 12px; overflow: hidden; transition: all 0.3s;
-            position: relative;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden; transition: all 0.3s;
+            position: relative; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
         }
-        .gym-card:hover { border-color: var(--neon-purple); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gym-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: rgba(21, 102, 55, 0.2); }
         
-        .gym-img {
-            width: 100%; height: 180px; object-fit: cover; background: #000;
-        }
+        .gym-img { width: 100%; height: 200px; object-fit: cover; background: var(--border); }
+        
         .gym-status {
-            position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.7);
-            padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1px; backdrop-filter: blur(5px);
+            position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9);
+            padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; backdrop-filter: blur(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .status-active { color: var(--neon-lime); border: 1px solid var(--neon-lime); }
-        .status-pending { color: #ffb703; border: 1px solid #ffb703; }
+        .status-active { color: var(--primary); }
+        .status-pending { color: var(--warning); }
         
-        .gym-details { padding: 20px; }
-        .gym-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: #fff; }
-        .gym-addr { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .gym-details { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .gym-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+        .gym-addr { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .gym-stats { display: flex; justify-content: space-between; border-top: 1px solid var(--card-border); padding-top: 15px; margin-bottom: 15px;}
-        .stat-item { text-align: center; }
-        .stat-val { font-size: 1.1rem; font-weight: 700; color: var(--neon-cyan); }
-        .stat-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-        .stat-item.revenue .stat-val { color: var(--neon-pink); }
+        .gym-stats { display: flex; justify-content: space-between; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 15px 0; margin-bottom: 20px; margin-top: auto;}
+        .stat-item { text-align: center; flex: 1; }
+        .stat-item:first-child { border-right: 1px solid var(--border); }
+        .stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 500;}
+        .stat-item.revenue .stat-val { color: var(--primary); }
         
         .gym-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-action {
-            padding: 8px; border-radius: 6px; border: 1px solid var(--card-border);
-            background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; transition: 0.2s;
-            font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 5px;
+        .btn-card-action {
+            padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: #f9fafb;
+            color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.9rem; font-weight: 500;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif;
         }
-        .btn-action:hover { background: rgba(255,255,255,0.1); }
-        .btn-edit:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-        .btn-delete:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-card-action:hover { background: #fff; }
+        .btn-edit:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        .btn-delete:hover { border-color: var(--danger); color: var(--danger); background: #fef2f2; }
 
-        /* Overlay loader */
-        .loading { text-align: center; color: var(--text-muted); padding: 50px 0; grid-column: 1 / -1; }
-        .loading i { font-size: 2rem; color: var(--neon-pink); margin-bottom: 10px; }
+        /* Loader */
+        .loading { text-align: center; color: var(--text-muted); padding: 60px 0; grid-column: 1 / -1; }
+        .loading i { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+        .loading p { font-size: 1.1rem; font-weight: 500; }
 
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { position: fixed; top: 0; left: -250px; bottom: 0; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
-            .sidebar.show { left: 0; }
-            .mobile-toggle { display: flex; align-items: center; justify-content: center; }
-            .main-content { padding-top: 80px; padding-left: 20px; padding-right: 20px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .filters-panel { flex-direction: column; padding: 15px; }
+            .search-box { max-width: 100%; }
+            .filter-select { padding: 12px 15px; }
+            .gyms-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -171,44 +91,50 @@
 
     <!-- Sidebar -->
     <nav class="sidebar">
+        <button class="sidebar-close" onclick="document.querySelector('.sidebar').classList.remove('show')">
+            <i class="fas fa-times"></i>
+        </button>
+        
         <div class="brand">
             <div class="brand-icon"><i class="fas fa-dumbbell"></i></div>
-            Nexus Gym
+            NexusHost
         </div>
         
-        <a href="gym-dashboard.html" class="nav-item">
-            <i class="fas fa-chart-pie"></i> Dashboard
-        </a>
-        <a href="create-gym.html" class="nav-item">
-            <i class="fas fa-plus-circle"></i> Add Gym
-        </a>
-        <a href="my-gyms.html" class="nav-item active">
-            <i class="fas fa-dumbbell"></i> Manage Gyms
-        </a>
-        <a href="qr-scanner.html" class="nav-item">
-            <i class="fas fa-qrcode"></i> QR Scanner
-        </a>
-        
-        <div class="sidebar-bottom" style="margin-top: auto;">
-            <a href="#" class="nav-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout System
+        <div class="nav-label">Menu</div>
+        <div class="sidebar-nav">
+            <a href="gym-dashboard.html" class="nav-item">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="create-gym.html" class="nav-item">
+                <i class="fas fa-plus-circle"></i> Add Gym
+            </a>
+            <a href="my-gyms.html" class="nav-item active">
+                <i class="fas fa-building"></i> Manage Gyms
             </a>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="header">
+        <header class="header">
             <div>
-                <div class="page-title"><span>GYM PANEL / </span> MANAGE GYMS</div>
-                <h2 style="font-size: 1.8rem; margin-top: 5px; font-weight: 700;">Your Gyms</h2>
+                <h1 class="page-title">Gym Locations</h1>
+                <p class="page-subtitle">Track and manage all your active listings.</p>
             </div>
-            <a href="create-gym.html" class="btn-glow">
-                <i class="fas fa-plus"></i> New Gym
-            </a>
-        </div>
+            <div class="header-right">
+                <a href="create-gym.html" class="btn-primary">
+                    <i class="fas fa-plus"></i> Add New
+                </a>
+                <div class="profile" onclick="logout()" style="margin-left: 10px;">
+                    <div class="profile-info" style="text-align: right;">
+                        <span class="name">Gym Owner</span>
+                        <span class="role" style="color: var(--danger); font-weight: 500;">Logout</span>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-        <div class="filters">
+        <div class="filters-panel">
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Search by name or location...">
@@ -222,8 +148,8 @@
 
         <div class="gyms-grid" id="gymsGrid">
             <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading your gyms...</p>
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p>Loading your portfolio...</p>
             </div>
         </div>
     </main>

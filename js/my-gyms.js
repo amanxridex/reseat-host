@@ -57,7 +57,7 @@ function renderGyms(data) {
             <div class="loading">
                 <i class="fas fa-box-open" style="color: var(--text-muted);"></i>
                 <p>You haven't listed any gyms yet.</p>
-                <a href="create-gym.html" class="btn-glow" style="margin-top: 20px; display: inline-block;">Create First Gym</a>
+                <a href="create-gym.html" class="btn-primary" style="margin-top: 20px; display: inline-block;">Create First Gym</a>
             </div>
         `;
         return;
@@ -95,10 +95,10 @@ function renderGyms(data) {
                 </div>
                 
                 <div class="gym-actions">
-                    <button class="btn-action btn-edit" onclick="editGym('${gym.id}')">
+                    <button class="btn-card-action btn-edit" onclick="editGym('${gym.id}')">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn-action btn-delete" onclick="deleteGym('${gym.id}')">
+                    <button class="btn-card-action btn-delete" onclick="deleteGym('${gym.id}')">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
