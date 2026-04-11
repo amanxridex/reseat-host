@@ -3,137 +3,636 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Host Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Nexus | Become a Host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/host-signup-login.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #07070f;
+            --surface: #0e0e1a;
+            --border: rgba(255,255,255,0.08);
+            --accent: #8b5cf6;
+            --accent2: #ec4899;
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.45);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Ambient glows ─── */
+        .glow { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+        .glow-1 { width: 400px; height: 400px; background: rgba(139,92,246,.18); top: -80px; right: -80px; }
+        .glow-2 { width: 350px; height: 350px; background: rgba(236,72,153,.12); bottom: 0; left: -60px; }
+
+        /* ─── Wrapper ─── */
+        .onboard-wrap {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ─── Progress bar ─── */
+        .progress-bar { width: 100%; max-width: 480px; margin-bottom: 2.5rem; }
+        .progress-dots { display: flex; gap: 6px; justify-content: center; }
+        .dot {
+            flex: 1; height: 4px; border-radius: 99px;
+            background: var(--border);
+            transition: background 0.4s ease;
+            max-width: 80px;
+        }
+        .dot.active { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        .dot.done { background: var(--accent); }
+
+        /* ─── Card ─── */
+        .card {
+            width: 100%; max-width: 480px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 2.25rem 2rem;
+        }
+
+        /* ─── Steps ─── */
+        .step { display: none; animation: fadeUp .35s ease forwards; }
+        .step.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Logo top ─── */
+        .brand {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        .brand-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .brand-name { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.3px; }
+
+        /* ─── Step header ─── */
+        .step-tag {
+            display: inline-block;
+            background: rgba(139,92,246,.15);
+            color: var(--accent);
+            font-size: .75rem; font-weight: 600; letter-spacing: .05em;
+            padding: 4px 12px; border-radius: 99px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        h2 { font-size: 1.7rem; font-weight: 800; line-height: 1.2; margin-bottom: .5rem; }
+        .sub { color: var(--muted); font-size: .95rem; margin-bottom: 2rem; line-height: 1.5; }
+
+        /* ─── Google button ─── */
+        .btn-google {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: #ffffff;
+            color: #111;
+            border: none; border-radius: 14px;
+            padding: 1rem 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem; font-weight: 600;
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .btn-google:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(255,255,255,.12); }
+        .btn-google:active { transform: scale(.98); }
+        .btn-google img { width: 20px; height: 20px; }
+
+        /* ─── Input ─── */
+        .input-group { margin-bottom: 1.25rem; }
+        .input-group label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .5rem; color: rgba(255,255,255,.75); }
+        .input-group input {
+            width: 100%;
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: .9rem 1.1rem;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            transition: border-color .2s;
+        }
+        .input-group input:focus { outline: none; border-color: var(--accent); }
+        .input-group input::placeholder { color: var(--muted); }
+        .input-group input:read-only { opacity: .5; cursor: not-allowed; }
+
+        /* ─── Category cards ─── */
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2rem; }
+        .cat-card {
+            background: rgba(255,255,255,.03);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            user-select: none;
+        }
+        .cat-card:hover { border-color: rgba(139,92,246,.5); background: rgba(139,92,246,.07); transform: translateY(-2px); }
+        .cat-card.selected {
+            border-color: var(--accent);
+            background: rgba(139,92,246,.18);
+            box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+        }
+        .cat-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255,255,255,.06);
+        }
+        .cat-card.selected .cat-icon { background: rgba(139,92,246,.25); }
+        .cat-label { font-size: .9rem; font-weight: 600; }
+        .cat-desc { font-size: .75rem; color: var(--muted); }
+
+        /* ─── Sub-category vertical list ─── */
+        .subcat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
+        .subcat-item {
+            display: flex; align-items: center; gap: 14px;
+            background: rgba(255,255,255,.03);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            transition: all .2s ease;
+            user-select: none;
+        }
+        .subcat-item:hover { border-color: rgba(139,92,246,.45); background: rgba(139,92,246,.07); }
+        .subcat-item.selected { border-color: var(--accent); background: rgba(139,92,246,.15); }
+        .subcat-item-icon { font-size: 1.3rem; width: 36px; text-align: center; }
+        .subcat-item-text .title { font-size: .95rem; font-weight: 600; }
+        .subcat-item-text .desc { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+        .subcat-check {
+            margin-left: auto;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .65rem;
+            transition: all .2s;
+        }
+        .subcat-item.selected .subcat-check { background: var(--accent); border-color: var(--accent); }
+
+        /* ─── Primary button ─── */
+        .btn-primary {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none; border-radius: 14px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: opacity .2s, transform .15s;
+        }
+        .btn-primary:hover { opacity: .92; transform: translateY(-1px); }
+        .btn-primary:active { transform: scale(.98); }
+        .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+        /* ─── Back link ─── */
+        .btn-back {
+            display: flex; align-items: center; gap: 6px;
+            background: none; border: none; color: var(--muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .9rem; cursor: pointer;
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+        .btn-back:hover { color: var(--text); }
+
+        /* ─── Spinner ─── */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: #1a1a2a; border: 1px solid var(--border);
+            padding: .85rem 1.75rem; border-radius: 12px;
+            color: white; font-size: .9rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity .3s; z-index: 999;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; }
+
+        /* ─── Google avatar preview ─── */
+        .user-preview {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(139,92,246,.08);
+            border: 1px solid rgba(139,92,246,.2);
+            border-radius: 12px; padding: .9rem 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        .user-preview img { width: 38px; height: 38px; border-radius: 50%; }
+        .user-preview .info .name { font-weight: 600; font-size: .95rem; }
+        .user-preview .info .email { font-size: .8rem; color: var(--muted); }
+        .verified-badge {
+            margin-left: auto;
+            font-size: .7rem; font-weight: 600;
+            background: rgba(16,185,129,.2); color: #10b981;
+            padding: 3px 9px; border-radius: 99px;
+        }
+    </style>
 </head>
 <body>
-    <div class="bg-glow glow-1"></div>
-    <div class="bg-glow glow-2"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
 
-    <div class="container">
-        <!-- Logo -->
-        <div class="logo-section">
-            <div class="logo">
-                <i class="fas fa-layer-group"></i>
+    <div class="onboard-wrap">
+
+        <!-- Brand -->
+        <div class="brand" style="width:100%;max-width:480px;margin-bottom:1.5rem;">
+            <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+            <span class="brand-name">Nexus Host</span>
+        </div>
+
+        <!-- Progress dots -->
+        <div class="progress-bar">
+            <div class="progress-dots">
+                <div class="dot active" id="dot1"></div>
+                <div class="dot" id="dot2"></div>
+                <div class="dot" id="dot3"></div>
+                <div class="dot" id="dot4"></div>
             </div>
-            <h1 class="logo-title">Host Portal</h1>
-            <p class="logo-subtitle">Manage Fests, Properties, Gyms & Restaurants</p>
         </div>
 
-        <!-- Toggle Tabs -->
-        <div class="toggle-tabs">
-            <button class="toggle-tab active" onclick="switchTab('login')">Login</button>
-            <button class="toggle-tab" onclick="switchTab('signup')">Become a Host</button>
+        <!-- ═══════════════ STEP 1 : Google Sign-in ═══════════════ -->
+        <div class="card step active" id="step1">
+            <div class="step-tag">Step 1 of 4 — Sign in</div>
+            <h2>Welcome to<br>Nexus Host 👋</h2>
+            <p class="sub">One tap to get started. We'll set up your portal in under 60 seconds.</p>
+
+            <button class="btn-google" id="googleBtn" onclick="signInWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+                Continue with Google
+            </button>
         </div>
 
-        <!-- Forms Container -->
-        <div class="form-container">
-            
-            <!-- LOGIN FORM -->
-            <div class="form-section active" id="loginForm">
-                <h2 class="form-title">Welcome Back!</h2>
-                <p class="form-subtitle">Login to your dashboard</p>
+        <!-- ═══════════════ STEP 2 : Basic Info ═══════════════ -->
+        <div class="card step" id="step2">
+            <button class="btn-back" onclick="goStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="step-tag">Step 2 of 4 — Your details</div>
+            <h2>Tell us about<br>yourself</h2>
+            <p class="sub">We need just a few details to set up your host account.</p>
 
-                <form onsubmit="handleLogin(event)">
-                    <div class="input-group">
-                        <label class="input-label">Email Address</label>
-                        <input type="email" id="loginEmail" class="input-field" placeholder="host@college.edu" required>
+            <!-- Google verified user preview -->
+            <div class="user-preview" id="userPreview">
+                <img id="userPhoto" src="https://placehold.co/38x38/8b5cf6/ffffff?text=H" alt="User">
+                <div class="info">
+                    <div class="name" id="userName">Loading...</div>
+                    <div class="email" id="userEmail">—</div>
+                </div>
+                <span class="verified-badge">✓ Google</span>
+            </div>
+
+            <div class="input-group">
+                <label>Full Name *</label>
+                <input type="text" id="infoName" placeholder="Your full name" required>
+            </div>
+            <div class="input-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="infoPhone" placeholder="+91 98765 43210" required>
+            </div>
+
+            <button class="btn-primary" onclick="submitInfo()">
+                Continue <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- ═══════════════ STEP 3 : Category ═══════════════ -->
+        <div class="card step" id="step3">
+            <button class="btn-back" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="step-tag">Step 3 of 4 — Your business</div>
+            <h2>What do you<br>want to host?</h2>
+            <p class="sub">Pick your category. You can expand later.</p>
+
+            <div class="cat-grid">
+                <div class="cat-card" id="cat-gym" onclick="selectCat('gym', this)">
+                    <div class="cat-icon">💪</div>
+                    <div>
+                        <div class="cat-label">Gym & Fitness</div>
+                        <div class="cat-desc">Manage memberships</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Password</label>
-                        <input type="password" id="loginPassword" class="input-field" placeholder="Enter your password" required>
+                </div>
+                <div class="cat-card" id="cat-restaurant" onclick="selectCat('restaurant', this)">
+                    <div class="cat-icon">🍽️</div>
+                    <div>
+                        <div class="cat-label">Restaurant</div>
+                        <div class="cat-desc">Tables & menus</div>
                     </div>
-
-                    <div class="forgot-link">
-                        <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+                </div>
+                <div class="cat-card" id="cat-property" onclick="selectCat('property', this)">
+                    <div class="cat-icon">🏠</div>
+                    <div>
+                        <div class="cat-label">Rent Property</div>
+                        <div class="cat-desc">List your spaces</div>
                     </div>
-
-                    <button type="submit" class="btn-primary" id="loginBtn">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login to Dashboard
-                    </button>
-                </form>
-
-                <div class="divider">or continue with</div>
-
-                <div class="social-login">
-                    <button class="social-btn" onclick="googleLogin()">
-                        <i class="fab fa-google"></i>
-                        Google
-                    </button>
+                </div>
+                <div class="cat-card" id="cat-events" onclick="selectCat('events', this)">
+                    <div class="cat-icon">🎤</div>
+                    <div>
+                        <div class="cat-label">Events</div>
+                        <div class="cat-desc">Sell tickets fast</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- SIGNUP FORM -->
-            <div class="form-section" id="signupForm">
-                <h2 class="form-title">Create Account</h2>
-                <p class="form-subtitle">Join the Nexus Host Network</p>
+            <button class="btn-primary" id="catNextBtn" onclick="submitCategory()" disabled>
+                Continue <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
 
-                <form onsubmit="handleSignup(event)">
-                    <div class="input-group">
-                        <label class="input-label">Full Name *</label>
-                        <input type="text" id="signupName" class="input-field" placeholder="Your full name" required>
+        <!-- ═══════════════ STEP 4 : Events sub-type ═══════════════ -->
+        <div class="card step" id="step4">
+            <button class="btn-back" onclick="goStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="step-tag">Step 4 of 4 — Event type</div>
+            <h2>What kind of<br>events?</h2>
+            <p class="sub">Choose your primary event category. This sets up your portal correctly.</p>
+
+            <div class="subcat-list">
+                <div class="subcat-item" onclick="selectSubcat('college_fest', this)">
+                    <div class="subcat-item-icon">🎓</div>
+                    <div class="subcat-item-text">
+                        <div class="title">College Events & Fests</div>
+                        <div class="desc">Campus fests, cultural nights, tech events</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Business Type *</label>
-                        <select id="signupType" class="input-field" required>
-                            <option value="">Select what you host</option>
-                            <option value="fest">College Events & Fests</option>
-                            <option value="property">Rental Properties</option>
-                            <option value="gym">Gym & Fitness Centers</option>
-                            <option value="restaurant">Restaurants & Dining</option>
-                        </select>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="subcat-item" onclick="selectSubcat('concert', this)">
+                    <div class="subcat-item-icon">🎵</div>
+                    <div class="subcat-item-text">
+                        <div class="title">Concerts & Live Music</div>
+                        <div class="desc">Gigs, open mics, DJ nights</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Email Address *</label>
-                        <input type="email" id="signupEmail" class="input-field" placeholder="your@email.com" required>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="subcat-item" onclick="selectSubcat('restaurant_event', this)">
+                    <div class="subcat-item-icon">🍴</div>
+                    <div class="subcat-item-text">
+                        <div class="title">Restaurant Events</div>
+                        <div class="desc">Food festivals, themed dinners, pop-ups</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Phone Number *</label>
-                        <input type="tel" id="signupPhone" class="input-field" placeholder="+91 98765 43210" required>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="subcat-item" onclick="selectSubcat('live_screening', this)">
+                    <div class="subcat-item-icon">📺</div>
+                    <div class="subcat-item-text">
+                        <div class="title">Live Screenings</div>
+                        <div class="desc">Sports, movie premieres, watch parties</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Create Password *</label>
-                        <input type="password" id="signupPassword" class="input-field" placeholder="Min 6 characters" minlength="6" required>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="subcat-item" onclick="selectSubcat('house_party', this)">
+                    <div class="subcat-item-icon">🎉</div>
+                    <div class="subcat-item-text">
+                        <div class="title">House Parties</div>
+                        <div class="desc">Private events, birthday bashes</div>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Confirm Password *</label>
-                        <input type="password" id="signupConfirm" class="input-field" placeholder="Re-enter password" required>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="subcat-item" onclick="selectSubcat('other', this)">
+                    <div class="subcat-item-icon">✨</div>
+                    <div class="subcat-item-text">
+                        <div class="title">Other Events</div>
+                        <div class="desc">Comedy shows, workshops, networking</div>
                     </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="terms" required>
-                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a></label>
-                    </div>
-
-                    <button type="submit" class="btn-primary" id="signupBtn">
-                        <i class="fas fa-user-plus"></i>
-                        Create Account
-                    </button>
-                </form>
-
-                <div class="divider">or</div>
-
-                <button class="social-btn" onclick="googleLogin()" style="width: 100%;">
-                    <i class="fab fa-google"></i>
-                    Continue with Google
-                </button>
+                    <div class="subcat-check"><i class="fas fa-check"></i></div>
+                </div>
             </div>
 
+            <button class="btn-primary" id="subcatBtn" onclick="submitAll()" disabled>
+                <span id="subcatBtnLabel">Launch My Portal</span>
+                <i class="fas fa-rocket"></i>
+            </button>
         </div>
+
+        <!-- ═══════════════ STEP 4b : Non-event submit ═══════════════ -->
+        <!-- (handled inline after step 3 for gym/restaurant/property) -->
+
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script type="module" src="js/host-signup-login.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js';
+
+        const API_URL = 'https://nexus-host-backend.onrender.com/api';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbgxg6QKLd3AGNKx5hNSksri05rMyYExA",
+            authDomain: "nexus-host-b96e0.firebaseapp.com",
+            projectId: "nexus-host-b96e0",
+            storageBucket: "nexus-host-b96e0.firebasestorage.app",
+            messagingSenderId: "906404829069",
+            appId: "1:906404829069:web:7008b74e07b096087ecfc4"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+
+        // ─── State ───
+        let currentStep = 1;
+        let googleUser = null;
+        let selectedCategory = null;
+        let selectedSubcat = null;
+
+        // ─── Toast ───
+        window.showToast = (msg) => {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        };
+
+        // ─── Step navigation ───
+        window.goStep = (n) => {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+            currentStep = n;
+            updateDots(n);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function updateDots(active) {
+            for (let i = 1; i <= 4; i++) {
+                const d = document.getElementById('dot' + i);
+                d.classList.remove('active', 'done');
+                if (i < active) d.classList.add('done');
+                else if (i === active) d.classList.add('active');
+            }
+        }
+
+        // ─── Check existing session ───
+        (async () => {
+            try {
+                const res = await fetch(`${API_URL}/auth/check`, { credentials: 'include' });
+                const data = await res.json();
+                if (data.exists) {
+                    window.location.href = 'host-dashboard.html';
+                }
+            } catch (e) { /* no session */ }
+        })();
+
+        // ─── Step 1: Google Sign-in ───
+        window.signInWithGoogle = async () => {
+            const btn = document.getElementById('googleBtn');
+            btn.innerHTML = '<div class="spinner"></div> Signing in...';
+            btn.disabled = true;
+            try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                googleUser = result.user;
+                const idToken = await googleUser.getIdToken();
+
+                // Create backend session cookie
+                const r = await fetch(`${API_URL}/auth/session`, {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken })
+                });
+                if (!r.ok) throw new Error('Session creation failed');
+
+                // Prefill step 2
+                document.getElementById('userName').textContent = googleUser.displayName || 'Host';
+                document.getElementById('userEmail').textContent = googleUser.email || '';
+                if (googleUser.photoURL) {
+                    document.getElementById('userPhoto').src = googleUser.photoURL;
+                }
+                document.getElementById('infoName').value = googleUser.displayName || '';
+
+                goStep(2);
+            } catch (err) {
+                showToast(err.message);
+                btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:20px"> Continue with Google';
+                btn.disabled = false;
+            }
+        };
+
+        // ─── Step 2: Info submit ───
+        window.submitInfo = () => {
+            const name = document.getElementById('infoName').value.trim();
+            const phone = document.getElementById('infoPhone').value.trim();
+            if (!name) return showToast('Please enter your name');
+            if (!phone || phone.length < 8) return showToast('Enter a valid phone number');
+            goStep(3);
+        };
+
+        // ─── Step 3: Category ───
+        window.selectCat = (cat, el) => {
+            document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedCategory = cat;
+            document.getElementById('catNextBtn').disabled = false;
+        };
+
+        window.submitCategory = async () => {
+            if (!selectedCategory) return showToast('Please select a category');
+            if (selectedCategory === 'events') {
+                goStep(4); // Events sub-type
+            } else {
+                await saveProfile(null); // Gym / Restaurant / Property — save directly
+            }
+        };
+
+        // ─── Step 4: Event sub-type ───
+        window.selectSubcat = (sub, el) => {
+            document.querySelectorAll('.subcat-item').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedSubcat = sub;
+            const lbl = el.querySelector('.title').textContent;
+            document.getElementById('subcatBtnLabel').textContent = `Launch ${lbl} Portal`;
+            document.getElementById('subcatBtn').disabled = false;
+        };
+
+        window.submitAll = async () => {
+            if (!selectedSubcat) return showToast('Please select an event type');
+            await saveProfile(selectedSubcat);
+        };
+
+        // ─── Final API call ───
+        async function saveProfile(eventSubtype) {
+            const btn = selectedCategory === 'events'
+                ? document.getElementById('subcatBtn')
+                : document.getElementById('catNextBtn');
+
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner"></div> Setting up portal...';
+            btn.disabled = true;
+
+            try {
+                const name = document.getElementById('infoName').value.trim();
+                const phone = document.getElementById('infoPhone').value.trim();
+
+                const payload = {
+                    full_name: name,
+                    phone,
+                    host_type: selectedCategory === 'events' ? 'fest' : selectedCategory,
+                    event_subtype: eventSubtype,
+                    designation: selectedCategory === 'fest' ? 'Student Organizer' : 'Owner'
+                };
+
+                const res = await fetch(`${API_URL}/auth/signup`, {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    // If already registered, try logging in instead
+                    if (res.status === 409) {
+                        const loginRes = await fetch(`${API_URL}/auth/login`, {
+                            method: 'POST', credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const loginData = await loginRes.json();
+                        if (loginRes.ok) {
+                            localStorage.setItem('nexus_host', JSON.stringify(loginData.data));
+                            window.location.href = 'host-dashboard.html';
+                            return;
+                        }
+                    }
+                    throw new Error(data.error || 'Failed to create profile');
+                }
+
+                localStorage.setItem('nexus_host', JSON.stringify(data.data));
+                showToast('🚀 Portal ready! Redirecting...');
+                setTimeout(() => { window.location.href = 'host-dashboard.html'; }, 1200);
+
+            } catch (err) {
+                showToast(err.message);
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
