@@ -26,10 +26,13 @@
 </head>
 <body>
 
-    <!-- Mobile Toggle -->
-    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('show')">
-        <i class="fas fa-bars"></i>
-    </button>
+    <!-- Mobile Top Bar -->
+    <div class="mobile-header">
+        <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div style="font-weight: 700; margin-left: 15px; color: var(--text-main);"><i class="fas fa-dumbbell" style="color: var(--primary); margin-right: 5px;"></i> NexusHost</div>
+    </div>
 
     <!-- Sidebar -->
     <nav class="sidebar">
