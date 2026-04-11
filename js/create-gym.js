@@ -135,6 +135,7 @@ document.getElementById('addGymForm').addEventListener('submit', async (e) => {
 
         const response = await fetch(`${window.API_BASE_URL}/gyms`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
