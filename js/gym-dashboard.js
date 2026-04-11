@@ -73,11 +73,16 @@ function updateUI(hostData) {
 
 // Load stats (cookie automatically sent)
 async function loadStats(hostData) {
-    // TODO: Replace with real stats API call
-    document.getElementById('totalGyms').textContent = '0';
-    document.getElementById('totalTickets').textContent = '0';
-    document.getElementById('totalRevenue').textContent = '₹0';
-    document.getElementById('totalAttendees').textContent = '0';
+    const setStat = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+
+    setStat('totalGyms', '0');
+    setStat('totalTickets', '0');
+    setStat('totalRevenue', '₹0');
+    setStat('totalAttendees', '0');
+    setStat('activeSubs', '0'); // Supported in some layouts
     
     loadGyms();
     loadActivities();
@@ -86,13 +91,9 @@ async function loadStats(hostData) {
 // Load gyms from backend (cookie automatically sent)
 async function loadGyms() {
     try {
-        // TODO: Replace with real endpoint when available
-        // const res = await fetch(`${API_URL}/host/gyms`, {
-        //     credentials: 'include', // ✅ Cookie sent
-        //     headers: { 'Content-Type': 'application/json' }
-        // });
-        
         const container = document.getElementById('liveGyms');
+        if (!container) return; // Silent return if element missing
+
         container.innerHTML = `
             <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
                 <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
@@ -112,6 +113,8 @@ async function loadGyms() {
 // Load activities
 function loadActivities() {
     const container = document.getElementById('activityList');
+    if (!container) return;
+
     container.innerHTML = `
         <div class="activity-item" style="justify-content: center; color: var(--text-muted);">
             No recent activity
@@ -121,7 +124,8 @@ function loadActivities() {
 
 // Toggle Sidebar
 function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.toggle('active');
 }
 
 // Show Notifications
@@ -131,11 +135,13 @@ function showNotifications() {
 
 // Share Modal
 function showShareModal() {
-    document.getElementById('shareModal').classList.add('active');
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.classList.add('active');
 }
 
 function closeShareModal() {
-    document.getElementById('shareModal').classList.remove('active');
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.classList.remove('active');
 }
 
 // Share To
@@ -181,6 +187,10 @@ async function logout() {
 // Toast
 function showToast(message) {
     const toast = document.getElementById('toast');
+    if (!toast) {
+        console.log('Toast:', message);
+        return;
+    }
     toast.textContent = message;
     toast.classList.add('show');
     
@@ -196,8 +206,11 @@ function openGym(gymId) {
 }
 
 // Close modal on outside click
-document.getElementById('shareModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-        closeShareModal();
-    }
-});
+const shareModal = document.getElementById('shareModal');
+if (shareModal) {
+    shareModal.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeShareModal();
+        }
+    });
+}
