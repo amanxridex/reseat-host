@@ -143,10 +143,13 @@ window.handleSignup = async (e) => {
         const name = document.getElementById('signupName').value;
         const email = document.getElementById('signupEmail').value;
         const phone = document.getElementById('signupPhone').value;
-        const college = document.getElementById('signupCollege').value;
-        const reg = document.getElementById('signupReg').value;
+        const type = document.getElementById('signupType').value;
         const password = document.getElementById('signupPassword').value;
         const confirm = document.getElementById('signupConfirm').value;
+
+        if (!type) {
+            throw new Error('Please select your Business Type');
+        }
 
         if (password !== confirm) {
             throw new Error('Passwords do not match');
@@ -165,8 +168,7 @@ window.handleSignup = async (e) => {
             email: email,
             name: name,
             phone: phone,
-            college: college,
-            reg: reg
+            host_type: type
         }));
 
         // Redirect to complete profile

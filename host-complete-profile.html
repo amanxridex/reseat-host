@@ -214,38 +214,18 @@
                     <input type="tel" id="phone" placeholder="+91 98765 43210" required>
                 </div>
 
-                <div class="input-group">
-                    <label>College/University Name *</label>
-                    <select id="college" required>
-                        <option value="">Select your college</option>
-                        <option value="Christ University - Bangalore">Christ University - Bangalore</option>
-                        <option value="Christ University - Delhi NCR">Christ University - Delhi NCR</option>
-                        <option value="Symbiosis Noida">Symbiosis Noida</option>
-                        <option value="LPU Jalandhar">LPU Jalandhar</option>
-                        <option value="IIT Bombay">IIT Bombay</option>
-                        <option value="IIT Delhi">IIT Delhi</option>
-                        <option value="BITS Pilani">BITS Pilani</option>
-                        <option value="VIT Vellore">VIT Vellore</option>
-                        <option value="SRM University">SRM University</option>
-                        <option value="Manipal University">Manipal University</option>
-                        <option value="NMIMS Mumbai">NMIMS Mumbai</option>
-                        <option value="Ashoka University">Ashoka University</option>
-                    </select>
+                <div id="dynamicFields">
+                    <!-- Fields injected dynamically below -->
                 </div>
 
-                <div class="input-group">
-                    <label>Registration/Roll Number *</label>
-                    <input type="text" id="regNumber" placeholder="Your college ID number" required>
-                </div>
-
-                <div class="input-group">
-                    <label>College ID Card *</label>
+                <div class="input-group" id="fileUploadGroup">
+                    <label id="fileUploadLabel">Verification Document *</label>
                     <div class="file-upload" onclick="document.getElementById('idCard').click()">
                         <input type="file" id="idCard" accept="image/*,.pdf" onchange="handleFile(this)" required>
                         <div class="file-icon">
                             <i class="fas fa-cloud-upload-alt"></i>
                         </div>
-                        <div class="file-text" id="fileText">Click to upload ID card<br>JPG, PNG or PDF (Max 5MB)</div>
+                        <div class="file-text" id="fileText">Click to upload document<br>JPG, PNG or PDF (Max 5MB)</div>
                     </div>
                 </div>
 
@@ -298,11 +278,28 @@ checkSession().then(hasSession => {
 document.getElementById('fullName').value = tempData.name || '';
 document.getElementById('email').value = tempData.email || '';
 document.getElementById('phone').value = tempData.phone || '';
-if (tempData.college) {
-    document.getElementById('college').value = tempData.college;
-}
-if (tempData.reg) {
-    document.getElementById('regNumber').value = tempData.reg;
+
+const dynamicFields = document.getElementById('dynamicFields');
+const fileUploadLabel = document.getElementById('fileUploadLabel');
+
+if (tempData.host_type === 'fest') {
+    fileUploadLabel.innerText = 'College ID Card *';
+    dynamicFields.innerHTML = `
+        <div class="input-group">
+            <label>College/University Name *</label>
+            <input type="text" id="college" placeholder="Enter your full College name" required>
+        </div>
+        <div class="input-group">
+            <label>Registration/Roll Number *</label>
+            <input type="text" id="regNumber" placeholder="Your college ID number" required>
+        </div>
+    `;
+} else if (tempData.host_type === 'property') {
+    fileUploadLabel.innerText = 'Property Layout / Ownership Proof *';
+} else if (tempData.host_type === 'gym') {
+    fileUploadLabel.innerText = 'Gym Registration / Trade License *';
+} else if (tempData.host_type === 'restaurant') {
+    fileUploadLabel.innerText = 'FSSAI License / Menu PDF *';
 }
 
 let idCardFile = null;
@@ -348,8 +345,9 @@ async function completeProfile(e) {
         const profileData = {
             full_name: document.getElementById('fullName').value,
             phone: document.getElementById('phone').value,
-            college_name: document.getElementById('college').value,
-            registration_number: document.getElementById('regNumber').value,
+            host_type: tempData.host_type || 'fest',
+            college_name: document.getElementById('college') ? document.getElementById('college').value : null,
+            registration_number: document.getElementById('regNumber') ? document.getElementById('regNumber').value : null,
             id_card_url: idCardUrl
         };
 

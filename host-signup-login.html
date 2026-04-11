@@ -16,10 +16,10 @@
         <!-- Logo -->
         <div class="logo-section">
             <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
+                <i class="fas fa-layer-group"></i>
             </div>
             <h1 class="logo-title">Host Portal</h1>
-            <p class="logo-subtitle">Create & Manage College Fests</p>
+            <p class="logo-subtitle">Manage Fests, Properties, Gyms & Restaurants</p>
         </div>
 
         <!-- Toggle Tabs -->
@@ -34,7 +34,7 @@
             <!-- LOGIN FORM -->
             <div class="form-section active" id="loginForm">
                 <h2 class="form-title">Welcome Back!</h2>
-                <p class="form-subtitle">Login to manage your college fests</p>
+                <p class="form-subtitle">Login to your dashboard</p>
 
                 <form onsubmit="handleLogin(event)">
                     <div class="input-group">
@@ -70,7 +70,7 @@
             <!-- SIGNUP FORM -->
             <div class="form-section" id="signupForm">
                 <h2 class="form-title">Create Account</h2>
-                <p class="form-subtitle">Join as a college fest host</p>
+                <p class="form-subtitle">Join the Nexus Host Network</p>
 
                 <form onsubmit="handleSignup(event)">
                     <div class="input-group">
@@ -79,37 +79,24 @@
                     </div>
 
                     <div class="input-group">
+                        <label class="input-label">Business Type *</label>
+                        <select id="signupType" class="input-field" required>
+                            <option value="">Select what you host</option>
+                            <option value="fest">College Events & Fests</option>
+                            <option value="property">Rental Properties</option>
+                            <option value="gym">Gym & Fitness Centers</option>
+                            <option value="restaurant">Restaurants & Dining</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
                         <label class="input-label">Email Address *</label>
-                        <input type="email" id="signupEmail" class="input-field" placeholder="your@college.edu" required>
+                        <input type="email" id="signupEmail" class="input-field" placeholder="your@email.com" required>
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Phone Number *</label>
                         <input type="tel" id="signupPhone" class="input-field" placeholder="+91 98765 43210" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">College/University *</label>
-                        <select id="signupCollege" class="input-field" required>
-                            <option value="">Select your college</option>
-                            <option value="Christ University - Bangalore">Christ University - Bangalore</option>
-                            <option value="Christ University - Delhi NCR">Christ University - Delhi NCR</option>
-                            <option value="Symbiosis Noida">Symbiosis Noida</option>
-                            <option value="LPU Jalandhar">LPU Jalandhar</option>
-                            <option value="IIT Bombay">IIT Bombay</option>
-                            <option value="IIT Delhi">IIT Delhi</option>
-                            <option value="BITS Pilani">BITS Pilani</option>
-                            <option value="VIT Vellore">VIT Vellore</option>
-                            <option value="SRM University">SRM University</option>
-                            <option value="Manipal University">Manipal University</option>
-                            <option value="NMIMS Mumbai">NMIMS Mumbai</option>
-                            <option value="Ashoka University">Ashoka University</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Registration Number *</label>
-                        <input type="text" id="signupReg" class="input-field" placeholder="Your college ID number" required>
                     </div>
 
                     <div class="input-group">
