@@ -1,18 +1,17 @@
-const CACHE_NAME = 'nexus-host-gym-v1';
+const CACHE_NAME = 'nexus-host-v2';
 
 // All static assets to pre-cache at install time
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/gym-dashboard.html',
-    '/create-gym.html',
-    '/my-gyms.html',
+    '/fest-dashboard.html',
+    '/restaurant-dashboard.html',
+    '/home-dashboard.html',
     '/host-signup-login.html',
     '/css/gym-theme.css',
     '/js/config.js',
-    '/js/create-gym.js',
-    '/js/my-gyms.js',
-    '/nexushostlogo.jpeg',
+    '/nexushostlogo.png',
     '/manifest.json'
 ];
 
