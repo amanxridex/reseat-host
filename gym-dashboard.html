@@ -170,13 +170,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="js/config.js"></script>
-    <script>
-        function logout() {
-            firebase.auth().signOut().then(() => {
-                window.location.href = 'host-signup-login.html';
-            });
-        }
-    </script>
+    <script src="js/gym-dashboard.js"></script>
     <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {

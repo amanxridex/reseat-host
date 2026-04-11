@@ -1,4 +1,4 @@
-const API_URL = 'https://nexus-host-backend.onrender.com/api';
+const API_URL = window.API_BASE_URL;
 
 // Check Auth & Load Real Data (cookie-based)
 document.addEventListener('DOMContentLoaded', async () => {
