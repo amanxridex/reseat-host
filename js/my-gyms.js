@@ -23,8 +23,9 @@ async function fetchMyGyms(user) {
         
         // Ensure API_BASE_URL is loaded from config
         const response = await fetch(`${window.API_BASE_URL}/gyms/mine`, {
+            credentials: 'include',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             }
         });
         

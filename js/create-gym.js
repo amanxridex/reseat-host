@@ -137,10 +137,9 @@ document.getElementById('addGymForm').addEventListener('submit', async (e) => {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(gymData)
         });
 
         const data = await response.json();
