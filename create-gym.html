@@ -170,14 +170,14 @@
                 <i class="fas fa-building"></i> Manage Gyms
             </a>
         </div>
-        
-        <div class="sidebar-footer" style="padding: 20px 24px; border-top: 1px solid var(--border); margin-top: auto; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s;" onclick="logout()" onmouseover="this.style.background='var(--bg-main)'" onmouseout="this.style.background='transparent'">
-            <div style="width: 36px; height: 36px; background: var(--primary-light); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                <i class="fas fa-user"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">Host Profile</div>
-                <div style="font-size: 0.8rem; color: var(--danger); font-weight: 500;"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        <div class="sidebar-footer" style="padding: 15px; border-top: 1px solid var(--border); margin-top: auto; display: flex; flex-direction: column; gap: 5px;">
+            <a href="host-complete-profile.html" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; text-decoration: none; color: var(--text-main); transition: 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--bg-main)'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-main)'">
+                <i class="fas fa-user-circle" style="font-size: 1.2rem; width: 24px; text-align: center;"></i>
+                <span style="font-weight: 600; font-size: 0.95rem;">Host Profile</span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-main); transition: 0.2s; cursor: pointer;" onclick="logout()" onmouseover="this.style.background='#fef2f2'; this.style.color='var(--danger)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-main)'">
+                <i class="fas fa-sign-out-alt" style="font-size: 1.2rem; width: 24px; text-align: center;"></i>
+                <span style="font-weight: 600; font-size: 0.95rem;">Logout</span>
             </div>
         </div>
     </nav>
