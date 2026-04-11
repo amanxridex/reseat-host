@@ -203,14 +203,11 @@
         <a href="add-property.html" class="nav-item active">
             <i class="fas fa-plus-square"></i> Add Property
         </a>
-        <a href="#" class="nav-item">
+        <a href="my-properties.html" class="nav-item">
             <i class="fas fa-building"></i> My Properties
         </a>
         <a href="#" class="nav-item">
             <i class="fas fa-envelope-open-text"></i> Inquiries
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fas fa-wallet"></i> Revenue
         </a>
         
         <div class="sidebar-bottom" style="margin-top: auto;">
@@ -262,11 +259,22 @@
                 <div class="form-row">
                     <div class="input-group">
                         <label>Monthly Rent (₹) *</label>
-                        <input type="number" placeholder="e.g. 25000" required>
+                        <input type="number" id="rentAmount" placeholder="e.g. 25000" required>
                     </div>
                     <div class="input-group">
                         <label>Security Deposit (₹) *</label>
-                        <input type="number" placeholder="e.g. 100000" required>
+                        <input type="number" id="depositAmount" placeholder="e.g. 100000" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Contact Person Name *</label>
+                        <input type="text" id="contactName" placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Contact Number *</label>
+                        <input type="tel" id="contactPhone" placeholder="e.g. 9876543210" required>
                     </div>
                 </div>
 
