@@ -2,6 +2,8 @@ const CACHE_NAME = 'nexus-host-gym-v1';
 
 // All static assets to pre-cache at install time
 const STATIC_ASSETS = [
+    '/',
+    '/index.html',
     '/gym-dashboard.html',
     '/create-gym.html',
     '/my-gyms.html',
