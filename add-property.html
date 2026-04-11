@@ -231,13 +231,13 @@
                 <div class="form-section-title">01. Basic Details</div>
                 <div class="input-group">
                     <label>Property Title / Name *</label>
-                    <input type="text" placeholder="e.g. Luxury 3BHK in HSR Layout" required>
+                    <input type="text" id="propTitle" placeholder="e.g. Luxury 3BHK in HSR Layout" required>
                 </div>
                 
                 <div class="form-row">
                     <div class="input-group">
                         <label>Property Type *</label>
-                        <select required>
+                        <select id="propType" required>
                             <option value="" disabled selected>Select Type</option>
                             <option value="apartment">Apartment</option>
                             <option value="independent">Independent House / Villa</option>
@@ -247,7 +247,7 @@
                     </div>
                     <div class="input-group">
                         <label>Furnishing Status *</label>
-                        <select required>
+                        <select id="propFurnishing" required>
                             <option value="" disabled selected>Select Status</option>
                             <option value="fully">Fully Furnished</option>
                             <option value="semi">Semi Furnished</option>
@@ -282,16 +282,16 @@
                 <div class="form-section-title">02. Location</div>
                 <div class="input-group">
                     <label>Full Address *</label>
-                    <textarea rows="2" placeholder="Building name, street, area..." required></textarea>
+                    <textarea id="propAddress" rows="2" placeholder="Building name, street, area..." required></textarea>
                 </div>
                 <div class="form-row">
                     <div class="input-group">
                         <label>City *</label>
-                        <input type="text" placeholder="e.g. Bengaluru" required>
+                        <input type="text" id="propCity" placeholder="e.g. Bengaluru" required>
                     </div>
                     <div class="input-group">
                         <label>Pin Code *</label>
-                        <input type="text" placeholder="e.g. 560102" required>
+                        <input type="text" id="propPincode" placeholder="e.g. 560102" required>
                     </div>
                 </div>
 
@@ -299,7 +299,7 @@
                 <div class="form-section-title">03. About & Amenities</div>
                 <div class="input-group">
                     <label>Property Description *</label>
-                    <textarea rows="4" placeholder="Describe the space, neighborhood, rules..." required></textarea>
+                    <textarea id="propDescription" rows="4" placeholder="Describe the space, neighborhood, rules..." required></textarea>
                 </div>
 
                 <div class="input-group">
@@ -396,18 +396,84 @@
             img.parentElement.classList.remove('has-image');
         }
 
-        function submitProperty(e) {
+        async function submitProperty(e) {
             e.preventDefault();
-            // Just for UI effect
             const btn = e.target.querySelector('button[type="submit"]');
-            const original = btn.innerHTML;
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PUBLISHING...';
-            
-            setTimeout(() => {
+            btn.disabled = true;
+
+            try {
+                // Determine API base URL dynamically based on environment
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const API_BASE = isLocal ? 'http://localhost:3000/api' : 'https://nexus-host-backend.onrender.com/api';
+
+                // 1. Upload Images
+                const imageUrls = [];
+                for (let i = 0; i < 6; i++) {
+                    const fileInput = document.getElementById(`file-${i}`);
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        
+                        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> UPLOADING IMAGE ${i+1}...`;
+                        
+                        const uploadRes = await fetch(`${API_BASE}/upload/property-image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const uploadData = await uploadRes.json();
+                        if (!uploadRes.ok) throw new Error(uploadData.error || 'Failed to upload image');
+                        imageUrls.push(uploadData.url);
+                    }
+                }
+
+                // 2. Gather Amenities
+                const amenities = [];
+                document.querySelectorAll('.amenity-pill.selected').forEach(pill => {
+                    amenities.push(pill.textContent.trim());
+                });
+
+                // 3. Prepare Payload
+                const payload = {
+                    title: document.getElementById('propTitle').value,
+                    property_type: document.getElementById('propType').value,
+                    furnishing_status: document.getElementById('propFurnishing').value,
+                    monthly_rent: document.getElementById('rentAmount').value,
+                    security_deposit: document.getElementById('depositAmount').value,
+                    contact_name: document.getElementById('contactName').value,
+                    contact_phone: document.getElementById('contactPhone').value,
+                    address: document.getElementById('propAddress').value,
+                    city: document.getElementById('propCity').value,
+                    pincode: document.getElementById('propPincode').value,
+                    description: document.getElementById('propDescription').value,
+                    amenities: amenities,
+                    images: imageUrls
+                };
+
+                // 4. Submit to DB
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SAVING RECORD...';
+                const res = await fetch(`${API_BASE}/properties`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to publish property');
+
                 alert("✨ Property Published Successfully!");
-                btn.innerHTML = original;
-                window.location.href = 'home-dashboard.html';
-            }, 1500);
+                window.location.href = 'my-properties.html';
+
+            } catch (error) {
+                console.error("Publish error:", error);
+                alert("Error: " + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         function logout() {
