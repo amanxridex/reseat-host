@@ -177,7 +177,8 @@
 
                 const res = await fetch(`${API_BASE}/properties/mine`, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
                 });
 
                 const data = await res.json();

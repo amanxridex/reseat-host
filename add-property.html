@@ -421,6 +421,7 @@
                         
                         const uploadRes = await fetch(`${API_BASE}/upload/property-image`, {
                             method: 'POST',
+                            credentials: 'include',
                             body: formData
                         });
                         
@@ -457,6 +458,7 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SAVING RECORD...';
                 const res = await fetch(`${API_BASE}/properties`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
