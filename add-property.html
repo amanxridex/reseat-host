@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus Host | Add Property</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --bg-dark: #120822;
+            --sidebar-bg: #1a0f2e;
+            --card-bg: #1f113a;
+            --card-border: rgba(255, 255, 255, 0.05);
+            --neon-pink: #ff2a6d;
+            --neon-cyan: #05d9e8;
+            --neon-lime: #01ffc3;
+            --neon-purple: #b122e5;
+            --text-main: #ffffff;
+            --text-muted: #8b7d9e;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 0 24px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex; align-items: center; gap: 12px;
+            letter-spacing: 1px;
+        }
+
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-lime));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .nav-item {
+            padding: 15px 24px; display: flex; align-items: center; gap: 15px;
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+            transition: all 0.2s; border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
+        .nav-item.active { color: var(--neon-cyan); border-left-color: var(--neon-cyan); background: rgba(5, 217, 232, 0.05); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
+        
+        /* ─── Mobile Toggle ─── */
+        .mobile-toggle {
+            display: none; position: fixed; top: 20px; right: 20px;
+            background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
+            width: 45px; height: 45px; border-radius: 12px; z-index: 1000; cursor: pointer; font-size: 1.2rem;
+        }
+
+        /* ─── Main Content ─── */
+        .main-content { flex: 1; padding: 30px; height: 100vh; overflow-y: auto; }
+
+        .header { margin-bottom: 25px; }
+        .page-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-main); font-weight: 600; }
+        .page-title span { color: var(--text-muted); }
+
+        .btn-glow {
+            background: var(--neon-cyan); color: #000; border: none; padding: 12px 24px;
+            border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.4); transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-glow:hover { box-shadow: 0 0 25px rgba(5, 217, 232, 0.6); transform: translateY(-2px); }
+
+        /* ─── Form Card ─── */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            max-width: 800px;
+        }
+        .form-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .form-section-title {
+            color: var(--neon-cyan);
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--card-border);
+            padding-bottom: 10px; margin-top: 30px;
+        }
+        .form-section-title:first-child { margin-top: 0; }
+
+        /* ─── Inputs ─── */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;}
+        .input-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+        .input-group input, .input-group textarea, .input-group select {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 8px; padding: 12px 15px; color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;
+            transition: all 0.2s; outline: none;
+        }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            border-color: var(--neon-cyan); background: rgba(5, 217, 232, 0.05);
+        }
+        .input-group select option { background: var(--bg-dark); color: white; }
+
+        /* ─── Amenities Pills ─── */
+        .amenities-grid {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+        }
+        .amenity-pill {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--card-border);
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer;
+            transition: all 0.2s; user-select: none; color: var(--text-muted);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .amenity-pill.selected {
+            background: rgba(5, 217, 232, 0.1); border-color: var(--neon-cyan);
+            color: var(--neon-cyan); box-shadow: 0 0 10px rgba(5, 217, 232, 0.2);
+        }
+
+        /* ─── Image Upload Grid (6 max) ─── */
+        .image-upload-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
+        }
+        .image-box {
+            aspect-ratio: 4/3;
+            background: rgba(255,255,255,0.02); border: 2px dashed var(--card-border);
+            border-radius: 12px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; cursor: pointer; transition: all 0.2s; position: relative;
+            overflow: hidden;
+        }
+        .image-box:hover { border-color: var(--neon-pink); background: rgba(255, 42, 109, 0.05); color: var(--neon-pink); }
+        .image-box i { font-size: 1.5rem; margin-bottom: 5px; color: var(--text-muted); }
+        .image-box:hover i { color: var(--neon-pink); }
+        .image-box span { font-size: 0.75rem; color: var(--text-muted); }
+        .image-box img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; display: none; }
+        
+        .image-box.has-image { border-style: solid; border-color: var(--neon-cyan); }
+        .image-box.has-image img { display: block; }
+        .image-box.has-image .overlay {
+            position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s;
+        }
+        .image-box.has-image:hover .overlay { opacity: 1; }
+        .image-box .overlay i { color: white; background: var(--neon-pink); padding: 8px; border-radius: 50%; box-shadow: 0 0 10px var(--neon-pink); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { position: fixed; top: 0; left: -250px; bottom: 0; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+            .sidebar.show { left: 0; }
+            .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+            .main-content { padding-top: 80px; padding-left: 20px; padding-right: 20px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .image-upload-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .image-upload-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-home"></i></div>
+            Nexus Property
+        </div>
+        
+        <a href="home-dashboard.html" class="nav-item">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="add-property.html" class="nav-item active">
+            <i class="fas fa-plus-square"></i> Add Property
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-building"></i> My Properties
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-envelope-open-text"></i> Inquiries
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-wallet"></i> Revenue
+        </a>
+        
+        <div class="sidebar-bottom" style="margin-top: auto;">
+            <a href="#" class="nav-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout System
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="page-title"><span>DASHBOARD / </span> ADD PROPERTY</div>
+            <h2 style="font-size: 1.5rem; margin-top: 5px; font-weight: 700;">List New Property</h2>
+        </div>
+
+        <div class="form-card">
+            <form id="addPropertyForm" onsubmit="submitProperty(event)">
+                
+                <!-- Basic Details -->
+                <div class="form-section-title">01. Basic Details</div>
+                <div class="input-group">
+                    <label>Property Title / Name *</label>
+                    <input type="text" placeholder="e.g. Luxury 3BHK in HSR Layout" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Property Type *</label>
+                        <select required>
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="independent">Independent House / Villa</option>
+                            <option value="pg">PG / Hostel</option>
+                            <option value="commercial">Commercial Space</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Furnishing Status *</label>
+                        <select required>
+                            <option value="" disabled selected>Select Status</option>
+                            <option value="fully">Fully Furnished</option>
+                            <option value="semi">Semi Furnished</option>
+                            <option value="unfurnished">Unfurnished</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Monthly Rent (₹) *</label>
+                        <input type="number" placeholder="e.g. 25000" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Security Deposit (₹) *</label>
+                        <input type="number" placeholder="e.g. 100000" required>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="form-section-title">02. Location</div>
+                <div class="input-group">
+                    <label>Full Address *</label>
+                    <textarea rows="2" placeholder="Building name, street, area..." required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>City *</label>
+                        <input type="text" placeholder="e.g. Bengaluru" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Pin Code *</label>
+                        <input type="text" placeholder="e.g. 560102" required>
+                    </div>
+                </div>
+
+                <!-- About & Amenities -->
+                <div class="form-section-title">03. About & Amenities</div>
+                <div class="input-group">
+                    <label>Property Description *</label>
+                    <textarea rows="4" placeholder="Describe the space, neighborhood, rules..." required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Amenities</label>
+                    <div class="amenities-grid">
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-wifi"></i> WiFi</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-snowflake"></i> AC</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-car"></i> Parking</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-dumbbell"></i> Gym</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-swimmer"></i> Pool</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-shield-alt"></i> Security</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-bolt"></i> Power Backup</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-elevator"></i> Elevator</div>
+                        <div class="amenity-pill" onclick="this.classList.toggle('selected')"><i class="fas fa-paw"></i> Pet Friendly</div>
+                    </div>
+                </div>
+
+                <!-- Images (Max 6) -->
+                <div class="form-section-title">04. Media (Max 6 Images)</div>
+                <div class="image-upload-grid">
+                    <!-- Setup 6 input boxes -->
+                    <div class="image-box" onclick="triggerFile(0)">
+                        <i class="fas fa-cloud-upload-alt"></i><span>Main Photo</span>
+                        <img id="img-preview-0" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 0)"><i class="fas fa-trash"></i></div>
+                    </div>
+                    <div class="image-box" onclick="triggerFile(1)">
+                        <i class="fas fa-plus"></i><span>Photo 2</span>
+                        <img id="img-preview-1" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 1)"><i class="fas fa-trash"></i></div>
+                    </div>
+                    <div class="image-box" onclick="triggerFile(2)">
+                        <i class="fas fa-plus"></i><span>Photo 3</span>
+                        <img id="img-preview-2" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 2)"><i class="fas fa-trash"></i></div>
+                    </div>
+                    <div class="image-box" onclick="triggerFile(3)">
+                        <i class="fas fa-plus"></i><span>Photo 4</span>
+                        <img id="img-preview-3" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 3)"><i class="fas fa-trash"></i></div>
+                    </div>
+                    <div class="image-box" onclick="triggerFile(4)">
+                        <i class="fas fa-plus"></i><span>Photo 5</span>
+                        <img id="img-preview-4" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 4)"><i class="fas fa-trash"></i></div>
+                    </div>
+                    <div class="image-box" onclick="triggerFile(5)">
+                        <i class="fas fa-plus"></i><span>Photo 6</span>
+                        <img id="img-preview-5" src="" alt="">
+                        <div class="overlay" onclick="removeImg(event, 5)"><i class="fas fa-trash"></i></div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs -->
+                <input type="file" id="file-0" accept="image/*" hidden onchange="previewImg(this, 0)">
+                <input type="file" id="file-1" accept="image/*" hidden onchange="previewImg(this, 1)">
+                <input type="file" id="file-2" accept="image/*" hidden onchange="previewImg(this, 2)">
+                <input type="file" id="file-3" accept="image/*" hidden onchange="previewImg(this, 3)">
+                <input type="file" id="file-4" accept="image/*" hidden onchange="previewImg(this, 4)">
+                <input type="file" id="file-5" accept="image/*" hidden onchange="previewImg(this, 5)">
+
+                <div style="margin-top: 40px; text-align: right;">
+                    <button type="submit" class="btn-glow" style="width: 100%; justify-content: center; padding: 16px;">
+                        <i class="fas fa-rocket"></i> PUBLISH PROPERTY
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function triggerFile(index) {
+            document.getElementById('file-' + index).click();
+        }
+
+        function previewImg(input, index) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('img-preview-' + index);
+                    img.src = e.target.result;
+                    img.parentElement.classList.add('has-image');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImg(event, index) {
+            event.stopPropagation(); // Prevent triggering the file input
+            const input = document.getElementById('file-' + index);
+            input.value = "";
+            const img = document.getElementById('img-preview-' + index);
+            img.src = "";
+            img.parentElement.classList.remove('has-image');
+        }
+
+        function submitProperty(e) {
+            e.preventDefault();
+            // Just for UI effect
+            const btn = e.target.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PUBLISHING...';
+            
+            setTimeout(() => {
+                alert("✨ Property Published Successfully!");
+                btn.innerHTML = original;
+                window.location.href = 'home-dashboard.html';
+            }, 1500);
+        }
+
+        function logout() {
+            localStorage.removeItem('nexus_host');
+            window.location.href = 'host-signup-login.html';
+        }
+    </script>
+</body>
+</html>

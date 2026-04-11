@@ -2,281 +2,569 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Host Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus Host | Property Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/host-dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --bg-dark: #120822; /* Deep dark purple/black */
+            --sidebar-bg: #1a0f2e;
+            --card-bg: #1f113a;
+            --card-border: rgba(255, 255, 255, 0.05);
+            /* Neon colors */
+            --neon-pink: #ff2a6d;
+            --neon-cyan: #05d9e8;
+            --neon-lime: #01ffc3;
+            --neon-purple: #b122e5;
+            --text-main: #ffffff;
+            --text-muted: #8b7d9e;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 0 24px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 1px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item {
+            padding: 15px 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .nav-item.active {
+            color: var(--neon-pink);
+            border-left-color: var(--neon-pink);
+            background: rgba(255, 42, 109, 0.05);
+        }
+
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
+        
+        .sidebar-bottom { margin-top: auto; }
+
+        /* ─── Mobile Menu Toggle ─── */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            z-index: 1000;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* ─── Main Content ─── */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .page-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        .page-title span { color: var(--text-muted); }
+
+        .btn-glow {
+            background: var(--neon-cyan);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.4);
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(5, 217, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* ─── Grid Dashboard ─── */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+        }
+        .card.card-cyan::before { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+        .card.card-pink::before { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
+        .card.card-lime::before { background: var(--neon-lime); box-shadow: 0 0 10px var(--neon-lime); }
+        .card.card-purple::before { background: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
+
+        /* Donut Cards */
+        .donut-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            height: 120px;
+        }
+        .donut-val {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card-title {
+            color: var(--neon-cyan);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .card.card-pink .card-title { color: var(--neon-pink); }
+        .card.card-lime .card-title { color: var(--neon-lime); }
+        .card.card-purple .card-title { color: var(--neon-purple); }
+
+        .card-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Wide Graph Row */
+        .wide-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        /* Lead Bars */
+        .lead-bar {
+            margin-bottom: 15px;
+        }
+        .lead-bar-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+        .lead-track {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .lead-fill {
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Bottom Row */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .list-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            align-items: center;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-avatar {
+            width: 35px; height: 35px;
+            border-radius: 50%;
+            background: var(--sidebar-bg);
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 12px;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            border: 1px solid rgba(5,217,232,0.3);
+        }
+        .list-info h4 { font-size: 0.85rem; margin-bottom: 2px; }
+        .list-info p { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .wide-row { grid-template-columns: 1fr; }
+            .bottom-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                top: 0; left: -250px; bottom: 0;
+                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            }
+            .sidebar.show { left: 0; }
+            .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .main-content { padding-top: 80px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>NEXUS HOST</span>
-            </div>
-            <button class="sidebar-close" onclick="toggleSidebar()">
-                <i class="fas fa-times"></i>
-            </button>
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-home"></i></div>
+            Nexus Property
         </div>
-
-        <nav class="sidebar-nav">
-            <a href="host-dashboard.html" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+        
+        <a href="home-dashboard.html" class="nav-item active">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="add-property.html" class="nav-item">
+            <i class="fas fa-plus-square"></i> Add Property
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-building"></i> My Properties
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-envelope-open-text"></i> Inquiries
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-wallet"></i> Revenue
+        </a>
+        
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i> Server Settings
             </a>
-            <a href="create-property.html" class="nav-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>Create Property</span>
-            </a>
-            <a href="my-propertys.html" class="nav-item">
-                <i class="fas fa-calendar-alt"></i>
-                <span>My Propertys</span>
-            </a>
-            <a href="qr-scanner.html" class="nav-item">
-                <i class="fas fa-qrcode"></i>
-                <span>QR Scanner</span>
-            </a>
-            <a href="analytics.html" class="nav-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="payouts.html" class="nav-item">
-                <i class="fas fa-wallet"></i>
-                <span>Payouts</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="settings.html" class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </a>
-            <a href="#" class="nav-item logout" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+            <a href="#" class="nav-item" style="color: var(--neon-pink);" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout System
             </a>
         </div>
-    </aside>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <button class="menu-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="header-title">
-                <h1>Dashboard</h1>
-                <p>Welcome back, <span id="hostName">Host</span></p>
+        <div class="header">
+            <div class="page-title">
+                <span>DASHBOARD / </span> HOME
+            </div>
+            <a href="add-property.html" class="btn-glow">
+                <i class="fas fa-plus"></i> NEW LISTING
+            </a>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Active Properties -->
+            <div class="card card-cyan">
+                <div class="donut-container">
+                    <canvas id="chart1"></canvas>
+                    <div class="donut-val">12</div>
+                </div>
+                <div class="card-title">ACTIVE PROPERTIES</div>
+                <div class="card-desc">Total live rental spaces currently available on the network.</div>
             </div>
 
-            <div class="header-actions">
-                <button class="icon-btn" onclick="showNotifications()">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge" id="notifBadge" style="display: none;">0</span>
-                </button>
-                <div class="profile" onclick="goToSettings()">
-                    <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=H" alt="Profile" id="profileImg">
+            <!-- Inquiries -->
+            <div class="card card-pink">
+                <div class="donut-container">
+                    <canvas id="chart2"></canvas>
+                    <div class="donut-val" style="color:var(--neon-pink)">348</div>
+                </div>
+                <div class="card-title">MONTHLY INQUIRIES</div>
+                <div class="card-desc">Interested tenant leads generated in the last 30 days.</div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="card card-lime">
+                <div class="donut-container">
+                    <canvas id="chart3"></canvas>
+                    <div class="donut-val" style="color:var(--neon-lime)">₹2.4L</div>
+                </div>
+                <div class="card-title">REVENUE GENERATED</div>
+                <div class="card-desc">Total rent collected via Nexus payment gateway.</div>
+            </div>
+
+            <!-- Occupancy Stats -->
+            <div class="card card-purple">
+                <div class="donut-val" style="position:relative; transform:none; top:0; left:0; font-size: 2.2rem; margin-bottom:10px; color:var(--neon-purple);">
+                    86<span style="font-size:1rem">%</span>
+                </div>
+                <div class="card-title" style="margin-bottom:15px;">OCCUPANCY RATE</div>
+                
+                <div class="lead-bar">
+                    <div class="lead-bar-info"><span>Apartments</span><span>92%</span></div>
+                    <div class="lead-track"><div class="lead-fill" style="width: 92%; background: var(--neon-cyan);"></div></div>
+                </div>
+                <div class="lead-bar">
+                    <div class="lead-bar-info"><span>Villas</span><span>75%</span></div>
+                    <div class="lead-track"><div class="lead-fill" style="width: 75%; background: var(--neon-pink);"></div></div>
+                </div>
+                <div class="lead-bar">
+                    <div class="lead-bar-info"><span>PG / Hostels</span><span>88%</span></div>
+                    <div class="lead-track"><div class="lead-fill" style="width: 88%; background: var(--neon-lime);"></div></div>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard">
+        <div class="wide-row">
+            <!-- Line Graph -->
+            <div class="card card-cyan">
+                <div class="card-title" style="margin-bottom: 15px;">INQUIRY VOLUME (LAST 6 MONTHS)</div>
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
             
             <!-- Quick Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalPropertys">0</h3>
-                        <p>Total Propertys</p>
+            <div class="card card-pink">
+                <div class="card-title">PROPERTY HEALTH</div>
+                <div class="card-desc" style="margin-bottom:20px;">System health and maintenance alerts.</div>
+                
+                <div style="font-size: 2rem; color: var(--text-main); font-weight:700; margin-bottom:5px;">2</div>
+                <p style="color: var(--neon-pink); font-size: 0.8rem; margin-bottom: 20px;">Pending Maintenance Requests</p>
+                
+                <div style="font-size: 2rem; color: var(--text-main); font-weight:700; margin-bottom:5px;">4</div>
+                <p style="color: var(--neon-lime); font-size: 0.8rem;">Upcoming Renewals This Month</p>
+            </div>
+        </div>
+
+        <div class="bottom-row">
+            <!-- Recent Inquiries -->
+            <div class="card card-purple">
+                <div class="card-title" style="margin-bottom: 15px;">RECENT LEADS</div>
+                <div class="list-item">
+                    <div class="list-avatar">RG</div>
+                    <div class="list-info">
+                        <h4>Rahul Gurjar</h4>
+                        <p>Inquired about 3BHK in HSR Layout</p>
                     </div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fas fa-ticket-alt"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalTickets">0</h3>
-                        <p>Tickets Sold</p>
+                <div class="list-item">
+                    <div class="list-avatar">SV</div>
+                    <div class="list-info">
+                        <h4>Sneha Verma</h4>
+                        <p>Requested callback for PG sharing</p>
                     </div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="fas fa-rupee-sign"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalRevenue">₹0</h3>
-                        <p>Total Revenue</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalAttendees">0</h3>
-                        <p>Attendees</p>
+                <div class="list-item">
+                    <div class="list-avatar">AK</div>
+                    <div class="list-info">
+                        <h4>Aman Kumar</h4>
+                        <p>Scheduled visit for Villa #4</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Live Propertys Section -->
-            <section class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-bolt"></i> Live Propertys</h2>
-                    <a href="my-propertys.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-                </div>
-
-                <div class="propertys-grid" id="livePropertys">
-                    <!-- Injected via JS -->
-                    <div class="empty-state" id="emptyPropertys">
-                        <div class="empty-icon">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <h4>No Propertys Yet</h4>
-                        <p>Create your first college property and start selling tickets!</p>
-                        <a href="create-property.html" class="btn-primary">Create Property</a>
+            <!-- Active Leases -->
+            <div class="card card-lime">
+                <div class="card-title" style="margin-bottom: 15px;">ACTIVE LEASES</div>
+                <div class="list-item">
+                    <div class="list-avatar" style="color:var(--neon-lime); border-color:var(--neon-lime)">A1</div>
+                    <div class="list-info">
+                        <h4>Aaditya Nivas</h4>
+                        <p>Rent Paid: ₹25,000 (12 May)</p>
                     </div>
                 </div>
-            </section>
-
-            <!-- Quick Actions -->
-            <section class="section">
-                <h2><i class="fas fa-rocket"></i> Quick Actions</h2>
-                <div class="quick-actions">
-                    <a href="create-property.html" class="action-card">
-                        <div class="action-icon purple">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <span>Create New Property</span>
-                    </a>
-                    
-                    <a href="qr-scanner.html" class="action-card">
-                        <div class="action-icon green">
-                            <i class="fas fa-qrcode"></i>
-                        </div>
-                        <span>Scan Tickets</span>
-                    </a>
-                    
-                    <a href="#" class="action-card" onclick="showShareModal()">
-                        <div class="action-icon blue">
-                            <i class="fas fa-share-alt"></i>
-                        </div>
-                        <span>Share Property Link</span>
-                    </a>
-                    
-                    <a href="payouts.html" class="action-card">
-                        <div class="action-icon orange">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <span>Withdraw Funds</span>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Recent Activity -->
-            <section class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
-                    <a href="analytics.html" class="view-all">View All</a>
-                </div>
-                
-                <div class="activity-list" id="activityList">
-                    <!-- Injected via JS -->
-                    <div class="activity-item empty">
-                        <i class="fas fa-info-circle"></i>
-                        <span>No recent activity</span>
+                <div class="list-item">
+                    <div class="list-avatar" style="color:var(--neon-lime); border-color:var(--neon-lime)">B4</div>
+                    <div class="list-info">
+                        <h4>Green Valley Apt</h4>
+                        <p>Rent Due: ₹32,000 (05 Jun)</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Verification Banner (if pending) -->
-            <div class="verification-banner" id="verificationBanner" style="display: none;">
-                <div class="banner-content">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                        <h4>Verification Pending</h4>
-                        <p>Your host application is under review. You'll be able to create propertys once approved.</p>
-                    </div>
-                </div>
-                <button class="btn-secondary" onclick="checkStatus()">Check Status</button>
-            </div>
-
-            <!-- Create Property CTA (when no propertys) -->
-            <div class="create-property-cta" id="createPropertyCTA" style="display: none;">
-                <div class="cta-content">
-                    <i class="fas fa-rocket"></i>
-                    <h3>Ready to host your first property?</h3>
-                    <p>Create an event in minutes and start selling tickets to students across colleges.</p>
-                    <a href="create-property.html" class="btn-primary">
-                        <i class="fas fa-plus"></i>
-                        Create Your First Property
-                    </a>
                 </div>
             </div>
 
+            <!-- System Logs -->
+            <div class="card card-cyan">
+                <div class="card-title" style="margin-bottom: 15px;">SYSTEM NOTICES</div>
+                <div class="list-item">
+                    <div class="list-info">
+                        <h4 style="color: var(--neon-cyan)">Agreement Generated</h4>
+                        <p>Digital lease for tenant AK signed.</p>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-info">
+                        <h4 style="color: var(--neon-pink)">Payment Failed</h4>
+                        <p>Transaction failed for tenant SV.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- Share Modal -->
-    <div class="modal" id="shareModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Share Your Property</h3>
-                <button class="modal-close" onclick="closeShareModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="share-options">
-                <button class="share-btn" onclick="shareTo('whatsapp')">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp</span>
-                </button>
-                <button class="share-btn" onclick="shareTo('instagram')">
-                    <i class="fab fa-instagram"></i>
-                    <span>Instagram</span>
-                </button>
-                <button class="share-btn" onclick="shareTo('copy')">
-                    <i class="fas fa-link"></i>
-                    <span>Copy Link</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <script>
+        // Chart Configs for Neon Look
+        Chart.defaults.color = '#8b7d9e';
+        Chart.defaults.font.family = "'Space Grotesk', sans-serif";
 
-    <!-- Notifications Modal -->
-    <div class="modal" id="notifModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Notifications</h3>
-                <button class="modal-close" onclick="closeNotifModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="notifications-list" id="notifList">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-    </div>
+        const createDonut = (ctxId, color, val, max) => {
+            new Chart(document.getElementById(ctxId), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [val, max - val],
+                        backgroundColor: [color, 'rgba(255,255,255,0.05)'],
+                        borderWidth: 0,
+                        circumference: 270,
+                        rotation: 225,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    cutout: '80%', responsive: true, maintainAspectRatio: false,
+                    plugins: { tooltip: { enabled: false } },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        };
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+        createDonut('chart1', '#05d9e8', 12, 20); // Cyan
+        createDonut('chart2', '#ff2a6d', 348, 500); // Pink
+        createDonut('chart3', '#01ffc3', 75, 100); // Lime
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
+        // Main Line Chart
+        const mainCtx = document.getElementById('mainChart').getContext('2d');
+        const gradient = mainCtx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, 'rgba(5, 217, 232, 0.4)');
+        gradient.addColorStop(1, 'rgba(5, 217, 232, 0.0)');
 
-    <script src="js/home-dashboard.js"></script>
+        new Chart(mainCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Inquiries',
+                    data: [120, 190, 150, 280, 240, 348],
+                    borderColor: '#05d9e8',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#120822',
+                    pointBorderColor: '#05d9e8',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Logout logic placeholder
+        function logout() {
+            localStorage.removeItem('nexus_host');
+            window.location.href = 'host-signup-login.html';
+        }
+    </script>
 </body>
 </html>
