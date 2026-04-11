@@ -519,6 +519,15 @@
                 });
                 if (!r.ok) throw new Error('Session creation failed');
 
+                // Check if host profile already exists
+                const checkRes = await fetch(`${API_URL}/auth/check`, { credentials: 'include' });
+                const checkData = await checkRes.json();
+                
+                if (checkData.exists) {
+                    window.location.href = 'host-dashboard.html';
+                    return;
+                }
+
                 // Prefill step 2
                 document.getElementById('userName').textContent = googleUser.displayName || 'Host';
                 document.getElementById('userEmail').textContent = googleUser.email || '';
