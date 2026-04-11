@@ -239,10 +239,14 @@
                         <label>Property Type *</label>
                         <select id="propType" required>
                             <option value="" disabled selected>Select Type</option>
-                            <option value="apartment">Apartment</option>
-                            <option value="independent">Independent House / Villa</option>
-                            <option value="pg">PG / Hostel</option>
-                            <option value="commercial">Commercial Space</option>
+                            <option value="1 BHK">1 BHK</option>
+                            <option value="2 BHK">2 BHK</option>
+                            <option value="3 BHK">3 BHK</option>
+                            <option value="4 BHK">4 BHK</option>
+                            <option value="Studio">Studio Apartment</option>
+                            <option value="Villa">Independent Villa / House</option>
+                            <option value="PG">Hostel / PG</option>
+                            <option value="Commercial">Commercial Space</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -253,6 +257,17 @@
                             <option value="semi">Semi Furnished</option>
                             <option value="unfurnished">Unfurnished</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Property Area (Square Feet) *</label>
+                        <input type="number" id="propArea" placeholder="e.g. 1500" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Condition Rating (1.0 to 5.0) *</label>
+                        <input type="number" step="0.1" id="propRating" placeholder="e.g. 4.8" min="1" max="5" required>
                     </div>
                 </div>
 
@@ -444,6 +459,8 @@
                     furnishing_status: document.getElementById('propFurnishing').value,
                     monthly_rent: document.getElementById('rentAmount').value,
                     security_deposit: document.getElementById('depositAmount').value,
+                    area: document.getElementById('propArea').value,
+                    rating: document.getElementById('propRating').value,
                     contact_name: document.getElementById('contactName').value,
                     contact_phone: document.getElementById('contactPhone').value,
                     address: document.getElementById('propAddress').value,
