@@ -5,14 +5,14 @@
 }
 
 :root {
-    --bg: #050508;
-    --card-bg: #0a0a12;
+    --bg: var(--nft-bg);
+    --card-bg: var(--nft-surface);
     --sidebar-bg: #08080f;
     --border: rgba(255, 255, 255, 0.08);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.5);
-    --accent-purple: #8b5cf6;
-    --accent-pink: #ec4899;
+    --nft-accent:
+    --nft-button-bg: #ffffff;
     --success: #10b981;
     --warning: #f59e0b;
 }
@@ -26,7 +26,7 @@ body {
 }
 
 /* Sidebar (Same as dashboard) */
-.sidebar {
+.legacy-sidebar {
     width: 280px;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
@@ -52,14 +52,14 @@ body {
     gap: 0.75rem;
     font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: #ffffff;
+    
+    -webkit-text-fill-color: initial;
 }
 
 .logo i {
     font-size: 1.5rem;
-    -webkit-text-fill-color: var(--accent-purple);
+    -webkit-text-fill-color: var(--nft-text-light);
 }
 
 .sidebar-close {
@@ -93,8 +93,8 @@ body {
 
 .nav-item:hover,
 .nav-item.active {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    color: white;
+    background: #ffffff;
+    color: var(--nft-text-dark);
 }
 
 .nav-item i {
@@ -167,7 +167,7 @@ body {
 }
 
 .btn-draft:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
 }
 
 /* Form Container */
@@ -191,7 +191,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
 }
 
 .form-grid {
@@ -229,7 +229,7 @@ body {
 
 .input-field:focus {
     outline: none;
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
@@ -261,13 +261,13 @@ body {
 }
 
 .upload-area:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
     background: rgba(139, 92, 246, 0.05);
 }
 
 .upload-placeholder i {
     font-size: 3rem;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
     margin-bottom: 1rem;
 }
 
@@ -301,7 +301,7 @@ body {
     background: rgba(239, 68, 68, 0.9);
     border: none;
     border-radius: 50%;
-    color: white;
+    color: var(--nft-text-dark);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -368,7 +368,7 @@ body {
 }
 
 input:checked + .slider {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #ffffff;
 }
 
 input:checked + .slider::before {
@@ -408,7 +408,7 @@ input:checked + .slider::before {
 .checkbox-group input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: var(--accent-purple);
+    accent-color: var(--nft-text-light);
     margin-top: 0.2rem;
     cursor: pointer;
 }
@@ -432,7 +432,7 @@ input:checked + .slider::before {
 }
 
 .checkbox-group a {
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
     text-decoration: none;
 }
 
@@ -473,15 +473,15 @@ input:checked + .slider::before {
 }
 
 .btn-secondary:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
 }
 
 .btn-primary {
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #ffffff;
     border: none;
     border-radius: 12px;
-    color: white;
+    color: var(--nft-text-dark);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1rem;
     font-weight: 700;
@@ -591,7 +591,7 @@ input:checked + .slider::before {
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: white;
+    color: var(--nft-text-dark);
     margin: 0 auto;
     animation: scaleIn 0.5s ease;
 }
@@ -662,8 +662,8 @@ input:checked + .slider::before {
 }
 
 .tag-limited {
-    background: rgba(139, 92, 246, 0.1);
-    color: var(--accent-purple);
+    background: var(--nft-card-hover);
+    color: var(--nft-text-light);
 }
 
 .preview-details {
@@ -710,7 +710,7 @@ input:checked + .slider::before {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .sidebar {
+    .legacy-sidebar {
         transform: translateX(-100%);
     }
     
@@ -777,7 +777,7 @@ input:checked + .slider::before {
 .step-badge {
     display: inline-block;
     background: rgba(139, 92, 246, 0.15);
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -791,7 +791,7 @@ input:checked + .slider::before {
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 10px;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .wizard-header p {
@@ -827,7 +827,7 @@ input:checked + .slider::before {
 }
 
 .event-card.active {
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--nft-card-hover);
     border: 2px solid var(--accent-purple);
 }
 
@@ -854,7 +854,7 @@ input:checked + .slider::before {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 5px;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .event-info p {
@@ -877,8 +877,8 @@ input:checked + .slider::before {
 
 .event-card.active .event-check {
     background: var(--accent-purple);
-    border-color: var(--accent-purple);
-    color: white;
+    border-color: var(--nft-text-light);
+    color: var(--nft-text-dark);
 }
 
 .launch-portal-btn {
@@ -896,8 +896,8 @@ input:checked + .slider::before {
 }
 
 .launch-portal-btn.ready {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    color: white;
+    background: #ffffff;
+    color: var(--nft-text-dark);
     cursor: pointer;
     box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
 }

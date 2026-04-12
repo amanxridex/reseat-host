@@ -454,63 +454,159 @@ body {
     font-size: 1.5rem;
 }
 
+    .nft-featured {
+        height: 500px; /* Specific height for mobile */
+    }
+}
+
 /* =========================================================================
-   MOBILE RESPONSIVE
+   MOBILE RESPONSIVE (Native App Vertical Dock Layout)
    ========================================================================= */
 @media (max-width: 1024px) {
     .nft-layout {
-        grid-template-columns: 1fr;
-        padding: 15px;
-        gap: 20px;
+        /* Keep sidebar docked left. Give it 60px space. Rest is content. */
+        grid-template-columns: 60px 1fr;
+        padding: 10px;
+        gap: 15px;
     }
     
     .nft-sidebar {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 10px;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: 95vh;
+        position: sticky;
+        top: 10px;
+        background: rgba(255,255,255,0.02);
+        border-right: none;
+        border-radius: 40px;
+        padding: 20px 0;
+        backdrop-filter: blur(10px);
+    }
+
+    .nft-logo {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
     }
     
     .nft-nav {
-        display: none; /* Hidden on mobile behind hamburger if needed */
+        display: flex;
+        gap: 20px;
+    }
+    
+    .nft-nav-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
     
     .mobile-menu-btn {
-        display: block;
+        display: none; /* Removed entirely because sidebar is always visible */
+    }
+    
+    .nft-user img {
+        width: 35px;
+        height: 35px;
+    }
+
+    /* Column 2 constraints */
+    .nft-main {
+        max-width: calc(100vw - 100px); /* 60px sidebar + paddings */
+        overflow-x: hidden;
     }
     
     .nft-header {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
         gap: 15px;
     }
     
+    .nft-segmented {
+        align-self: stretch;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    
+    .nft-segment {
+        flex: 1;
+        text-align: center;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    
     .nft-header-actions {
-        flex-direction: column;
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+    
+    .nft-search {
+        flex: 1;
+    }
+    .nft-search input {
         width: 100%;
     }
     
-    .nft-search, .nft-add-btn {
-        width: 100%;
-        justify-content: center;
+    .nft-add-btn {
+        white-space: nowrap;
+        font-size: 0.8rem;
+        padding: 10px 15px;
     }
     
     .nft-deck {
         /* Mobile horizontal scroll override */
         overflow-x: auto;
+        overflow-y: hidden;
         padding-bottom: 30px;
-        gap: 20px;
+        padding-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        scroll-snap-type: x mandatory;
     }
     
     .nft-card {
-        position: relative;
-        left: 0 !important;
+        position: relative !important;
+        left: auto !important;
         transform: none !important;
-        flex: 0 0 200px;
+        flex: 0 0 calc(90% - 20px); /* Almost full width horizontally scrollable */
+        height: 320px; /* Taller on mobile to show info */
+        scroll-snap-align: center;
+    }
+    
+    .nft-card:hover {
+        transform: translateY(-5px) !important;
     }
     
     .nft-featured {
-        height: 500px; /* Specific height for mobile */
+        /* Dump featured below cleanly */
+        grid-column: 1 / -1;
+        height: 400px; 
+        margin-top: 10px;
+        border-radius: 20px;
+    }
+}
+
+/* Base history adjustments for tiny phones */
+@media (max-width: 480px) {
+    .history-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .nft-layout {
+        padding: 5px;
+        gap: 10px;
+        grid-template-columns: 50px 1fr;
+    }
+    
+    .nft-sidebar {
+        border-radius: 20px;
+        padding: 15px 0;
+    }
+    
+    .nft-nav-icon {
+        width: 35px;
+        height: 35px;
     }
 }

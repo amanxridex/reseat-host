@@ -5,14 +5,14 @@
 }
 
 :root {
-    --bg: #050508;
-    --card-bg: #0a0a12;
+    --bg: var(--nft-bg);
+    --card-bg: var(--nft-surface);
     --sidebar-bg: #08080f;
     --border: rgba(255, 255, 255, 0.08);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.5);
-    --accent-purple: #8b5cf6;
-    --accent-pink: #ec4899;
+    --nft-accent:
+    --nft-button-bg: #ffffff;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
@@ -27,7 +27,7 @@ body {
 }
 
 /* Sidebar */
-.sidebar {
+.legacy-sidebar {
     width: 280px;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
@@ -53,14 +53,14 @@ body {
     gap: 0.75rem;
     font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: #ffffff;
+    
+    -webkit-text-fill-color: initial;
 }
 
 .logo i {
     font-size: 1.5rem;
-    -webkit-text-fill-color: var(--accent-purple);
+    -webkit-text-fill-color: var(--nft-text-light);
 }
 
 .sidebar-close {
@@ -94,8 +94,8 @@ body {
 
 .nav-item:hover,
 .nav-item.active {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    color: white;
+    background: #ffffff;
+    color: var(--nft-text-dark);
 }
 
 .nav-item i {
@@ -153,10 +153,10 @@ body {
 
 .btn-primary {
     padding: 0.875rem 1.5rem;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #ffffff;
     border: none;
     border-radius: 12px;
-    color: white;
+    color: var(--nft-text-dark);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
@@ -199,7 +199,7 @@ body {
 .stat-number {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
 }
 
 .stat-label {
@@ -229,14 +229,14 @@ body {
 }
 
 .filter-tab:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
     color: var(--text);
 }
 
 .filter-tab.active {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #ffffff;
     border-color: transparent;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 /* Search Bar */
@@ -266,7 +266,7 @@ body {
 
 .search-bar input:focus {
     outline: none;
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
 }
 
 /* Fests Container */
@@ -287,7 +287,7 @@ body {
 
 .fest-card:hover {
     transform: translateY(-5px);
-    border-color: rgba(139, 92, 246, 0.3);
+    border-color: rgba(255,255,255,0.4);
 }
 
 .fest-image {
@@ -314,18 +314,18 @@ body {
 
 .badge-live {
     background: var(--success);
-    color: white;
+    color: var(--nft-text-dark);
     animation: pulse 2s infinite;
 }
 
 .badge-upcoming {
     background: var(--warning);
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .badge-pending {
     background: #3b82f6;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .badge-completed {
@@ -335,7 +335,7 @@ body {
 
 .badge-rejected {
     background: var(--danger);
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 @keyframes pulse {
@@ -353,7 +353,7 @@ body {
     backdrop-filter: blur(10px);
     border: none;
     border-radius: 10px;
-    color: white;
+    color: var(--nft-text-dark);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -403,7 +403,7 @@ body {
 .fest-stat-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
 }
 
 .fest-stat-label {
@@ -438,14 +438,14 @@ body {
 }
 
 .fest-btn:hover {
-    border-color: var(--accent-purple);
-    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--nft-text-light);
+    background: var(--nft-card-hover);
 }
 
 .fest-btn.primary {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #ffffff;
     border-color: transparent;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .fest-btn.primary:hover {
@@ -464,13 +464,13 @@ body {
 .empty-icon {
     width: 100px;
     height: 100px;
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--nft-card-hover);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
     margin: 0 auto 1.5rem;
 }
 
@@ -570,12 +570,12 @@ body {
 }
 
 .action-item:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--nft-card-hover);
 }
 
 .action-item i {
     width: 24px;
-    color: var(--accent-purple);
+    color: var(--nft-text-light);
 }
 
 .action-item.danger {
@@ -621,7 +621,7 @@ body {
 }
 
 .btn-secondary:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--nft-text-light);
 }
 
 .btn-danger {
@@ -630,7 +630,7 @@ body {
     background: var(--danger);
     border: none;
     border-radius: 12px;
-    color: white;
+    color: var(--nft-text-dark);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1rem;
     font-weight: 600;
@@ -670,8 +670,8 @@ body {
 }
 
 .btn-copy:hover {
-    border-color: var(--accent-purple);
-    color: var(--accent-purple);
+    border-color: var(--nft-text-light);
+    color: var(--nft-text-light);
 }
 
 .share-options {
@@ -702,25 +702,25 @@ body {
 .share-btn.whatsapp:hover {
     background: #25d366;
     border-color: #25d366;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .share-btn.instagram:hover {
     background: #e4405f;
     border-color: #e4405f;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .share-btn.twitter:hover {
     background: #1da1f2;
     border-color: #1da1f2;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 .share-btn.email:hover {
     background: #ea4335;
     border-color: #ea4335;
-    color: white;
+    color: var(--nft-text-dark);
 }
 
 /* Toast */
@@ -751,7 +751,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .sidebar {
+    .legacy-sidebar {
         transform: translateX(-100%);
     }
     
