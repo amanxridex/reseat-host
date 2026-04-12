@@ -168,25 +168,9 @@
     gap: 12px;
 }
 
-.btn-secondary {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.btn-secondary:hover {
-    border-color: #ffffff;
-    color: var(--text-primary);
-}
+
+
 
 /* Balance Section */
 .balance-section {

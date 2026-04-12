@@ -145,27 +145,9 @@
     font-size: 0.9rem;
 }
 
-.btn-primary {
-    padding: 0.875rem 1.5rem;
-    background: #ffffff;
-    border: none;
-    border-radius: 12px;
-    color: var(--nft-text-dark);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
-}
+
+
 
 /* Content */
 .content {
@@ -600,23 +582,9 @@
     margin-top: 1.5rem;
 }
 
-.btn-secondary {
-    flex: 1;
-    padding: 1rem;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.btn-secondary:hover {
-    border-color: #ffffff;
-}
+
+
 
 .btn-danger {
     flex: 1;
