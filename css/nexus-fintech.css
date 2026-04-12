@@ -1,0 +1,389 @@
+/* =========================================================
+   NEXUS FINTECH THEME - PAYCENT DARK
+   A unified, premium dark-navy dashboard ecosystem.
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Base Colors - Deep Navy / Fintech Style */
+    --fin-bg: #0b0e14;         /* Outer app background */
+    --fin-sidebar: #0b0e14;    /* Sidebar background */
+    --fin-surface: #141824;    /* Main cards & panels */
+    --fin-surface-hover: #1e2436;
+    
+    /* Accents */
+    --fin-primary: #0066ff;    /* Bright electric blue */
+    --fin-primary-hover: #0088ff;
+    --fin-success: #10b981;    /* Bright green */
+    --fin-warning: #f59e0b;    /* Orange/amber */
+    --fin-danger: #ef4444;     /* Red */
+    
+    /* Typography */
+    --fin-text-primary: #ffffff;
+    --fin-text-secondary: #8e95a5;
+    --fin-text-muted: #5e6678;
+    
+    /* Structural */
+    --fin-border: rgba(255, 255, 255, 0.05);
+    --fin-radius: 20px;
+    --fin-radius-sm: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--fin-bg);
+    color: var(--fin-text-primary);
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   2. APP LAYOUT GRID
+========================================================= */
+.app-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar */
+.app-sidebar {
+    background-color: var(--fin-sidebar);
+    border-right: 1px solid var(--fin-border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.app-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+}
+
+.brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--fin-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+}
+
+.app-brand h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Navigation Links */
+.app-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.app-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    color: var(--fin-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+}
+
+.app-nav-link i {
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
+
+.app-nav-link:hover {
+    color: var(--fin-text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Active State (The Blue Pill) */
+.app-nav-link.active {
+    background-color: var(--fin-primary);
+    color: white;
+    box-shadow: 0 4px 20px rgba(0, 102, 255, 0.2);
+}
+
+.app-nav-link.active i {
+    color: white;
+}
+
+/* Sidebar Footer */
+.app-sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--fin-border);
+    padding-top: 20px;
+}
+
+/* =========================================================
+   3. MAIN CONTENT AREA
+========================================================= */
+.app-main {
+    display: flex;
+    flex-direction: column;
+    padding: 24px 40px;
+    max-width: 1600px;
+}
+
+/* Header Navbar */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-title h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Search Bar */
+.fin-search {
+    position: relative;
+    width: 300px;
+}
+
+.fin-search i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--fin-text-muted);
+}
+
+.fin-search input {
+    width: 100%;
+    background: var(--fin-surface);
+    border: 1px solid var(--fin-border);
+    color: var(--fin-text-primary);
+    padding: 12px 16px 12px 42px;
+    border-radius: 30px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.fin-search input:focus {
+    border-color: var(--fin-primary);
+}
+
+/* Top Right User Info */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info .name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-info .role {
+    font-size: 12px;
+    color: var(--fin-text-muted);
+}
+
+/* =========================================================
+   4. DATA CARDS & PANELS
+========================================================= */
+.fin-card {
+    background: var(--fin-surface);
+    border: 1px solid var(--fin-border);
+    border-radius: var(--fin-radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sub-card gradients (like Paycent card) */
+.fin-card.gradient-card {
+    background: linear-gradient(135deg, #181d31, #0b1e42);
+    border-color: rgba(0, 102, 255, 0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fin-text-secondary);
+}
+
+/* =========================================================
+   5. BUTTONS AND INPUTS
+========================================================= */
+.btn-primary {
+    background: var(--fin-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--fin-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 102, 255, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--fin-text-primary);
+    border: 1px solid var(--fin-border);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Input Fields */
+.fin-input {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--fin-border);
+    color: var(--fin-text-primary);
+    padding: 14px 16px;
+    border-radius: var(--fin-radius-sm);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.fin-input:focus {
+    border-color: var(--fin-primary);
+    background: var(--fin-surface);
+}
+
+/* Tables / Data Lists */
+.fin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fin-table th {
+    text-align: left;
+    padding: 12px 0;
+    color: var(--fin-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--fin-border);
+}
+
+.fin-table td {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--fin-border);
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-success { background: rgba(16, 185, 129, 0.15); color: var(--fin-success); }
+.status-warning { background: rgba(245, 158, 11, 0.15); color: var(--fin-warning); }
+
+/* =========================================================
+   6. RESPONSIVE DESIGN
+========================================================= */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--fin-text-primary);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .app-sidebar {
+        position: fixed;
+        left: -300px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        background: var(--fin-sidebar);
+        border-right: 1px solid var(--fin-border);
+    }
+    
+    .app-sidebar.active {
+        left: 0;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .app-main {
+        padding: 20px;
+    }
+}

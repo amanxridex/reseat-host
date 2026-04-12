@@ -7,7 +7,7 @@
 :root {
     --bg: var(--nft-bg);
     --card-bg: var(--nft-surface);
-    --sidebar-bg: #08080f;
+    --sidebar-bg: #0b0e14;
     --border: rgba(255, 255, 255, 0.08);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.5);
@@ -38,7 +38,7 @@ body {
     transition: transform 0.3s ease;
 }
 
-.sidebar-header {
+.isolated-sidebar-header {
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -111,14 +111,14 @@ body {
 }
 
 /* Main Content */
-.main-content {
+.isolated-main {
     flex: 1;
     margin-left: 280px;
     min-height: 100vh;
 }
 
 /* Header */
-.header {
+.isolated-header {
     position: sticky;
     top: 0;
     background: rgba(5, 5, 8, 0.95);
@@ -230,7 +230,7 @@ body {
 .input-field:focus {
     outline: none;
     border-color: var(--nft-text-light);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
 }
 
 .input-field::placeholder {
@@ -262,7 +262,7 @@ body {
 
 .upload-area:hover {
     border-color: var(--nft-text-light);
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(0, 102, 255, 0.05);
 }
 
 .upload-placeholder i {
@@ -421,7 +421,7 @@ input:checked + .slider::before {
 }
 
 .checkbox-group.terms {
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(0, 102, 255, 0.05);
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid var(--border);
@@ -489,13 +489,13 @@ input:checked + .slider::before {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
     transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 102, 255, 0.4);
 }
 
 .btn-primary:disabled {
@@ -722,7 +722,7 @@ input:checked + .slider::before {
         display: block;
     }
     
-    .main-content {
+    .isolated-main {
         margin-left: 0;
     }
     
@@ -776,7 +776,7 @@ input:checked + .slider::before {
 
 .step-badge {
     display: inline-block;
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(0, 102, 255, 0.15);
     color: var(--nft-text-light);
     padding: 6px 12px;
     border-radius: 20px;
@@ -828,7 +828,7 @@ input:checked + .slider::before {
 
 .event-card.active {
     background: var(--nft-card-hover);
-    border: 2px solid var(--accent-purple);
+    border: 2px solid #0066ff;
 }
 
 .event-icon {
@@ -843,7 +843,7 @@ input:checked + .slider::before {
 }
 
 .event-card.active .event-icon {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(0, 102, 255, 0.2);
 }
 
 .event-info {
@@ -876,7 +876,7 @@ input:checked + .slider::before {
 }
 
 .event-card.active .event-check {
-    background: var(--accent-purple);
+    background: #0066ff;
     border-color: var(--nft-text-light);
     color: var(--nft-text-dark);
 }
@@ -899,12 +899,12 @@ input:checked + .slider::before {
     background: #ffffff;
     color: var(--nft-text-dark);
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
 }
 
 .launch-portal-btn.ready:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 15px 40px rgba(0, 102, 255, 0.6);
 }
 
 @keyframes slideUp {

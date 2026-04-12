@@ -7,58 +7,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/fest-theme.css">
+    <link rel="stylesheet" href="css/nexus-fintech.css">
     <link rel="stylesheet" href="css/create-fest.css">
     
     <!-- PWA Meta Tags -->
     <meta name="application-name" content="Nexus Host">
-    <meta name="description" content="Manage your fests on Nexus Host">
-    <meta name="theme-color" content="#2b2533">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- Manifest & Icon -->
+    <meta name="theme-color" content="#0b0e14">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="nexushostlogo.png">
 </head>
 <body>
 
-<div class="nft-layout">
+<div class="app-layout">
     
-    <!-- 1. LEFT SIDEBAR (Mobile optimized dock) -->
-    <aside class="nft-sidebar" id="sidebar">
-        <div class="nft-logo">N<span style="color:var(--nft-text-muted)">X</span></div>
+    <!-- 1. LEFT SIDEBAR -->
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
         
-        <nav class="nft-nav">
-            <a href="host-dashboard.html" class="nft-nav-icon" title="Home"><i class="fas fa-home"></i></a>
-            <a href="fest-dashboard.html" class="nft-nav-icon" title="Fests"><i class="fas fa-calendar-alt"></i></a>
-            <a href="my-fests.html" class="nft-nav-icon" title="My Fests"><i class="fas fa-list"></i></a>
-            <a href="qr-scanner.html" class="nft-nav-icon" title="QR Scanner"><i class="fas fa-qrcode"></i></a>
-            <a href="create-fest.html" class="nft-nav-icon active" title="Create Fest"><i class="fas fa-plus"></i></a>
-            <a href="analytics.html" class="nft-nav-icon" title="Analytics"><i class="fas fa-chart-line"></i></a>
-            <a href="payouts.html" class="nft-nav-icon" title="Payouts"><i class="fas fa-wallet"></i></a>
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
+                <i class="fas fa-calendar-alt"></i> Fests
+            </a>
+            <a href="my-fests.html" class="app-nav-link" title="My Fests">
+                <i class="fas fa-list"></i> My Fests
+            </a>
+            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
+                <i class="fas fa-qrcode"></i> QR Scanner
+            </a>
+            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
+                <i class="fas fa-plus"></i> Create Fest
+            </a>
+            <a href="analytics.html" class="app-nav-link" title="Analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="payouts.html" class="app-nav-link" title="Payouts">
+                <i class="fas fa-wallet"></i> Payouts
+            </a>
         </nav>
         
-        <div class="nft-user" onclick="logout()" style="cursor: pointer;" title="Logout">
-            <img src="https://placehold.co/100x100/ec4899/ffffff?text=H" alt="Profile">
+        <div class="app-sidebar-footer">
+            <a href="#" class="app-nav-link" onclick="logout()" style="color: var(--fin-danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </aside>
 
-    <!-- 2. MAIN CONTENT AREA -->
-    <main class="nft-main" style="max-width: 100%;">
+    <!-- 2. MAIN CONTENT -->
+    <main class="app-main">
+        
         <!-- Header -->
-        <header class="header">
-            <button class="menu-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            
+        <header class="app-header">
             <div class="header-title">
                 <h1>Create New Fest</h1>
-                <p>Set up your college event</p>
             </div>
-
+            
             <div class="header-actions">
-                <button class="btn-draft" onclick="saveDraft()">
-                    <i class="fas fa-save"></i>
-                    Save Draft
+                <button class="btn-secondary" onclick="saveDraft()">
+                    <i class="fas fa-save"></i> Save Draft
                 </button>
             </div>
         </header>

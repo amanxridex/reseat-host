@@ -43,7 +43,7 @@ body {
     z-index: 100;
 }
 
-.sidebar-header {
+.isolated-sidebar-header {
     padding: 24px;
     display: flex;
     align-items: center;
@@ -96,9 +96,9 @@ body {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.1));
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(236, 72, 153, 0.1));
     color: var(--text-primary);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(0, 102, 255, 0.3);
 }
 
 .sidebar-footer {
@@ -144,7 +144,7 @@ body {
 }
 
 /* Main Content */
-.main-content {
+.isolated-main {
     flex: 1;
     margin-left: 260px;
     padding: 32px;
@@ -293,7 +293,7 @@ body {
 }
 
 .kpi-icon.revenue {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 102, 255, 0.05));
     color: var(--nft-text-light);
 }
 
@@ -422,11 +422,11 @@ body {
 }
 
 .dot.purple {
-    background: var(--accent-purple);
+    background: #0066ff;
 }
 
 .dot.pink {
-    background: var(--accent-pink);
+    background: #0066ff;
 }
 
 .chart-container {
@@ -536,7 +536,7 @@ body {
 }
 
 .funnel-fill.cart {
-    background: linear-gradient(90deg, var(--info), var(--accent-purple));
+    background: linear-gradient(90deg, var(--info), #0066ff);
     width: 65%;
 }
 
@@ -913,7 +913,7 @@ body {
         transform: translateX(-100%);
     }
     
-    .main-content {
+    .isolated-main {
         margin-left: 0;
     }
     
@@ -947,5 +947,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-purple);
+    background: #0066ff;
 }

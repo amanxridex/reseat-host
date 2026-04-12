@@ -10,8 +10,8 @@
     --bg-primary: #050508;
     --bg-card: #0a0a12;
     --border: rgba(255, 255, 255, 0.08);
-    --accent-purple: #8b5cf6;
-    --accent-pink: #ec4899;
+    --nft-accent:
+    --nft-button-bg: #0066ff;
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -91,13 +91,13 @@ body {
 
 .back-btn:hover, .flashlight-btn:hover {
     background: rgba(139, 92, 246, 0.2);
-    border-color: var(--accent-purple);
+    border-color: #0066ff;
     transform: scale(1.05);
 }
 
 .flashlight-btn.active {
-    background: var(--accent-purple);
-    border-color: var(--accent-purple);
+    background: #0066ff;
+    border-color: #0066ff;
 }
 
 .fest-info {
@@ -182,7 +182,7 @@ body {
     position: absolute;
     width: 30px;
     height: 30px;
-    border-color: var(--accent-purple);
+    border-color: #0066ff;
     border-style: solid;
     border-width: 0;
 }
@@ -225,8 +225,8 @@ body {
     left: 10%;
     right: 10%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
-    box-shadow: 0 0 10px var(--accent-purple), 0 0 20px var(--accent-purple);
+    background: linear-gradient(90deg, transparent, #0066ff, transparent);
+    box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
     animation: scan 2s linear infinite;
 }
 
@@ -287,7 +287,7 @@ body {
 }
 
 .retry-btn {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #0066ff;
     border: none;
     color: white;
     padding: 12px 32px;
@@ -323,7 +323,7 @@ body {
 }
 
 .manual-toggle:hover {
-    border-color: var(--accent-purple);
+    border-color: #0066ff;
     color: var(--text-primary);
     background: rgba(139, 92, 246, 0.1);
 }
@@ -427,14 +427,14 @@ body {
 
 .input-group input:focus {
     outline: none;
-    border-color: var(--accent-purple);
+    border-color: #0066ff;
     background: rgba(139, 92, 246, 0.05);
 }
 
 .verify-btn {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #0066ff;
     border: none;
     border-radius: 12px;
     color: white;
@@ -615,7 +615,7 @@ body {
 .stat-value {
     font-size: 24px;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #0066ff;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -692,7 +692,7 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    background: #0066ff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -757,7 +757,7 @@ body {
     width: 48px;
     height: 48px;
     border: 3px solid var(--border);
-    border-top-color: var(--accent-purple);
+    border-top-color: #0066ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -803,5 +803,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-purple);
+    background: #0066ff;
 }

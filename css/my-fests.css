@@ -7,7 +7,7 @@
 :root {
     --bg: var(--nft-bg);
     --card-bg: var(--nft-surface);
-    --sidebar-bg: #08080f;
+    --sidebar-bg: #0b0e14;
     --border: rgba(255, 255, 255, 0.08);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.5);
@@ -39,7 +39,7 @@ body {
     transition: transform 0.3s ease;
 }
 
-.sidebar-header {
+.isolated-sidebar-header {
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -112,14 +112,14 @@ body {
 }
 
 /* Main Content */
-.main-content {
+.isolated-main {
     flex: 1;
     margin-left: 280px;
     min-height: 100vh;
 }
 
 /* Header */
-.header {
+.isolated-header {
     position: sticky;
     top: 0;
     background: rgba(5, 5, 8, 0.95);
@@ -170,7 +170,7 @@ body {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
 }
 
 /* Content */
@@ -362,7 +362,7 @@ body {
 }
 
 .fest-actions-btn:hover {
-    background: var(--accent-purple);
+    background: #0066ff;
 }
 
 .fest-info {
@@ -763,7 +763,7 @@ body {
         display: block;
     }
     
-    .main-content {
+    .isolated-main {
         margin-left: 0;
     }
     

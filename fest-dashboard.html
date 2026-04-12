@@ -3,197 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Host Fests Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Nexus | Host Fests</title>
     
-    <!-- We load ONLY the new theme to prevent standard styles from clashing -->
-    <link rel="stylesheet" href="css/fest-theme.css">
+    <!-- Using the new unified Paycent-style Fintech Theme -->
+    <link rel="stylesheet" href="css/nexus-fintech.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- PWA Meta Tags -->
     <meta name="application-name" content="Nexus Host">
-    <meta name="theme-color" content="#2b2533">
+    <meta name="theme-color" content="#0b0e14">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="nexushostlogo.png">
 </head>
 <body>
 
-<div class="nft-layout">
+<div class="app-layout">
     
     <!-- 1. LEFT SIDEBAR -->
-    <aside class="nft-sidebar" id="sidebar">
-        <div class="nft-logo">N<span style="color:var(--nft-text-muted)">X</span></div>
-        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
         
-        <nav class="nft-nav">
-            <a href="host-dashboard.html" class="nft-nav-icon" title="Home"><i class="fas fa-home"></i></a>
-            <a href="fest-dashboard.html" class="nft-nav-icon active" title="Fests"><i class="fas fa-calendar-alt"></i></a>
-            <a href="my-fests.html" class="nft-nav-icon" title="My Fests"><i class="fas fa-list"></i></a>
-            <a href="qr-scanner.html" class="nft-nav-icon" title="QR Scanner"><i class="fas fa-qrcode"></i></a>
-            <a href="create-fest.html" class="nft-nav-icon" title="Create Fest"><i class="fas fa-plus"></i></a>
-            <a href="analytics.html" class="nft-nav-icon" title="Analytics"><i class="fas fa-chart-line"></i></a>
-            <a href="payouts.html" class="nft-nav-icon" title="Payouts"><i class="fas fa-wallet"></i></a>
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="fest-dashboard.html" class="app-nav-link active" title="Fests">
+                <i class="fas fa-calendar-alt"></i> Fests
+            </a>
+            <a href="my-fests.html" class="app-nav-link" title="My Fests">
+                <i class="fas fa-list"></i> My Fests
+            </a>
+            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
+                <i class="fas fa-qrcode"></i> QR Scanner
+            </a>
+            <a href="create-fest.html" class="app-nav-link" title="Create Fest">
+                <i class="fas fa-plus"></i> Create Fest
+            </a>
+            <a href="analytics.html" class="app-nav-link" title="Analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="payouts.html" class="app-nav-link" title="Payouts">
+                <i class="fas fa-wallet"></i> Payouts
+            </a>
         </nav>
         
-        <div class="nft-user" onclick="logout()" style="cursor: pointer;" title="Logout">
-            <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=H" alt="Profile" id="profileImg">
+        <div class="app-sidebar-footer">
+            <a href="#" class="app-nav-link" onclick="logout()" style="color: var(--fin-danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </aside>
 
-    <!-- 2. MIDDLE CONTENT -->
-    <main class="nft-main">
+    <!-- 2. MAIN CONTENT -->
+    <main class="app-main">
         
         <!-- Header -->
-        <header class="nft-header">
-            <div class="nft-segmented">
-                <div class="nft-segment active">Fests</div>
-                <div class="nft-segment" onclick="window.location.href='analytics.html'">Analytics</div>
+        <header class="app-header">
+            <div class="header-title">
+                <h1>Fests Dashboard</h1>
             </div>
             
-            <div class="nft-header-actions">
-                <div class="nft-search">
-                    <i class="fas fa-search" style="color: var(--nft-text-muted)"></i>
+            <div class="header-actions">
+                <div class="fin-search">
+                    <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search Fests, Tickets...">
                 </div>
-                <!-- ID attached here for JS hook -->
-                <a href="create-fest.html" class="nft-add-btn" id="createFestCTA">
-                    <i class="fas fa-plus-circle"></i> Add Fest
+                
+                <a href="create-fest.html" class="btn-primary" id="createFestCTA">
+                    <i class="fas fa-plus"></i> Add Fest
                 </a>
-                <button class="nft-nav-icon" style="background: var(--nft-surface); margin-left: 10px;" onclick="showNotifications()">
-                    <i class="fas fa-bell"></i>
-                </button>
+                
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span class="name" id="hostName">Loading...</span>
+                        <span class="role">Fest Host</span>
+                    </div>
+                    <img src="https://placehold.co/100x100/0066ff/ffffff?text=H" alt="Profile" id="profileImg">
+                </div>
             </div>
         </header>
 
         <!-- Verification Banner from original logic -->
-        <div class="verification-banner" id="verificationBanner" style="display: none; background: rgba(255,0,0,0.1); padding: 15px; border-radius: 15px; color: #ff6b6b; font-size: 0.9rem;">
-            Verification Pending. Host features limited.
+        <div class="verification-banner" id="verificationBanner" style="display: none; background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 12px; color: var(--fin-danger); font-size: 0.9rem; margin-bottom: 24px;">
+            <i class="fas fa-exclamation-circle"></i> Verification Pending. Host features limited.
         </div>
 
-        <!-- Recent Fests (Overlapping Deck) -->
-        <section>
-            <div class="nft-section-title">Active Fests</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 30px;" id="liveFests">
             
-            <div class="nft-deck" id="liveFests">
-                <!-- JS will inject dynamic cards. Here are the placeholder theme frames -->
-                
-                <div class="nft-card">
-                    <div class="card-top">
-                        <div class="card-top-left">
-                            <img src="https://placehold.co/50" alt="H"> 
-                            <span id="hostName">Host</span> <i class="fas fa-check-circle" style="color:#2563eb"></i>
-                        </div>
-                        <div class="card-lock"><i class="fas fa-lock"></i></div>
-                    </div>
-                    <div class="card-timer">
-                        <div class="timer-pill">12<span>DAYS</span></div>
-                        <div class="timer-pill">21<span>HRS</span></div>
-                    </div>
-                    <div class="card-bottom">
-                        <div class="card-price-pill"><i class="fas fa-users"></i> <span id="totalAttendees">0</span></div>
-                        <div class="card-lock" style="background: white;"><i class="fas fa-bookmark" style="color: black"></i></div>
-                    </div>
+            <!-- Cards matching the Total Balance / Debit / Credit layout -->
+            <div class="fin-card gradient-card">
+                <div class="card-header">
+                    <span class="card-title">Total Fests</span>
+                    <i class="fas fa-calendar" style="color: rgba(255,255,255,0.5)"></i>
                 </div>
-
-                <div class="nft-card" style="background: var(--card-yellow)">
-                    <div class="card-top">
-                        <div class="card-top-left">
-                            <span style="font-size: 0.75rem;">Nexus Auto-Sync</span>
-                        </div>
-                        <div class="card-lock"><i class="fas fa-bolt"></i></div>
-                    </div>
-                    <div class="card-bottom">
-                        <div class="card-price-pill"><i class="fas fa-ticket-alt"></i> <span id="totalTickets">0</span></div>
-                    </div>
+                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;" id="totalFests">0</h2>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.7);">
+                    <span style="color: var(--fin-success)">+1 Active</span> this month
                 </div>
-
             </div>
-        </section>
+            
+            <div class="fin-card">
+                <div class="card-header">
+                    <span class="card-title" style="color: var(--fin-text-primary);">Total Attendees</span>
+                    <i class="fas fa-users" style="color: var(--fin-text-muted)"></i>
+                </div>
+                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;" id="totalAttendees">0</h2>
+                <div style="font-size: 12px; color: var(--fin-text-muted);">
+                    Based on total ticket scans
+                </div>
+            </div>
 
-        <!-- History Table -->
-        <section class="nft-history">
-            <div class="history-header">
-                <div class="nft-section-title" style="margin: 0;">History</div>
-                <div class="history-tabs">
-                    <span class="active">All history</span>
+            <div class="fin-card">
+                <div class="card-header">
+                    <span class="card-title" style="color: var(--fin-text-primary);">Total Tickets</span>
+                    <i class="fas fa-ticket-alt" style="color: var(--fin-text-muted)"></i>
+                </div>
+                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;" id="totalTickets">0</h2>
+                <div style="font-size: 12px; color: var(--fin-text-muted);">
+                    All time distribution
+                </div>
+            </div>
+
+        </div>
+
+        <!-- History Section replacing the old Data List -->
+        <div class="fin-card" style="flex: 1;">
+            <div class="card-header" style="margin-bottom: 24px;">
+                <span class="card-title" style="color:white;">Recent Activity</span>
+                <div style="display: flex; gap: 16px; font-size: 12px; color: var(--fin-text-muted);">
+                    <span style="color: var(--fin-primary); font-weight: 600;">All history</span>
                     <span>Purchase</span>
                     <span>Transfer</span>
                 </div>
             </div>
             
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Event</th>
-                        <th>User</th>
-                        <th>Tickets</th>
-                        <th>Value</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="activityList">
-                    <!-- Dynamic injection overrider -->
-                    <tr>
-                        <td>Ticket Purchase</td>
-                        <td class="history-row-users">
-                            <img src="https://placehold.co/50"> <i class="fas fa-arrow-right history-arrow"></i>
-                        </td>
-                        <td>3</td>
-                        <td>₹1,240</td>
-                        <td style="color: var(--nft-text-muted)">21/08</td>
-                    </tr>
-                    <tr>
-                        <td>Check-In</td>
-                        <td class="history-row-users">
-                            <img src="https://placehold.co/50"> <i class="fas fa-qrcode" style="color:var(--nft-text-muted)"></i>
-                        </td>
-                        <td>1</td>
-                        <td>-</td>
-                        <td style="color: var(--nft-text-muted)">21/08</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
-
-    <!-- 3. RIGHT FEATURED (Stats Hooked In) -->
-    <aside class="nft-featured">
-        <div class="featured-top">
-            <div class="featured-user">
-                <img src="https://placehold.co/50" alt="nx">
-                <span style="font-weight: 700; font-size: 0.8rem">TechFest #26</span> <i class="fas fa-check-circle" style="color:#2563eb"></i>
-            </div>
-            <div class="featured-actions">
-                <button class="f-btn"><i class="fas fa-shopping-bag"></i></button>
-                <button class="f-btn" onclick="showShareModal()"><i class="fas fa-share"></i></button>
+            <div style="overflow-x: auto;">
+                <table class="fin-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>User Details</th>
+                            <th>Tickets</th>
+                            <th>Amount</th>
+                            <th>Status / Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityList">
+                        <!-- Loaded dynamically via JS -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--fin-text-muted); padding: 40px 0;">
+                                No recent activity
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         
-        <!-- Massive image placeholder -->
-        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Fest Art" class="featured-image">
-
-        <div class="featured-info">
-            <h2>Annual Fest</h2>
-            <h3>#Live Events</h3>
-        </div>
-
-        <div class="featured-bottom">
-            <div class="f-stat-pill"><i class="fas fa-image" style="color: var(--nft-text-muted)"></i> <span id="totalFests">0</span> Total Fests</div>
-            <div class="f-stat-pill dark"><span id="totalRevenue">₹0</span> <i class="fab fa-ethereum"></i></div>
-            <button class="f-btn" style="background: white; color: black;"><i class="fas fa-bookmark"></i></button>
-        </div>
-    </aside>
-
+    </main>
 </div>
 
-<!-- Unchanging original Modals for JS logic compatibility -->
-<div class="modal" id="shareModal" style="display: none; position: fixed; z-index: 100;">
-    <!-- Simple hidden block to avoid JS errors if clicked -->
-</div>
+<!-- Essential JS scripts -->
+<script type="module" src="js/config.js"></script>
+<script type="module" src="js/dashboardApp.js"></script>
+<script type="module" src="js/dashboard.js"></script>
 
-<!-- Toast -->
-<div class="toast" id="toast" style="display: none; position: fixed;"></div>
-
-<script src="js/host-dashboard.js"></script>
 </body>
 </html>
