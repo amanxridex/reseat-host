@@ -1,0 +1,516 @@
+/* =========================================================================
+   FEST DASHBOARD (NFT THEME V2)
+   ========================================================================= */
+
+:root {
+    --nft-bg: #2b2533;
+    --nft-surface: #3b3543;
+    --nft-pill: #e6e0d8;
+    --nft-text-dark: #2b2533;
+    --nft-text-light: #ffffff;
+    --nft-text-muted: #a49ea8;
+    
+    --card-green: #aee5cc;
+    --card-purple: #c0bced;
+    --card-yellow: #f2e9c9;
+}
+
+body {
+    background-color: var(--nft-bg);
+    color: var(--nft-text-light);
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --------------------------------------
+   LAYOUT GRID
+--------------------------------------- */
+.nft-layout {
+    display: grid;
+    grid-template-columns: 80px 1fr 400px;
+    min-height: 100vh;
+    gap: 30px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* --------------------------------------
+   1. SIDEBAR (Slim Left)
+--------------------------------------- */
+.nft-sidebar {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding-top: 20px;
+}
+
+.nft-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.nft-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nft-nav-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nft-text-muted);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+}
+
+.nft-nav-icon:hover {
+    color: var(--nft-text-light);
+}
+
+.nft-nav-icon.active {
+    background: var(--nft-text-light);
+    color: var(--nft-text-dark);
+}
+
+.nft-user {
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.nft-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--nft-text-light);
+    object-fit: cover;
+}
+
+/* --------------------------------------
+   2. MIDDLE COLUMN (Main Content)
+--------------------------------------- */
+.nft-main {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Top Header */
+.nft-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+}
+
+.nft-segmented {
+    background: var(--nft-surface);
+    border-radius: 30px;
+    display: inline-flex;
+    padding: 5px;
+}
+
+.nft-segment {
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--nft-text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nft-segment.active {
+    background: var(--nft-text-light);
+    color: var(--nft-text-dark);
+}
+
+.nft-header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nft-search {
+    background: var(--nft-surface);
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nft-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--nft-text-light);
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 200px;
+}
+.nft-search input::placeholder {
+    color: var(--nft-text-muted);
+}
+
+.nft-add-btn {
+    background: var(--nft-text-light);
+    color: var(--nft-text-dark);
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease;
+}
+
+.nft-add-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Recent Fests (Overlapping Cards) */
+.nft-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.nft-deck {
+    display: flex;
+    position: relative;
+    height: 320px;
+    align-items: center;
+}
+
+.nft-card {
+    width: 200px;
+    height: 280px;
+    border-radius: 20px;
+    background: var(--card-purple);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: -10px 10px 30px rgba(0,0,0,0.3);
+    position: absolute;
+    transition: transform 0.3s ease, z-index 0.3s ease;
+    cursor: pointer;
+    color: var(--nft-text-dark);
+    /* For injection safety */
+    overflow: hidden;
+}
+
+/* Specific Card Offsets & Colors */
+.nft-card:nth-child(1) { left: 0; background: var(--card-purple); z-index: 3; }
+.nft-card:nth-child(2) { left: 140px; background: var(--card-yellow); z-index: 2; transform: scale(0.95) translateY(10px); }
+.nft-card:nth-child(3) { left: 280px; background: var(--card-green); z-index: 1; transform: scale(0.9) translateY(20px); }
+
+.nft-card:hover {
+    transform: translateY(-20px) scale(1.05);
+    z-index: 10 !important;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.card-top-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.card-top-left img {
+    width: 20px; height: 20px; border-radius: 50%;
+}
+
+.card-lock {
+    background: rgba(0,0,0,0.1);
+    width: 25px; height: 25px;
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    color: var(--nft-text-dark);
+}
+
+.card-timer {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+.timer-pill {
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    width: 35px; height: 35px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height:1;
+}
+.timer-pill span {
+    font-size: 0.4rem;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.card-price-pill {
+    background: rgba(0,0,0,0.15);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* History Table */
+.nft-history {
+    background: var(--nft-surface);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.history-tabs {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: var(--nft-text-muted);
+}
+.history-tabs span.active {
+    color: var(--nft-text-light);
+    font-weight: 600;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    text-align: left;
+    color: var(--nft-text-muted);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.history-table td {
+    padding: 15px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.history-row-users {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.history-row-users img {
+    width: 25px; height: 25px; border-radius: 50%;
+}
+.history-arrow {
+    color: #4ade80;
+    font-size: 0.8rem;
+}
+
+/* --------------------------------------
+   3. RIGHT COLUMN (Featured Fest)
+--------------------------------------- */
+.nft-featured {
+    background: linear-gradient(to bottom, #cfc6b5, #dec299);
+    border-radius: 30px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    color: var(--nft-text-dark);
+    display: flex;
+    flex-direction: column;
+}
+
+/* The Robot/Image */
+.featured-image {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+    border-radius: 20px;
+    margin-bottom: auto;
+}
+
+.featured-top {
+    position: absolute;
+    top: 20px; left: 20px; right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.featured-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.7);
+    padding: 5px 15px 5px 5px;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+}
+.featured-user img {
+    width: 30px; height: 30px; border-radius: 50%;
+}
+
+.featured-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.f-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+    display: flex; justify-content: center; align-items: center;
+    border: none;
+    cursor: pointer;
+}
+
+.featured-info {
+    position: relative;
+    z-index: 10;
+    margin-top: 20px;
+}
+
+.featured-info h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+.featured-info h3 {
+    color: rgba(0,0,0,0.6);
+    margin-bottom: 20px;
+}
+
+.featured-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.f-stat-pill {
+    background: rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.f-stat-pill.dark {
+    background: rgba(0,0,0,0.3);
+    color: white;
+}
+
+/* Mobile Oriented Toggles */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+@media (max-width: 1024px) {
+    .nft-layout {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 20px;
+    }
+    
+    .nft-sidebar {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 10px;
+    }
+    
+    .nft-nav {
+        display: none; /* Hidden on mobile behind hamburger if needed */
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .nft-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .nft-header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .nft-search, .nft-add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .nft-deck {
+        /* Mobile horizontal scroll override */
+        overflow-x: auto;
+        padding-bottom: 30px;
+        gap: 20px;
+    }
+    
+    .nft-card {
+        position: relative;
+        left: 0 !important;
+        transform: none !important;
+        flex: 0 0 200px;
+    }
+    
+    .nft-featured {
+        height: 500px; /* Specific height for mobile */
+    }
+}
