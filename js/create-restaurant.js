@@ -96,11 +96,15 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
         
         const hostApiUrl = API_URL || 'https://nexus-host-backend.onrender.com/api';
         
+        const token = localStorage.getItem('nexus_token');
+        const fetchHeaders = {
+            'Content-Type': 'application/json'
+        };
+        if (token) fetchHeaders['Authorization'] = `Bearer ${token}`;
+        
         const response = await fetch(`${hostApiUrl}/restaurants`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: fetchHeaders,
             credentials: 'include',
             body: JSON.stringify(data)
         });

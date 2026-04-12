@@ -118,7 +118,7 @@ window.handleLogin = async (e) => {
 
         // ✅ Keep localStorage for UI data only (not token)
         localStorage.setItem('nexus_host', JSON.stringify(data.data));
-        // ❌ REMOVED: localStorage.setItem('nexus_token', token);
+        if (data.token) localStorage.setItem('nexus_token', data.token);
 
         showToast('Login successful!');
         setTimeout(() => {
@@ -210,7 +210,7 @@ window.googleLogin = async () => {
             const loginData = await loginRes.json();
             
             localStorage.setItem('nexus_host', JSON.stringify(loginData.data));
-            // ❌ REMOVED: localStorage.setItem('nexus_token', token);
+            if (loginData.token) localStorage.setItem('nexus_token', loginData.token);
             
             window.location.href = 'host-dashboard.html';
         } else {

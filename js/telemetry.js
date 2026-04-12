@@ -4,6 +4,29 @@
 // and beams hardware footprints to the admin vault.
 // ==========================================
 
+// --- AUTH RESILIENCE PROXY ---
+// Safely bypasses Android WebView 3rd-party cookie destruction blocks
+const originalFetch = window.fetch;
+window.fetch = async function () {
+    let [resource, config] = arguments;
+    const token = localStorage.getItem('nexus_token');
+    
+    // Only intercept API calls if token exists
+    if (token && resource && resource.toString().includes('api')) {
+        config = config || {};
+        config.headers = config.headers || {};
+        
+        // Ensure headers is treated properly whether it's Headers object or literal
+        if (config.headers instanceof Headers) {
+            config.headers.append('Authorization', `Bearer ${token}`);
+        } else {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return originalFetch(resource, config);
+};
+// -----------------------------
+
 (function() {
     const TELEMETRY_BACKEND = 'https://nexus-dashboard-backend.onrender.com/api/telemetry/crash';
     

@@ -133,12 +133,16 @@ document.getElementById('addGymForm').addEventListener('submit', async (e) => {
             images
         };
 
+        const token = localStorage.getItem('nexus_token');
+        const fetchHeaders = {
+            'Content-Type': 'application/json'
+        };
+        if (token) fetchHeaders['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(`${window.API_BASE_URL}/gyms`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: fetchHeaders,
             body: JSON.stringify(gymData)
         });
 
