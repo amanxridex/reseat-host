@@ -11,8 +11,8 @@
     --bg-card: #0a0a12;
     --bg-hover: rgba(255, 255, 255, 0.05);
     --border: rgba(255, 255, 255, 0.08);
-    --nft-accent:
-    --nft-button-bg: #ffffff;
+    --fin-primary: #0066ff;
+    --fin-primary-hover: #0088ff;
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -22,14 +22,7 @@
     --text-muted: rgba(255, 255, 255, 0.4);
 }
 
-body {
-    font-family: 'Space Grotesk', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    overflow-x: hidden;
-}
+
 
 /* Sidebar */
 .legacy-sidebar {
@@ -191,7 +184,7 @@ body {
 }
 
 .btn-secondary:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     color: var(--text-primary);
 }
 
@@ -435,7 +428,7 @@ body {
 }
 
 .btn-icon:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     color: var(--text-primary);
 }
 
@@ -549,7 +542,7 @@ body {
 }
 
 .page-btn:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     color: var(--text-primary);
 }
 
@@ -565,7 +558,7 @@ body {
     gap: 6px;
     background: none;
     border: none;
-    color: var(--nft-text-light);
+    color: #ffffff;
     font-family: inherit;
     font-size: 13px;
     cursor: pointer;
@@ -573,7 +566,7 @@ body {
 }
 
 .btn-text:hover {
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .methods-list {
@@ -600,7 +593,7 @@ body {
 }
 
 .method-card.primary {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), transparent);
 }
 
@@ -706,7 +699,7 @@ body {
 
 .setting-value {
     font-size: 14px;
-    color: var(--nft-text-light);
+    color: #ffffff;
     font-weight: 600;
 }
 
@@ -829,9 +822,7 @@ input:checked + .toggle-slider:before {
     color: var(--text-primary);
 }
 
-.modal-body {
-    padding: 24px;
-}
+.modal-
 
 /* Withdraw Modal Specific */
 .withdraw-summary {
@@ -891,7 +882,7 @@ input:checked + .toggle-slider:before {
 }
 
 .amount-input-wrapper:focus-within {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
 }
 
 .currency {
@@ -919,10 +910,10 @@ input:checked + .toggle-slider:before {
 
 .max-btn {
     padding: 8px 16px;
-    background: var(--nft-card-hover);
+    background: rgba(255,255,255,0.05);
     border: 1px solid #0066ff;
     border-radius: 8px;
-    color: var(--nft-text-light);
+    color: #ffffff;
     font-family: inherit;
     font-size: 12px;
     font-weight: 600;
@@ -966,8 +957,8 @@ input:checked + .toggle-slider:before {
 }
 
 .account-option.selected {
-    border-color: var(--nft-text-light);
-    background: var(--nft-card-hover);
+    border-color: #ffffff;
+    background: rgba(255,255,255,0.05);
 }
 
 .account-radio {
@@ -982,7 +973,7 @@ input:checked + .toggle-slider:before {
 }
 
 .account-option.selected .account-radio {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     background: #0066ff;
 }
 
@@ -1111,7 +1102,7 @@ input:checked + .toggle-slider:before {
 
 .checkbox input:checked + .checkmark {
     background: #0066ff;
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
 }
 
 .checkbox input:checked + .checkmark::after {

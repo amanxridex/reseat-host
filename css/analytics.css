@@ -11,8 +11,8 @@
     --bg-card: #0a0a12;
     --bg-hover: rgba(255, 255, 255, 0.05);
     --border: rgba(255, 255, 255, 0.08);
-    --nft-accent:
-    --nft-button-bg: #ffffff;
+    --fin-primary: #0066ff;
+    --fin-primary-hover: #0088ff;
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -22,14 +22,7 @@
     --text-muted: rgba(255, 255, 255, 0.4);
 }
 
-body {
-    font-family: 'Space Grotesk', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    overflow-x: hidden;
-}
+
 
 /* Sidebar */
 .legacy-sidebar {
@@ -208,7 +201,7 @@ body {
 }
 
 .btn-secondary:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     color: var(--text-primary);
 }
 
@@ -294,7 +287,7 @@ body {
 
 .kpi-icon.revenue {
     background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 102, 255, 0.05));
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .kpi-icon.tickets {
@@ -309,7 +302,7 @@ body {
 
 .kpi-icon.conversion {
     background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.05));
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .kpi-content {
@@ -586,7 +579,7 @@ body {
 .btn-text {
     background: none;
     border: none;
-    color: var(--nft-text-light);
+    color: #ffffff;
     font-family: inherit;
     font-size: 13px;
     cursor: pointer;
@@ -594,7 +587,7 @@ body {
 }
 
 .btn-text:hover {
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .table-responsive {
@@ -687,7 +680,7 @@ body {
 }
 
 .activity-icon.payout {
-    background: var(--nft-card-hover);
+    background: rgba(255,255,255,0.05);
 }
 
 .activity-content {
@@ -781,7 +774,7 @@ body {
 
 .insight-meta {
     font-size: 12px;
-    color: var(--nft-text-light);
+    color: #ffffff;
     font-weight: 500;
 }
 
@@ -840,9 +833,7 @@ body {
     cursor: pointer;
 }
 
-.modal-body {
-    padding: 20px;
-}
+.modal-
 
 .date-inputs {
     display: grid;

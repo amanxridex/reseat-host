@@ -5,26 +5,20 @@
 }
 
 :root {
-    --bg: var(--nft-bg);
-    --card-bg: var(--nft-surface);
+    --bg: #0b0e14;
+    --card-bg: #141824;
     --sidebar-bg: #0b0e14;
     --border: rgba(255, 255, 255, 0.08);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.5);
-    --nft-accent:
-    --nft-button-bg: #ffffff;
+    --fin-primary: #0066ff;
+    --fin-primary-hover: #0088ff;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
 }
 
-body {
-    font-family: 'Space Grotesk', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-}
+
 
 /* Sidebar */
 .legacy-sidebar {
@@ -60,7 +54,7 @@ body {
 
 .logo i {
     font-size: 1.5rem;
-    -webkit-text-fill-color: var(--nft-text-light);
+    -webkit-text-fill-color: #ffffff;
 }
 
 .sidebar-close {
@@ -199,7 +193,7 @@ body {
 .stat-number {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .stat-label {
@@ -229,7 +223,7 @@ body {
 }
 
 .filter-tab:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
     color: var(--text);
 }
 
@@ -266,7 +260,7 @@ body {
 
 .search-bar input:focus {
     outline: none;
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
 }
 
 /* Fests Container */
@@ -403,7 +397,7 @@ body {
 .fest-stat-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .fest-stat-label {
@@ -438,8 +432,8 @@ body {
 }
 
 .fest-btn:hover {
-    border-color: var(--nft-text-light);
-    background: var(--nft-card-hover);
+    border-color: #ffffff;
+    background: rgba(255,255,255,0.05);
 }
 
 .fest-btn.primary {
@@ -464,13 +458,13 @@ body {
 .empty-icon {
     width: 100px;
     height: 100px;
-    background: var(--nft-card-hover);
+    background: rgba(255,255,255,0.05);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    color: var(--nft-text-light);
+    color: #ffffff;
     margin: 0 auto 1.5rem;
 }
 
@@ -570,12 +564,12 @@ body {
 }
 
 .action-item:hover {
-    background: var(--nft-card-hover);
+    background: rgba(255,255,255,0.05);
 }
 
 .action-item i {
     width: 24px;
-    color: var(--nft-text-light);
+    color: #ffffff;
 }
 
 .action-item.danger {
@@ -621,7 +615,7 @@ body {
 }
 
 .btn-secondary:hover {
-    border-color: var(--nft-text-light);
+    border-color: #ffffff;
 }
 
 .btn-danger {
@@ -670,8 +664,8 @@ body {
 }
 
 .btn-copy:hover {
-    border-color: var(--nft-text-light);
-    color: var(--nft-text-light);
+    border-color: #ffffff;
+    color: #ffffff;
 }
 
 .share-options {
