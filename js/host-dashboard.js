@@ -71,52 +71,165 @@ function updateUI(hostData) {
     }
 }
 
+// Global fetch cache to avoid double calling
+let cachedFests = null;
+
 // Load stats (cookie automatically sent)
 async function loadStats(hostData) {
-    // TODO: Replace with real stats API call
-    document.getElementById('totalFests').textContent = '0';
-    document.getElementById('totalTickets').textContent = '0';
-    document.getElementById('totalRevenue').textContent = '₹0';
-    document.getElementById('totalAttendees').textContent = '0';
-    
-    loadFests();
-    loadActivities();
+    await fetchAndRenderFests();
 }
 
 // Load fests from backend (cookie automatically sent)
-async function loadFests() {
+async function fetchAndRenderFests() {
     try {
-        // TODO: Replace with real endpoint when available
-        // const res = await fetch(`${API_URL}/host/fests`, {
-        //     credentials: 'include', // ✅ Cookie sent
-        //     headers: { 'Content-Type': 'application/json' }
-        // });
+        const res = await fetch(`${API_URL}/fest/my-fests`, {
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
         
-        const container = document.getElementById('liveFests');
-        container.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-                <h3>No Fests Yet</h3>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first college fest!</p>
-                <a href="create-fest.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
-                    Create Fest
-                </a>
-            </div>
-        `;
+        if (!res.ok) throw new Error('API Error');
+        const data = await res.json();
+        
+        if (data.success) {
+            cachedFests = data.fests || [];
+            
+            // Calculate aggregations
+            let totalRev = 0;
+            let totalTix = 0;
+            
+            cachedFests.forEach(f => {
+                totalRev += (f.fest_analytics?.total_revenue || 0);
+                totalTix += (f.fest_analytics?.total_tickets_sold || 0);
+            });
+            
+            // Populate Featured/Global Tags
+            const tFests = document.getElementById('totalFests');
+            const tTix = document.getElementById('totalTickets');
+            const tRev = document.getElementById('totalRevenue');
+            const tAtt = document.getElementById('totalAttendees'); // Often equals tickets sold
+            
+            if (tFests) tFests.textContent = cachedFests.length;
+            if (tTix) tTix.textContent = totalTix;
+            if (tAtt) tAtt.textContent = totalTix;
+            
+            // Indian Rupee Format
+            if (tRev) {
+                tRev.textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(totalRev);
+            }
+            
+            // Render the NFT UI Layout Cards
+            const container = document.getElementById('liveFests');
+            if (!cachedFests.length) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: left; padding: 3rem;">
+                        <h3 style="margin-bottom:1rem; color:var(--text-muted)">No Active Events</h3>
+                        <a href="create-fest.html" class="nft-add-btn" style="display:inline-flex; width:auto;">Initialize your first portal 🚀</a>
+                    </div>
+                `;
+            } else {
+                let cardsHTML = '';
+                const themeColors = ['var(--card-purple)', 'var(--card-yellow)', 'var(--card-green)'];
+                
+                cachedFests.slice(0, 5).forEach((fest, index) => {
+                    const bg = themeColors[index % themeColors.length];
+                    const offset = index * 140;
+                    const z = 50 - index;
+                    const scale = 1 - (index * 0.05);
+                    const y = index * 10;
+                    
+                    // Small timer logic placeholder based on start_date
+                    const targetDate = new Date(fest.start_date);
+                    const diffDays = Math.ceil((targetDate - new Date()) / (1000 * 60 * 60 * 24)) || 0;
+                    
+                    cardsHTML += `
+                    <div class="nft-card" onclick="openFest('${fest.id}')" style="left:${offset}px; z-index:${z}; transform: scale(${scale}) translateY(${y}px); background: ${bg}">
+                        <div class="card-top">
+                            <div class="card-top-left" style="overflow:hidden; text-wrap:nowrap; max-width:120px;">
+                                <span style="font-size: 0.8rem;">${fest.fest_name}</span>
+                            </div>
+                            <div class="card-lock" title="${fest.fest_type}"><i class="fas fa-bolt"></i></div>
+                        </div>
+                        
+                        <div class="card-timer">
+                            <div class="timer-pill">${diffDays >= 0 ? diffDays : 0}<span>DAYS</span></div>
+                        </div>
+                        
+                        <div class="card-bottom">
+                            <div class="card-price-pill"><i class="fas fa-ticket-alt"></i> <span>${fest.fest_analytics?.total_tickets_sold || 0}</span></div>
+                            <div class="card-lock" style="background: rgba(0,0,0,0.1);"><i class="fas fa-arrow-right" style="color: black"></i></div>
+                        </div>
+                    </div>
+                    `;
+                });
+                
+                container.innerHTML = cardsHTML;
+                
+                // Inject the most premium fest into the giant right-side hero section if it exists
+                updateFeaturedHero(cachedFests[0]);
+            }
+            
+            // Also generate the history table if possible
+            loadActivities();
+        }
         
     } catch (err) {
-        console.error('Failed to load fests:', err);
+        console.error('Failed to fetch fests API:', err);
     }
 }
 
-// Load activities
+function updateFeaturedHero(fest) {
+    if (!fest) return;
+    
+    // Attempting to safely update the DOM if the featured elements exist
+    const heroImg = document.querySelector('.featured-image');
+    if (heroImg) {
+        heroImg.src = fest.banner_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+    }
+    
+    const titleH2 = document.querySelector('.featured-info h2');
+    if (titleH2) titleH2.textContent = fest.fest_name;
+    
+    const typeH3 = document.querySelector('.featured-info h3');
+    if (typeH3) typeH3.textContent = `#${fest.fest_type.toUpperCase()}`;
+}
+
+// Load activities (Mapped to Recent Fests for visual demo)
 function loadActivities() {
     const container = document.getElementById('activityList');
-    container.innerHTML = `
-        <div class="activity-item" style="justify-content: center; color: var(--text-muted);">
-            No recent activity
-        </div>
-    `;
+    
+    if (!cachedFests || cachedFests.length === 0) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; color: var(--text-muted); padding: 20px;">
+                    No recent activity
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let html = '';
+    cachedFests.slice(0, 5).forEach(fest => {
+        const dDate = new Date(fest.created_at || fest.start_date);
+        const formatStr = dDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
+        const rev = fest.fest_analytics?.total_revenue || 0;
+        const revStr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(rev);
+        const tix = fest.fest_analytics?.total_tickets_sold || 0;
+        
+        html += `
+        <tr>
+            <td>${fest.fest_name}</td>
+            <td class="history-row-users">
+                <img src="${fest.banner_url || 'https://placehold.co/50'}" style="object-fit:cover;"> <i class="fas fa-arrow-right history-arrow"></i>
+            </td>
+            <td>${tix}</td>
+            <td>${revStr}</td>
+            <td style="color: var(--nft-text-muted)">${formatStr || '--/--'}</td>
+        </tr>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 // Toggle Sidebar
