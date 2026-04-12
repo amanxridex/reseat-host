@@ -513,4 +513,63 @@ function setupEventListeners() {
     document.querySelectorAll('.input-field').forEach(field => {
         field.addEventListener('change', () => autoSaveDraft());
     });
+
+    // ============================================
+    // WIZARD EVENT SELECTION LOGIC
+    // ============================================
+    const eventCards = document.querySelectorAll('.event-card');
+    const launchBtn = document.getElementById('launchPortalBtn');
+    const festTypeInput = document.getElementById('festType');
+    
+    if (eventCards.length > 0) {
+        eventCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active from all
+                eventCards.forEach(c => c.classList.remove('active'));
+                
+                // Add active to clicked
+                card.classList.add('active');
+                
+                // Extract data
+                const type = card.getAttribute('data-type');
+                const title = card.querySelector('h4').innerText;
+                
+                // Set hidden input for form submission
+                festTypeInput.value = type;
+                
+                // Activate the portal launch button
+                launchBtn.classList.add('ready');
+                launchBtn.removeAttribute('disabled');
+                launchBtn.innerHTML = `Launch ${title} Portal 🚀`;
+            });
+        });
+
+        launchBtn.addEventListener('click', () => {
+            if (!launchBtn.classList.contains('ready')) return;
+            
+            const selectedTitle = document.querySelector('.event-card.active h4').innerText;
+            const type = festTypeInput.value;
+            
+            // Hide wizard, show details slowly
+            document.getElementById('wizardHeader').style.display = 'none';
+            document.getElementById('eventSelectionGrid').style.display = 'none';
+            
+            const detailsSection = document.getElementById('eventDetailsSection');
+            detailsSection.style.display = 'block';
+            
+            document.getElementById('dynamicDetailsTitle').innerText = selectedTitle + ' Configuration';
+            
+            // Smart Form Tuning Based on Type
+            if (type !== 'college') {
+                // Not a college fest, hide student-specific requirement toggles safely
+                // E.g., 'Audience Settings' and 'ID requirements' aren't strictly for restaurants
+                // Setting outside default allow
+                const outsideToggle = document.getElementById('allowOutside');
+                if (outsideToggle && !outsideToggle.checked) {
+                    outsideToggle.checked = true;
+                    toggleAudience();
+                }
+            }
+        });
+    }
 }

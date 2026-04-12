@@ -759,4 +759,155 @@ input:checked + .slider::before {
         width: 100%;
         justify-content: center;
     }
+    
+    /* Wizard Mobile */
+    .event-selection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==============================================================
+   EVENT SELECTION WIZARD (STEP 1)
+   ============================================================== */
+.wizard-header {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.step-badge {
+    display: inline-block;
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--accent-purple);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.wizard-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.wizard-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.event-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 15px;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+.event-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.event-card.active {
+    background: rgba(139, 92, 246, 0.1);
+    border: 2px solid var(--accent-purple);
+}
+
+.event-icon {
+    font-size: 1.8rem;
+    background: rgba(255,255,255,0.05);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+}
+
+.event-card.active .event-icon {
+    background: rgba(139, 92, 246, 0.2);
+}
+
+.event-info {
+    flex: 1;
+}
+
+.event-info h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.event-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.event-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    color: transparent;
+    transition: all 0.3s ease;
+}
+
+.event-card.active .event-check {
+    background: var(--accent-purple);
+    border-color: var(--accent-purple);
+    color: white;
+}
+
+.launch-portal-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    margin-top: 20px;
+    cursor: not-allowed;
+    transition: all 0.4s ease;
+}
+
+.launch-portal-btn.ready {
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+}
+
+.launch-portal-btn.ready:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
