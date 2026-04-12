@@ -101,7 +101,7 @@ window.handleLogin = async (e) => {
         const token = await result.user.getIdToken();
 
         // ✅ NEW: Create session cookie (30 days)
-        await createHostSession(token);
+        const sessionPayload = await createHostSession(token); if(sessionPayload.token) localStorage.setItem('nexus_token', sessionPayload.token);
 
         // ✅ NEW: Fetch profile using cookie (no Authorization header needed)
         const res = await fetch(`${API_URL}/auth/login`, {
@@ -160,7 +160,7 @@ window.handleSignup = async (e) => {
         const token = await result.user.getIdToken();
 
         // ✅ NEW: Create session cookie immediately
-        await createHostSession(token);
+        const sessionPayload = await createHostSession(token); if(sessionPayload.token) localStorage.setItem('nexus_token', sessionPayload.token);
 
         // Save temp data for profile completion
         sessionStorage.setItem('host_temp_data', JSON.stringify({
@@ -189,7 +189,7 @@ window.googleLogin = async () => {
         const token = await result.user.getIdToken();
 
         // ✅ NEW: Create session cookie first
-        await createHostSession(token);
+        const sessionPayload = await createHostSession(token); if(sessionPayload.token) localStorage.setItem('nexus_token', sessionPayload.token);
 
         // Check if host exists (cookie automatically sent)
         const res = await fetch(`${API_URL}/auth/check`, {
