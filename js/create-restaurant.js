@@ -76,10 +76,11 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
     submitBtn.disabled = true;
 
     try {
-        // Collect basic data
         const data = {
             name: document.getElementById('restName').value,
             about: document.getElementById('restAbout').value,
+            cuisines: document.getElementById('restCuisines').value,
+            cost_for_two: document.getElementById('restCost').value,
             fssai: document.getElementById('fssai').value,
             phone: document.getElementById('restPhone').value,
             address: document.getElementById('restAddress').value,
@@ -87,21 +88,35 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
             open_time: document.getElementById('openTime').value,
             close_time: document.getElementById('closeTime').value,
             
-            // In a real flow, images would be uploaded to Supabase Storage first 
-            // and their URLs sent here. Since we are mocking the frontend builder:
-            images: restaurantImages.map(r => 'mock_uploaded_img_url'), 
-            menu: menuImages.map(m => 'mock_uploaded_menu_url')
+            // Still mocking the direct image upload portion to match standard architecture for now
+            // Would normally go to Supabase storage buckets and then string array is passed.
+            images: restaurantImages.map(r => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'), 
+            menu_images: menuImages.map(m => 'mock_uploaded_menu_url')
         };
         
-        // Mock API Call delay
-        await new Promise(r => setTimeout(r, 1500));
+        const hostApiUrl = API_URL || 'https://nexus-host-backend.onrender.com/api';
         
-        alert('Restaurant setup completed successfully!');
+        const response = await fetch(`${hostApiUrl}/restaurants`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to complete registration');
+        }
+        
+        alert('Restaurant setup completed successfully and is pending admin approval!');
         window.location.href = 'restaurant-dashboard.html';
         
     } catch (err) {
         console.error(err);
-        alert('Failed to create restaurant. Please try again.');
+        alert(err.message || 'Failed to create restaurant. Please try again.');
         submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Registration';
         submitBtn.disabled = false;
     }
