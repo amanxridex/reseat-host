@@ -240,9 +240,7 @@
 .balance-amount {
     font-size: 48px;
     font-weight: 700;
-    background: linear-gradient(135deg, #fff, #0066ff);
-    
-    -webkit-text-fill-color: initial;
+    color: #ffffff;
     margin-bottom: 8px;
 }
 
@@ -280,10 +278,11 @@
     align-items: center;
     gap: 8px;
     padding: 14px 28px;
-    background: #ffffff;
+    background: var(--fin-primary);
     border: none;
+    color: #ffffff;
     border-radius: 12px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-family: inherit;
     font-size: 15px;
     font-weight: 600;
@@ -610,7 +609,7 @@
     padding: 2px 8px;
     background: #0066ff;
     border-radius: 10px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .method-details {
@@ -908,7 +907,7 @@ input:checked + .toggle-slider:before {
 
 .max-btn:hover {
     background: #0066ff;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .input-hint {
@@ -1000,10 +999,11 @@ input:checked + .toggle-slider:before {
 .confirm-btn {
     width: 100%;
     padding: 16px;
-    background: #ffffff;
+    background: var(--fin-primary);
     border: none;
+    color: #ffffff;
     border-radius: 12px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
@@ -1091,7 +1091,7 @@ input:checked + .toggle-slider:before {
 
 .checkbox input:checked + .checkmark::after {
     content: '✓';
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-size: 12px;
 }
 
@@ -1145,13 +1145,13 @@ input:checked + .toggle-slider:before {
 
 .toast.success .toast-icon::after {
     content: '✓';
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-size: 14px;
 }
 
 .toast.error .toast-icon::after {
     content: '✕';
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-size: 14px;
 }
 

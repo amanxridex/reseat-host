@@ -49,7 +49,7 @@
     font-weight: 700;
     background: #ffffff;
     
-    -webkit-text-fill-color: initial;
+    
 }
 
 .logo i {
@@ -89,7 +89,7 @@
 .nav-item:hover,
 .nav-item.active {
     background: #ffffff;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .nav-item i {
@@ -212,7 +212,7 @@
 .filter-tab.active {
     background: #ffffff;
     border-color: transparent;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 /* Search Bar */
@@ -290,18 +290,18 @@
 
 .badge-live {
     background: var(--success);
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     animation: pulse 2s infinite;
 }
 
 .badge-upcoming {
     background: var(--warning);
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .badge-pending {
     background: #3b82f6;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .badge-completed {
@@ -311,7 +311,7 @@
 
 .badge-rejected {
     background: var(--danger);
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 @keyframes pulse {
@@ -329,7 +329,7 @@
     backdrop-filter: blur(10px);
     border: none;
     border-radius: 10px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -421,7 +421,7 @@
 .fest-btn.primary {
     background: #ffffff;
     border-color: transparent;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .fest-btn.primary:hover {
@@ -592,7 +592,7 @@
     background: var(--danger);
     border: none;
     border-radius: 12px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1rem;
     font-weight: 600;
@@ -664,25 +664,25 @@
 .share-btn.whatsapp:hover {
     background: #25d366;
     border-color: #25d366;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .share-btn.instagram:hover {
     background: #e4405f;
     border-color: #e4405f;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .share-btn.twitter:hover {
     background: #1da1f2;
     border-color: #1da1f2;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .share-btn.email:hover {
     background: #ea4335;
     border-color: #ea4335;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 /* Toast */

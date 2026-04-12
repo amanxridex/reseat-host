@@ -48,7 +48,7 @@
     font-weight: 700;
     background: #ffffff;
     
-    -webkit-text-fill-color: initial;
+    
 }
 
 .logo i {
@@ -88,7 +88,7 @@
 .nav-item:hover,
 .nav-item.active {
     background: #ffffff;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .nav-item i {
@@ -295,7 +295,7 @@
     background: rgba(239, 68, 68, 0.9);
     border: none;
     border-radius: 50%;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -547,7 +547,7 @@ input:checked + .slider::before {
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     margin: 0 auto;
     animation: scaleIn 0.5s ease;
 }
@@ -738,7 +738,7 @@ input:checked + .slider::before {
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 10px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .wizard-header p {
@@ -801,7 +801,7 @@ input:checked + .slider::before {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 5px;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .event-info p {
@@ -825,7 +825,7 @@ input:checked + .slider::before {
 .event-card.active .event-check {
     background: #0066ff;
     border-color: #ffffff;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
 }
 
 .launch-portal-btn {
@@ -844,7 +844,7 @@ input:checked + .slider::before {
 
 .launch-portal-btn.ready {
     background: #ffffff;
-    color: var(--nft-text-dark);
+    color: #0b0e14;
     cursor: pointer;
     box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
 }
