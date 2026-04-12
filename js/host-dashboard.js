@@ -314,8 +314,11 @@ function openFest(festId) {
 }
 
 // Close modal on outside click
-document.getElementById('shareModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-        closeShareModal();
-    }
-});
+const shareModalEl = document.getElementById('shareModal');
+if (shareModalEl) {
+    shareModalEl.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeShareModal();
+        }
+    });
+}
