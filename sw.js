@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexus-host-v2';
+const CACHE_NAME = 'nexus-host-v3';
 
 // All static assets to pre-cache at install time
 const STATIC_ASSETS = [
