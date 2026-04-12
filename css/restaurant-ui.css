@@ -1,0 +1,411 @@
+/* restaurant-ui.css - Salesforce Style Premium Concept */
+:root {
+    --bg-mesh: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 50%, #fef9c3 100%);
+    --card-glass: rgba(255, 255, 255, 0.45);
+    --card-glass-border: rgba(255, 255, 255, 0.6);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    
+    /* Concept Info Chunks */
+    --block-blue: #2563eb;
+    --block-cyan: #3b82f6; 
+    --block-yellow: #fde047;
+    --block-black: #0f172a;
+    
+    --radius-lg: 32px;
+    --radius-md: 20px;
+    --radius-pill: 50px;
+}
+
+body {
+    background: var(--bg-mesh);
+    color: var(--text-main);
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Floating Sidebar Pill */
+.side-pill {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #000;
+    width: 60px;
+    border-radius: var(--radius-pill);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 20px;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.side-pill a {
+    color: #64748b;
+    font-size: 1.1rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.side-pill a:hover, .side-pill a.active {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Main Layout Wrapper */
+.main-wrapper {
+    margin-left: 100px; /* Space for side-pill */
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-height: 100vh;
+}
+
+/* Top Nav Area */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.top-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-brand img {
+    height: 30px;
+    border-radius: 50%;
+}
+
+.top-nav-links {
+    display: flex;
+    gap: 20px;
+    background: var(--card-glass);
+    padding: 10px 30px;
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-glass-border);
+}
+
+.top-nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.top-nav-links a.active, .top-nav-links a:hover {
+    color: var(--text-main);
+    background: #000;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin: -4px 0;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--card-glass-border);
+    background: var(--card-glass);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+/* Page Header Stats */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.quick-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.glass-stat {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--card-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--card-glass-border);
+    padding: 15px 25px;
+    border-radius: var(--radius-pill);
+}
+
+.glass-stat .icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.glass-stat .info h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+.glass-stat .info p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Grid Dashboard */
+.dash-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+/* Interaction Chunks */
+.glass-panel {
+    background: var(--card-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--card-glass-border);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.glass-panel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+.panel-icon-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.interaction-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.color-chunk {
+    padding: 25px;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.color-chunk:hover { transform: translateY(-5px); }
+.chunk-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.chunk-top small { font-size: 0.8rem; opacity: 0.8; }
+.chunk-top .dots { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 10px; font-size: 0.7rem; }
+.chunk-mid h4 { margin: 10px 0 0 0; font-size: 1.2rem; font-weight: 500; }
+.chunk-bot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+.chunk-bot .amount { font-size: 1.8rem; font-weight: 700; margin: 0; }
+.faces img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); margin-left:-10px;}
+.faces img:first-child { margin-left: 0; }
+
+.bg-blue { background: var(--block-blue); }
+.bg-cyan { background: var(--block-cyan); }
+.bg-yellow { background: var(--block-yellow); color: var(--text-main); }
+.bg-yellow .dots { background: rgba(0,0,0,0.1); }
+.bg-black { background: var(--block-black); }
+
+/* Right Column - Profile & Info */
+.profile-card {
+    text-align: center;
+    padding-top: 40px;
+}
+.profile-card .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    background: #fff;
+    padding: 5px;
+}
+.profile-card h3 { margin: 0 0 5px 0; font-size: 1.3rem; }
+.profile-card p { margin: 0 0 20px 0; color: var(--text-muted); font-size: 0.85rem;}
+
+.action-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.action-row button {
+    width: 40px; height: 40px; border-radius: 12px;
+    border: none; background: rgba(255,255,255,0.5);
+    cursor: pointer; transition: 0.2s;
+}
+.action-row button:hover { background: rgba(255,255,255,0.8); }
+
+/* Info List */
+.info-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.info-row i {
+    color: var(--text-muted); width: 20px; text-align: center;
+}
+.info-data {
+    flex: 1;
+}
+.info-data small { display: block; color: var(--text-muted); font-size: 0.75rem; }
+.info-data strong { display: block; font-size: 0.95rem; }
+
+/* Form Aesthetics for Create Restaurant */
+.glass-form {
+    display: grid;
+    gap: 20px;
+}
+.input-group {
+    background: rgba(255,255,255,0.6);
+    border-radius: var(--radius-md);
+    padding: 10px 20px;
+    border: 1px solid rgba(255,255,255,0.8);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.input-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.input-group input, .input-group select, .input-group textarea {
+    border: none;
+    background: transparent;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    outline: none;
+}
+.input-group textarea { resize: vertical; min-height: 80px; }
+
+/* Image Dropzones */
+.image-upload-area {
+    background: rgba(255,255,255,0.4);
+    border: 2px dashed rgba(0,0,0,0.1);
+    border-radius: var(--radius-md);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.image-upload-area:hover { background: rgba(255,255,255,0.7); }
+.image-upload-area i { font-size: 2rem; color: var(--block-blue); margin-bottom: 10px; }
+
+.image-preview-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    margin-top: 15px;
+    padding-bottom: 5px;
+}
+.preview-box {
+    width: 80px; height: 80px; border-radius: 12px;
+    background: #000; position: relative; flex-shrink: 0;
+    background-size: cover; background-position: center;
+}
+.preview-box .remove-btn {
+    position: absolute; top: -5px; right: -5px;
+    background: red; color: white; width: 20px; height: 20px;
+    border-radius: 50%; border: none; font-size: 10px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+.btn-primary {
+    background: var(--text-main); color: white;
+    padding: 15px 30px; border-radius: var(--radius-pill);
+    border: none; font-size: 1rem; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: 0.2s;
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+/* Mobile Reponsive */
+@media (max-width: 990px) {
+    .dash-layout { grid-template-columns: 1fr; }
+    .interaction-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .side-pill {
+        width: calc(100% - 40px);
+        height: 60px;
+        flex-direction: row;
+        justify-content: center;
+        top: auto; 
+        bottom: 20px;
+        left: 20px;
+        padding: 0 20px;
+        transform: none;
+    }
+    .main-wrapper { margin-left: 0; padding-bottom: 100px; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .quick-stats { flex-wrap: wrap; }
+    .glass-stat { width: 100%; flex-direction: column; align-items: flex-start; }
+    .top-nav { flex-wrap: wrap; gap: 15px; }
+    .top-nav-links { display: none; } /* Hide on mobile to simplify */
+}

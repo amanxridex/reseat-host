@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/restaurant-ui.css">
+    
+    <meta name="theme-color" content="#e0f2fe">
+</head>
+<body>
+    <!-- Floating Sidebar Pill -->
+    <aside class="side-pill" id="sidebar">
+        <a href="host-dashboard.html" title="Home"><i class="fas fa-home"></i></a>
+        <a href="restaurant-dashboard.html" title="Restaurants"><i class="fas fa-utensils"></i></a>
+        <a href="create-restaurant.html" class="active" title="Add Restaurant"><i class="fas fa-plus"></i></a>
+        <a href="analytics.html" title="Analytics"><i class="fas fa-chart-line"></i></a>
+        <a href="payouts.html" title="Payouts"><i class="fas fa-wallet"></i></a>
+        <a href="#" style="margin-top:auto" onclick="logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </aside>
+
+    <main class="main-wrapper">
+        <!-- Top Nav -->
+        <header class="top-nav">
+            <div class="top-brand">
+                <i class="fas fa-layer-group"></i> NEXUS
+            </div>
+            
+            <div class="top-nav-links">
+                <a href="restaurant-dashboard.html">Back to Dashboard</a>
+            </div>
+            
+            <div class="top-actions">
+                <button class="top-btn" onclick="showNotifications()"><i class="fas fa-bell"></i></button>
+            </div>
+        </header>
+
+        <!-- Page Header -->
+        <div class="page-header" style="margin-bottom: 20px;">
+            <div class="page-title">
+                <h1>Add New<br>Restaurant</h1>
+            </div>
+        </div>
+
+        <div class="dash-layout" style="grid-template-columns: 1fr; max-width: 900px; margin: 0 auto; width: 100%;">
+            <form id="createRestaurantForm" class="glass-panel glass-form">
+                
+                <h3 style="margin: 0 0 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">Basic Information</h3>
+                
+                <div class="input-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" id="restName" placeholder="e.g. Nexus Grill & Lounge" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>About Restaurant</label>
+                    <textarea id="restAbout" placeholder="Tell us about the vibe, cuisine, and specialties..." required></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>FSSAI License Number</label>
+                        <input type="text" id="fssai" placeholder="14-digit FSSAI number" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="restPhone" placeholder="+91" required>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">Location & Timings</h3>
+                
+                <div class="input-group">
+                    <label>Full Address</label>
+                    <input type="text" id="restAddress" placeholder="Street, Sector, City..." required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Google Maps Location (URL or Embed)</label>
+                    <input type="url" id="restLocation" placeholder="https://maps.google.com/..." required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Opening Time</label>
+                        <input type="time" id="openTime" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Closing Time</label>
+                        <input type="time" id="closeTime" required>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">Media Uploads</h3>
+                
+                <!-- Restaurant Main Images (Max 6) -->
+                <div>
+                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:10px;">Restaurant Images (Max 6)</label>
+                    <div class="image-upload-area" onclick="document.getElementById('restImgUpload').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p style="margin:0; font-weight:600;">Click to upload restaurant images</p>
+                        <small style="color:var(--text-muted);">Optimal size: 1920x1080 (Limit: 6 images)</small>
+                    </div>
+                    <input type="file" id="restImgUpload" accept="image/*" multiple style="display:none;" onchange="handleRestImages(this)">
+                    <div class="image-preview-grid" id="restPreviewGrid"></div>
+                </div>
+
+                <!-- Menu Images (Infinite) -->
+                <div style="margin-top:20px;">
+                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:10px;">Menu Scans/Pages (Unlimited)</label>
+                    <div class="image-upload-area" onclick="document.getElementById('menuImgUpload').click()">
+                        <i class="fas fa-book-open"></i>
+                        <p style="margin:0; font-weight:600;">Click to upload menu pages</p>
+                        <small style="color:var(--text-muted);">Optimal size: Vertical A4</small>
+                    </div>
+                    <input type="file" id="menuImgUpload" accept="image/*" multiple style="display:none;" onchange="handleMenuImages(this)">
+                    <div class="image-preview-grid" id="menuPreviewGrid"></div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 30px;">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <i class="fas fa-check-circle"></i> Complete Registration
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- JS files -->
+    <script src="js/config.js"></script>
+    <script src="js/create-restaurant.js"></script>
+</body>
+</html>
