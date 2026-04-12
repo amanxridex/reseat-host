@@ -6,221 +6,154 @@
     <title>Nexus | My Fests</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Using the unified NFT Marketplace layout -->
+    <link rel="stylesheet" href="css/fest-theme.css">
     <link rel="stylesheet" href="css/my-fests.css">
     
-    <!-- PWA Meta Tags -->
     <meta name="application-name" content="Nexus Host">
-    <meta name="description" content="Manage your fests on Nexus Host">
-    <meta name="theme-color" content="#050508">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- iOS PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nexus Host">
-    <link rel="apple-touch-icon" href="nexushostlogo.png">
-
-    <!-- Manifest & Icon -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="nexushostlogo.png">
+    <meta name="theme-color" content="#2b2533">
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>NEXUS HOST</span>
-            </div>
-            <button class="sidebar-close" onclick="toggleSidebar()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
 
-        <nav class="sidebar-nav">
-            <a href="host-dashboard.html" class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="create-fest.html" class="nav-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>Create Fest</span>
-            </a>
-            <a href="#" class="nav-item active">
-                <i class="fas fa-calendar-alt"></i>
-                <span>My Fests</span>
-            </a>
-            <a href="qr-scanner.html" class="nav-item">
-                <i class="fas fa-qrcode"></i>
-                <span>QR Scanner</span>
-            </a>
-            <a href="analytics.html" class="nav-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
+<div class="nft-layout">
+    
+    <!-- 1. LEFT SIDEBAR (Mobile optimized dock) -->
+    <aside class="nft-sidebar" id="sidebar">
+        <div class="nft-logo">N<span style="color:var(--nft-text-muted)">X</span></div>
+        
+        <nav class="nft-nav">
+            <a href="host-dashboard.html" class="nft-nav-icon" title="Home"><i class="fas fa-home"></i></a>
+            <a href="fest-dashboard.html" class="nft-nav-icon" title="Fests"><i class="fas fa-calendar-alt"></i></a>
+            <a href="my-fests.html" class="nft-nav-icon active" title="My Fests"><i class="fas fa-list"></i></a>
+            <a href="qr-scanner.html" class="nft-nav-icon" title="QR Scanner"><i class="fas fa-qrcode"></i></a>
+            <a href="create-fest.html" class="nft-nav-icon" title="Create Fest"><i class="fas fa-plus"></i></a>
+            <a href="analytics.html" class="nft-nav-icon" title="Analytics"><i class="fas fa-chart-line"></i></a>
+            <a href="payouts.html" class="nft-nav-icon" title="Payouts"><i class="fas fa-wallet"></i></a>
         </nav>
-
-        <div class="sidebar-footer">
-            <a href="#" class="nav-item logout" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
+        
+        <div class="nft-user" onclick="logout()" style="cursor: pointer;" title="Logout">
+            <img src="https://placehold.co/100x100/ec4899/ffffff?text=H" alt="Profile">
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- 2. MIDDLE CONTENT -->
+    <main class="nft-main" style="max-width: 100%;">
+        
         <!-- Header -->
-        <header class="header">
-            <button class="menu-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="header-title">
-                <h1>My Fests</h1>
-                <p>Manage all your events</p>
+        <header class="nft-header">
+            <div class="nft-segmented">
+                <div class="nft-segment active">All Fests</div>
+                <div class="nft-segment" onclick="filterFests('live')">Live</div>
+                <div class="nft-segment" onclick="filterFests('upcoming')">Upcoming</div>
             </div>
-
-            <div class="header-actions">
-                <a href="create-fest.html" class="btn-primary">
-                    <i class="fas fa-plus"></i>
-                    Create New
+            
+            <div class="nft-header-actions">
+                <div class="nft-search">
+                    <i class="fas fa-search" style="color: var(--nft-text-muted)"></i>
+                    <input type="text" placeholder="Search your fests..." id="searchInput" onkeyup="searchFests()">
+                </div>
+                <a href="create-fest.html" class="nft-add-btn">
+                    <i class="fas fa-plus-circle"></i> Create New
                 </a>
             </div>
         </header>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Stats Overview -->
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <span class="stat-number" id="totalFests">0</span>
-                    <span class="stat-label">Total Fests</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="liveFests">0</span>
-                    <span class="stat-label">Live</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="pendingFests">0</span>
-                    <span class="stat-label">Pending</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="completedFests">0</span>
-                    <span class="stat-label">Completed</span>
-                </div>
-            </div>
-
-            <!-- Filter Tabs -->
-            <div class="filter-tabs">
-                <button class="filter-tab active" onclick="filterFests('all')">
-                    All Fests
-                </button>
-                <button class="filter-tab" onclick="filterFests('live')">
-                    Live
-                </button>
-                <button class="filter-tab" onclick="filterFests('upcoming')">
-                    Upcoming
-                </button>
-                <button class="filter-tab" onclick="filterFests('pending')">
-                    Pending Approval
-                </button>
-                <button class="filter-tab" onclick="filterFests('completed')">
-                    Completed
-                </button>
-                <button class="filter-tab" onclick="filterFests('rejected')">
-                    Rejected
-                </button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search your fests..." id="searchInput" onkeyup="searchFests()">
-            </div>
-
-            <!-- Fests Grid -->
-            <div class="fests-container" id="festsContainer">
+        <!-- Dynamic Deck Engine -->
+        <section>
+            <div class="nft-section-title" style="margin-bottom:10px;">Fest Directory</div>
+            
+            <!-- We will use the native css/my-fests.css grid format here instead of nft-deck -->
+            <div class="fests-container" id="festsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
                 <!-- Fests injected via JS -->
             </div>
 
             <!-- Empty State -->
-            <div class="empty-state" id="emptyState" style="display: none;">
-                <div class="empty-icon">
-                    <i class="fas fa-calendar-times"></i>
-                </div>
+            <div class="empty-state" id="emptyState" style="display: none; height: 300px; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0.6;">
+                <i class="fas fa-calendar-times" style="font-size:3rem; margin-bottom:20px;"></i>
                 <h3>No fests found</h3>
                 <p>Create your first fest to get started</p>
-                <a href="create-fest.html" class="btn-primary">Create Fest</a>
+                <a href="create-fest.html" class="nft-add-btn" style="margin-top:20px;">Create Fest</a>
             </div>
-        </div>
+        </section>
+
     </main>
 
-    <!-- Fest Actions Modal -->
-    <div class="modal" id="actionsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Fest Actions</h3>
-                <button class="modal-close" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="actions-list" id="actionsList">
-                <!-- Actions injected via JS -->
+    <!-- 3. RIGHT COLUMN (Reused as Stats Board) -->
+    <aside class="nft-featured">
+        <div class="featured-top">
+            <div class="featured-user">
+                <i class="fas fa-chart-line"></i>
+                <span class="name" style="font-weight:700; font-size:0.8rem; color:#000;">Global Metrics</span>
             </div>
         </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content small">
-            <div class="warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+        
+        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+             class="featured-image" alt="Stats" style="height:40%;">
+             
+        <div class="featured-info" style="margin-top:auto;">
+            <h2>Operation Center</h2>
+        </div>
+        
+        <div class="featured-bottom" style="flex-wrap: wrap; gap:10px;">
+            <div class="f-stat-pill" style="flex:1;">
+                <span id="totalFests">0</span> Total
             </div>
-            <h3>Delete Fest?</h3>
-            <p>This action cannot be undone. All data will be permanently removed.</p>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn-danger" onclick="confirmDelete()">Delete</button>
+            <div class="f-stat-pill dark" style="flex:1;">
+                <span id="liveFests">0</span> Live
+            </div>
+            <div class="f-stat-pill" style="flex:1;">
+                <span id="pendingFests">0</span> Wait
+            </div>
+             <div class="f-stat-pill dark" style="flex:1;">
+                <span id="completedFests">0</span> Done
             </div>
         </div>
-    </div>
+    </aside>
+    
+</div>
 
-    <!-- Share Modal -->
-    <div class="modal" id="shareModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Share Fest</h3>
-                <button class="modal-close" onclick="closeShareModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="share-link-box">
-                <input type="text" class="share-input" id="shareLink" readonly>
-                <button class="btn-copy" onclick="copyLink()">
-                    <i class="fas fa-copy"></i>
-                </button>
-            </div>
-            <div class="share-options">
-                <button class="share-btn whatsapp" onclick="shareTo('whatsapp')">
-                    <i class="fab fa-whatsapp"></i>
-                </button>
-                <button class="share-btn instagram" onclick="shareTo('instagram')">
-                    <i class="fab fa-instagram"></i>
-                </button>
-                <button class="share-btn twitter" onclick="shareTo('twitter')">
-                    <i class="fab fa-twitter"></i>
-                </button>
-                <button class="share-btn email" onclick="shareTo('email')">
-                    <i class="fas fa-envelope"></i>
-                </button>
-            </div>
+<!-- Modals needed for functionality -->
+<div class="modal" id="actionsModal" style="display:none; position:fixed; z-index:100; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff; color:#000; padding:20px; border-radius:20px; width:90%; max-width:400px; margin:20vh auto;">
+        <div class="modal-header" style="display:flex; justify-content:space-between;">
+            <h3>Fest Actions</h3>
+            <button onclick="closeModal()" style="border:none;background:none;font-size:1.2rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="actions-list" id="actionsList" style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+            <!-- JS injects here -->
         </div>
     </div>
+</div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+<div class="modal" id="deleteModal" style="display:none; position:fixed; z-index:100; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff; color:#000; padding:20px; border-radius:20px; width:90%; max-width:400px; margin:20vh auto; text-align:center;">
+        <i class="fas fa-exclamation-triangle" style="font-size:2rem; color:red; margin-bottom:15px;"></i>
+        <h3>Delete Fest?</h3>
+        <p>This action cannot be undone.</p>
+        <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeDeleteModal()" style="padding:10px 20px; border:none; border-radius:10px; background:#ddd; cursor:pointer;">Cancel</button>
+            <button onclick="confirmDelete()" style="padding:10px 20px; border:none; border-radius:10px; background:red; color:white; cursor:pointer;">Delete</button>
+        </div>
+    </div>
+</div>
 
-    <script src="js/my-fests.js"></script>
+<div class="modal" id="shareModal" style="display:none; position:fixed; z-index:100; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff; color:#000; padding:20px; border-radius:20px; width:90%; max-width:400px; margin:20vh auto;">
+        <div style="display:flex; justify-content:space-between;">
+            <h3>Share Fest</h3>
+            <button onclick="closeShareModal()" style="border:none;background:none;font-size:1.2rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <input type="text" id="shareLink" readonly style="width:100%; padding:10px; margin:20px 0; border:1px solid #ccc; border-radius:10px;">
+        <div style="display:flex; justify-content:space-around;">
+             <button onclick="copyLink()" style="background:#eee; border:none; padding:15px; border-radius:50%; cursor:pointer;"><i class="fas fa-copy"></i></button>
+             <button onclick="shareTo('whatsapp')" style="background:#25D366; color:#fff; border:none; padding:15px; border-radius:50%; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 20px; border-radius:20px; z-index:1000;"></div>
+
+<script src="js/my-fests.js"></script>
 </body>
 </html>

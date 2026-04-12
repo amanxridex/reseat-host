@@ -6,86 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus - Payouts & Withdrawals</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/fest-theme.css">
     <link rel="stylesheet" href="css/payouts.css">
     
     <!-- PWA Meta Tags -->
     <meta name="application-name" content="Nexus Host">
     <meta name="description" content="Manage your payouts on Nexus Host">
-    <meta name="theme-color" content="#050508">
+    <meta name="theme-color" content="#2b2533">
     <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- iOS PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nexus Host">
-    <link rel="apple-touch-icon" href="nexushostlogo.png">
 
     <!-- Manifest & Icon -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="nexushostlogo.png">
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-icon">N</div>
-            <span class="logo-text">NEXUS</span>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="host-dashboard.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"/>
-                    <rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/>
-                    <rect x="3" y="14" width="7" height="7"/>
-                </svg>
-                Dashboard
-            </a>
-            <a href="my-fests.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                My Fests
-            </a>
-            <a href="create-fest.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
-                </svg>
-                Create Fest
-            </a>
-            <a href="qr-scanner.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                </svg>
-                QR Scanner
-            </a>
-            <a href="payouts.html" class="nav-item active">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                </svg>
-                Payouts
-            </a>
-        </nav>
 
-        <div class="sidebar-footer">
-            <div class="user-mini">
-                <div class="user-avatar" id="user-avatar">H</div>
-                <div class="user-info">
-                    <span class="user-name" id="user-name">Loading...</span>
-                    <span class="user-role">Event Host</span>
-                </div>
-            </div>
+<div class="nft-layout">
+    
+    <!-- 1. LEFT SIDEBAR (Mobile optimized dock) -->
+    <aside class="nft-sidebar" id="sidebar">
+        <div class="nft-logo">N<span style="color:var(--nft-text-muted)">X</span></div>
+        
+        <nav class="nft-nav">
+            <a href="host-dashboard.html" class="nft-nav-icon" title="Home"><i class="fas fa-home"></i></a>
+            <a href="fest-dashboard.html" class="nft-nav-icon" title="Fests"><i class="fas fa-calendar-alt"></i></a>
+            <a href="my-fests.html" class="nft-nav-icon" title="My Fests"><i class="fas fa-list"></i></a>
+            <a href="qr-scanner.html" class="nft-nav-icon" title="QR Scanner"><i class="fas fa-qrcode"></i></a>
+            <a href="create-fest.html" class="nft-nav-icon" title="Create Fest"><i class="fas fa-plus"></i></a>
+            <a href="analytics.html" class="nft-nav-icon" title="Analytics"><i class="fas fa-chart-line"></i></a>
+            <a href="payouts.html" class="nft-nav-icon active" title="Payouts"><i class="fas fa-wallet"></i></a>
+        </nav>
+        
+        <div class="nft-user" onclick="logout()" style="cursor: pointer;" title="Logout">
+            <img src="https://placehold.co/100x100/ec4899/ffffff?text=H" alt="Profile">
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- 2. MAIN CONTENT AREA -->
+    <main class="nft-main" style="max-width: 100%;">
         <!-- Header -->
         <header class="page-header">
             <div class="header-left">
@@ -255,6 +213,7 @@
             </section>
         </div>
     </main>
+</div>
 
     <!-- Withdraw Modal -->
     <div id="withdraw-modal" class="modal hidden">
