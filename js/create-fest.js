@@ -17,13 +17,21 @@ let formState = {
 // ============================================
 // INITIALIZATION
 // ============================================
-document.addEventListener('DOMContentLoaded', async () => {
+async function initFestApp() {
     const hasSession = await checkAuth();
     if (!hasSession) return;
     
     await loadDraftFromServer();
-    setupEventListeners();
-});
+}
+
+// Bind UI immediately, don't wait for network
+setupEventListeners();
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFestApp);
+} else {
+    initFestApp();
+}
 
 // ============================================
 // AUTHENTICATION (COOKIE-BASED)
