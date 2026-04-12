@@ -61,8 +61,13 @@ function updateUI(hostData) {
     }
     
     const profileImg = document.getElementById('profileImg');
-    if (profileImg && hostData.avatar_url) {
-        profileImg.src = hostData.avatar_url;
+    if (profileImg) {
+        if (hostData.avatar_url) {
+            profileImg.src = hostData.avatar_url;
+        } else {
+            const initial = (hostData.full_name || hostData.email || 'H').charAt(0).toUpperCase();
+            profileImg.src = `https://placehold.co/100x100/0066ff/ffffff?text=${initial}`;
+        }
     }
     
     const banner = document.getElementById('verificationBanner');
