@@ -99,7 +99,13 @@ async function saveEdits() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Staging...'; btn.disabled = true;
     
     const id = document.getElementById('editId').value;
-    const finalImages = editImagesCache.map(i => i.url || i);
+    
+    // Scrub blob vectors out of the DB pipeline, mimicking remote cloud references natively.
+    const finalImages = editImagesCache.map(i => {
+        if (typeof i === 'string') return i;
+        if (i.url && i.url.startsWith('http') && !i.url.startsWith('blob:')) return i.url;
+        return 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    });
 
     const updates = {
         name: document.getElementById('editName').value,
