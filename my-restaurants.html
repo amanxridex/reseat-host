@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Manage Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/restaurant-ui.css">
+    
+    <style>
+        .filters-panel {
+            display: flex; gap: 15px; margin-bottom: 30px;
+            background: var(--card-glass); backdrop-filter: blur(10px);
+            padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--card-glass-border);
+        }
+        
+        .search-box {
+            flex: 1; display: flex; align-items: center; background: rgba(255,255,255,0.7);
+            border-radius: var(--radius-pill); padding: 0 20px;
+        }
+        .search-box input {
+            border: none; background: transparent; padding: 12px 10px; width: 100%;
+            font-family: inherit; font-size: 0.95rem; outline: none;
+        }
+        
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;
+        }
+
+        .rest-card {
+            background: var(--card-glass); border-radius: var(--radius-lg);
+            border: 1px solid var(--card-glass-border); padding: 20px;
+            backdrop-filter: blur(10px); transition: 0.2s;
+            display: flex; flex-direction: column;
+        }
+        .rest-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .rc-status {
+            font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 20px;
+            display: inline-block; margin-bottom: 15px; align-self: flex-start;
+        }
+        .bg-active { background: #dcfce7; color: #166534; }
+        .bg-pending { background: #fef9c3; color: #854d0e; }
+
+        .rest-card h3 { margin: 0 0 10px 0; font-size: 1.3rem; }
+        .rest-card p { margin: 0 0 15px 0; font-size: 0.9rem; color: var(--text-muted); }
+        
+        .action-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .btn {
+            padding: 10px; border-radius: var(--radius-pill); border: none; cursor: pointer;
+            font-family: inherit; font-weight: 600; font-size: 0.9rem; transition: 0.2s;
+        }
+        .btn-edit { background: var(--block-blue); color: #fff; }
+        .btn-disable { background: #fee2e2; color: #991b1b; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Modal Styles */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 500px;
+            padding: 30px; position: relative;
+        }
+        .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <!-- Floating Sidebar Pill -->
+    <aside class="side-pill" id="sidebar">
+        <a href="host-dashboard.html" title="Home"><i class="fas fa-home"></i></a>
+        <a href="restaurant-dashboard.html" title="Overview"><i class="fas fa-chart-pie"></i></a>
+        <a class="active" href="my-restaurants.html" title="My Restaurants"><i class="fas fa-utensils"></i></a>
+        <a href="create-restaurant.html" title="Add New"><i class="fas fa-plus"></i></a>
+         <a href="javascript:void(0)" onclick="logout()" title="Logout" style="margin-top:auto;"><i class="fas fa-sign-out-alt"></i></a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <header class="top-nav">
+            <div class="top-brand">
+                <i class="fas fa-utensils" style="color: var(--block-yellow);"></i> Nexus Restaurants
+            </div>
+        </header>
+
+        <section class="page-header">
+            <div class="page-title">
+                <p>Management Console</p>
+                <h1>Manage Portfolio</h1>
+            </div>
+        </section>
+
+        <div class="filters-panel">
+            <div class="search-box">
+                <i class="fas fa-search" style="color: var(--text-muted); margin-right: 10px;"></i>
+                <input type="text" id="searchInput" placeholder="Search physical restaurant names or addresses...">
+            </div>
+        </div>
+
+        <div class="grid-container" id="restaurantsGrid">
+            <!-- Rendered natively via JS -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--block-blue);"></i>
+                <p style="margin-top: 15px;">Synchronizing API constraints...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Native Dynamic Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 style="margin-top:0;">Edit Restaurant</h2>
+            
+            <form id="editForm" class="glass-form" style="margin-top: 20px;">
+                <input type="hidden" id="editId">
+                
+                <div class="input-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Food Types (e.g., Chinese, Italian)</label>
+                    <input type="text" id="editType" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Average Price For Two (₹)</label>
+                    <input type="number" id="editPrice" required>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top:10px;">Save Physical Overrides</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/my-restaurants.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('nexus_host');
+            sessionStorage.clear();
+            window.location.href = 'host-signup-login.html';
+        }
+    </script>
+</body>
+</html>

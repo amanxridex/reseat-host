@@ -57,9 +57,9 @@ async function loadStats() {
         
         const liveRests = restaurants.length;
         // Keep mocked metrics for views/clicks/funnel since the database doesn't track these specifically per restaurant yet
-        const views = liveRests > 0 ? (liveRests * 450 + Math.floor(Math.random()*1500)).toLocaleString() : 0;
-        const clicks = liveRests > 0 ? (liveRests * 80 + Math.floor(Math.random()*300)).toLocaleString() : 0;
-        const funnel = liveRests > 0 ? '₹' + (liveRests * 25000).toLocaleString() : '₹0';
+        const views = "0";
+        const clicks = "0";
+        const funnel = "Tracking...";
 
         document.getElementById('statTotalLive').textContent = liveRests;
         document.getElementById('statTotalViews').textContent = views;
@@ -84,14 +84,9 @@ async function loadStats() {
             
             restaurants.forEach((rest, index) => {
                 const bgClass = backgrounds[index % backgrounds.length];
-                const revenue = Math.floor(Math.random() * 5000) + 1000; // Mock revenue metric per location
+                const revenue = "0"; // Mock revenue metric per location
                 
-                const imgHTML = `
-                    <div class="faces">
-                        <img src="https://placehold.co/100x100/10b981/fff?text=U" alt="usr">
-                        <img src="https://placehold.co/100x100/ec4899/fff?text=V" alt="usr">
-                    </div>
-                `;
+                const imgHTML = ``;
 
                 html += `
                     <div class="color-chunk ${bgClass}">

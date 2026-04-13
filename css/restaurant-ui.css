@@ -35,6 +35,7 @@ body {
     transform: translateY(-50%);
     background: #000;
     width: 60px;
+    box-sizing: border-box;
     border-radius: var(--radius-pill);
     display: flex;
     flex-direction: column;
