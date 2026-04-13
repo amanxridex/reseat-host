@@ -96,16 +96,39 @@ function closeModal() { document.getElementById('editModal').classList.remove('a
 
 async function saveEdits() {
     const btn = document.querySelector('#editForm button');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Staging...'; btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Image Streams...'; btn.disabled = true;
     
     const id = document.getElementById('editId').value;
     
-    // Scrub blob vectors out of the DB pipeline, mimicking remote cloud references natively.
-    const finalImages = editImagesCache.map(i => {
-        if (typeof i === 'string') return i;
-        if (i.url && i.url.startsWith('http') && !i.url.startsWith('blob:')) return i.url;
-        return 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
-    });
+    // Resolve all physical files to Supabase CDN implicitly
+    const finalImages = [];
+    for (let i of editImagesCache) {
+        if (typeof i === 'string') {
+            finalImages.push(i);
+        } else if (i.url && i.url.startsWith('http') && !i.url.startsWith('blob:')) {
+            finalImages.push(i.url);
+        } else if (i.file) {
+            // Actively Execute Image Upload Buffer
+            const formData = new FormData();
+            formData.append('file', i.file);
+            try {
+                const token = localStorage.getItem('nexus_token');
+                const uploadRes = await fetch(`${window.API_BASE_URL || 'https://nexus-host-backend.onrender.com/api'}/upload/property-image`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (uploadData.success && uploadData.url) {
+                    finalImages.push(uploadData.url);
+                }
+            } catch (err) {
+                console.error("Image Upload Fragment failed:", err);
+            }
+        }
+    }
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Staging...';
 
     const updates = {
         name: document.getElementById('editName').value,

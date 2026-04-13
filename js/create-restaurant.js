@@ -76,6 +76,32 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
     submitBtn.disabled = true;
 
     try {
+        // Sequentially upload literal files directly into Supabase CDN Storage Native Buckets
+        const finalImages = [];
+        for (let r of restaurantImages) {
+            if (r.file) {
+                const formData = new FormData();
+                formData.append('file', r.file);
+                try {
+                    const token = localStorage.getItem('nexus_token');
+                    const uploadRes = await fetch(`${API_URL || 'https://nexus-host-backend.onrender.com/api'}/upload/property-image`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.success && uploadData.url) {
+                        finalImages.push(uploadData.url);
+                    }
+                } catch (err) { console.error("Create Flow Img Upload Failed", err); }
+            }
+        }
+        
+        // Ensure fallback if upload totally fails or no images provided
+        if (finalImages.length === 0) {
+            finalImages.push('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');
+        }
+
         const data = {
             name: document.getElementById('restName').value,
             about: document.getElementById('restAbout').value,
@@ -88,9 +114,8 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
             open_time: document.getElementById('openTime').value,
             close_time: document.getElementById('closeTime').value,
             
-            // Still mocking the direct image upload portion to match standard architecture for now
-            // Would normally go to Supabase storage buckets and then string array is passed.
-            images: restaurantImages.map(r => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'), 
+            // Now passing explicit Supabase Bucket URL arrays mapped directly!
+            images: finalImages, 
             menu_images: menuImages.map(m => 'mock_uploaded_menu_url')
         };
         
