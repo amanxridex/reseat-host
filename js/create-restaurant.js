@@ -104,11 +104,31 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
             finalImages.push('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');
         }
 
+        // Upload Menu Images sequentially to Supabase
+        const finalMenuImages = [];
+        for (let m of menuImages) {
+            if (m.file) {
+                const formData = new FormData();
+                formData.append('file', m.file);
+                try {
+                    const token = localStorage.getItem('nexus_token') || '';
+                    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                    const uploadRes = await fetch(`${API_URL || 'https://nexus-host-backend.onrender.com/api'}/upload/property-image`, {
+                        method: 'POST', credentials: 'include', headers: headers, body: formData
+                    });
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.success && uploadData.url) {
+                        finalMenuImages.push(uploadData.url);
+                    }
+                } catch (err) { console.error("Menu Img Upload Failed", err); }
+            }
+        }
+
         const data = {
             name: document.getElementById('restName').value,
             about: document.getElementById('restAbout').value,
             cuisines: document.getElementById('restCuisines').value,
-            cost_for_two: document.getElementById('restCost').value,
+            cost_for_two: Number(document.getElementById('restCost').value),
             fssai: document.getElementById('fssai').value,
             phone: document.getElementById('restPhone').value,
             address: document.getElementById('restAddress').value,
@@ -118,7 +138,7 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
             
             // Now passing explicit Supabase Bucket URL arrays mapped directly!
             images: finalImages, 
-            menu_images: menuImages.map(m => 'mock_uploaded_menu_url')
+            menu_images: finalMenuImages.length > 0 ? finalMenuImages : ['https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80']
         };
         
         const hostApiUrl = API_URL || 'https://nexus-host-backend.onrender.com/api';
