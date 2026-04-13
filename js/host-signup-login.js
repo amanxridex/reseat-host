@@ -37,10 +37,22 @@ const checkSession = async () => {
             const data = await res.json();
             if (data.exists) {
                 window.location.href = 'host-dashboard.html';
+            } else {
+                // Backend rejected cookie, purge Firebase explicitly natively
+                import('https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js').then(({ signOut }) => {
+                    signOut(auth);
+                });
             }
+        } else {
+            import('https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js').then(({ signOut }) => {
+                signOut(auth);
+            });
         }
     } catch (err) {
         console.log('No active session');
+        import('https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js').then(({ signOut }) => {
+            signOut(auth);
+        });
     }
 };
 
@@ -185,11 +197,16 @@ window.handleSignup = async (e) => {
 window.googleLogin = async () => {
     try {
         const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+        
         const result = await signInWithPopup(auth, provider);
         const token = await result.user.getIdToken();
 
         // ✅ NEW: Create session cookie first
-        const sessionPayload = await createHostSession(token); if(sessionPayload.token) localStorage.setItem('nexus_token', sessionPayload.token);
+        const sessionPayload = await createHostSession(token); 
+        if(sessionPayload.token) localStorage.setItem('nexus_token', sessionPayload.token);
 
         // Check if host exists (cookie automatically sent)
         const res = await fetch(`${API_URL}/auth/check`, {
