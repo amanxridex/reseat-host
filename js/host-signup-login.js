@@ -196,6 +196,9 @@ window.handleSignup = async (e) => {
 // Google Login
 window.googleLogin = async () => {
     try {
+        // Force complete Firebase state purge to guarantee Account Selection screen
+        await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js').then(({ signOut }) => signOut(auth));
+
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({
             prompt: 'select_account'

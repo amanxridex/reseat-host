@@ -20,3 +20,30 @@ if (typeof firebase !== 'undefined') {
 }
 
 console.log('✅ Nexus Config Loaded:', window.API_BASE_URL);
+
+// ✅ NEW: Centralized Universal Logout Function
+window.nexusLogout = async function() {
+    try {
+        // Destroy Backend Secure HTTP Session Cookie
+        await fetch(`${window.API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (e) {
+        console.error('Backend logout failed:', e);
+    }
+    
+    // Purge local artifacts natively
+    localStorage.removeItem('nexus_token');
+    localStorage.removeItem('nexus_host');
+    sessionStorage.clear();
+    
+    // Destroy Firebase Auth Object if loaded
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        try { await firebase.auth().signOut(); } catch(e) {}
+    }
+    
+    // Redirect to login explicitly purging history
+    window.location.replace('host-signup-login.html');
+};

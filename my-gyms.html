@@ -138,7 +138,7 @@
                 <i class="fas fa-user-circle" style="font-size: 1.2rem; width: 24px; text-align: center;"></i>
                 <span style="font-weight: 600; font-size: 0.95rem;">Host Profile</span>
             </a>
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-main); transition: 0.2s; cursor: pointer;" onclick="logout()" onmouseover="this.style.background='#fef2f2'; this.style.color='var(--danger)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-main)'">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-main); transition: 0.2s; cursor: pointer;" onclick="nexusLogout()" onmouseover="this.style.background='#fef2f2'; this.style.color='var(--danger)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-main)'">
                 <i class="fas fa-sign-out-alt" style="font-size: 1.2rem; width: 24px; text-align: center;"></i>
                 <span style="font-weight: 600; font-size: 0.95rem;">Logout</span>
             </div>
@@ -156,7 +156,7 @@
                 <a href="create-gym.html" class="btn-primary">
                     <i class="fas fa-plus"></i> Add New
                 </a>
-                <div class="profile" onclick="logout()" style="margin-left: 10px;">
+                <div class="profile" onclick="nexusLogout()" style="margin-left: 10px;">
                     <div class="profile-info" style="text-align: right;">
                         <span class="name">Gym Owner</span>
                         <span class="role" style="color: var(--danger); font-weight: 500;">Logout</span>
@@ -190,7 +190,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <!-- App Logic -->
-    <script src="js/config.js?v=1.1"></script>
+    <script src="js/config.js?v=2.1"></script>
     <script src="js/my-gyms.js"></script>
     <!-- PWA Service Worker Registration -->
     <script>
