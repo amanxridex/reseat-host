@@ -1,6 +1,7 @@
 const API_URL = window.API_BASE_URL || 'https://nexus-host-backend.onrender.com/api';
 let restaurantsCache = [];
 let editImagesCache = [];
+let editMenuImagesCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('nexus_host');
@@ -76,6 +77,23 @@ function renderEditPreviews() {
     `).join('');
 }
 
+function handleEditMenuImages(input) {
+    if (!input.files || input.files.length === 0) return;
+    Array.from(input.files).forEach(file => editMenuImagesCache.push({ file, url: URL.createObjectURL(file) }));
+    renderEditMenuPreviews();
+    input.value = '';
+}
+
+function removeEditMenuImage(index) { editMenuImagesCache.splice(index, 1); renderEditMenuPreviews(); }
+
+function renderEditMenuPreviews() {
+    document.getElementById('editMenuPreviewGrid').innerHTML = editMenuImagesCache.map((img, index) => `
+        <div class="preview-box" style="background-image: url('${img.url || img}')">
+            <button class="remove-btn" type="button" onclick="removeEditMenuImage(${index})"><i class="fas fa-times"></i></button>
+        </div>
+    `).join('');
+}
+
 function openEditModal(id) {
     const r = restaurantsCache.find(x => x.id === id);
     if (!r) return;
@@ -88,6 +106,9 @@ function openEditModal(id) {
     
     editImagesCache = r.images ? [...r.images] : [];
     renderEditPreviews();
+    
+    editMenuImagesCache = r.menu_images ? [...r.menu_images] : [];
+    renderEditMenuPreviews();
     
     document.getElementById('editModal').classList.add('active');
 }
@@ -130,6 +151,35 @@ async function saveEdits() {
         }
     }
     
+    const finalMenuImages = [];
+    for (let i of editMenuImagesCache) {
+        if (typeof i === 'string') {
+            finalMenuImages.push(i);
+        } else if (i.url && i.url.startsWith('http') && !i.url.startsWith('blob:')) {
+            finalMenuImages.push(i.url);
+        } else if (i.file) {
+            // Actively Execute Menu Image Upload Buffer
+            const formData = new FormData();
+            formData.append('file', i.file);
+            try {
+                const token = localStorage.getItem('nexus_token') || '';
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const uploadRes = await fetch(`${window.API_BASE_URL || 'https://nexus-host-backend.onrender.com/api'}/upload/property-image`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: headers,
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (uploadData.success && uploadData.url) {
+                    finalMenuImages.push(uploadData.url);
+                }
+            } catch (err) {
+                console.error("Menu Image Upload Fragment failed:", err);
+            }
+        }
+    }
+    
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Staging...';
 
     const updates = {
@@ -137,7 +187,8 @@ async function saveEdits() {
         cuisines: document.getElementById('editType').value,
         cost_for_two: document.getElementById('editPrice').value,
         address: document.getElementById('editAddress').value,
-        images: finalImages
+        images: finalImages,
+        menu_images: finalMenuImages
     };
     
     try {
