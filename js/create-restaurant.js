@@ -83,10 +83,12 @@ document.getElementById('createRestaurantForm').addEventListener('submit', async
                 const formData = new FormData();
                 formData.append('file', r.file);
                 try {
-                    const token = localStorage.getItem('nexus_token');
+                    const token = localStorage.getItem('nexus_token') || '';
+                    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                     const uploadRes = await fetch(`${API_URL || 'https://nexus-host-backend.onrender.com/api'}/upload/property-image`, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
+                        credentials: 'include',
+                        headers: headers,
                         body: formData
                     });
                     const uploadData = await uploadRes.json();
