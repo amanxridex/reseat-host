@@ -1,295 +1,374 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Create Fest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="css/nexus-fintech.css">
-    <link rel="stylesheet" href="css/create-fest.css">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Nexus Host">
-    <meta name="theme-color" content="#0b0e14">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="nexushostlogo.png">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create A Vibe 🔥</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/nexus-fintech.css">
+    <link rel="stylesheet" href="css/create-fest.css">
+    
+    <!-- Custom styling for the "Viral" Houseparty Builder -->
+    <style>
+        .viral-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .viral-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .viral-header p {
+            color: var(--fin-text-secondary);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Pill Selectors */
+        .pill-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .vibe-radio {
+            display: none;
+        }
+        .vibe-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--fin-bg-light);
+            border: 1px solid var(--fin-border);
+            border-radius: 30px;
+            color: var(--fin-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .vibe-radio:checked + .vibe-label {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #FF6B6B;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+        }
+        
+        /* Time Flex */
+        .time-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .input-group.highlighted input {
+            border-color: #FF8E53 !important;
+            background: rgba(255, 142, 83, 0.05);
+        }
+        .highlighted label {
+            color: #FF8E53 !important;
+        }
+    </style>
+
+    <meta name="application-name" content="Nexus Host">
+    <meta name="theme-color" content="#0b0e14">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="nexushostlogo.png">
     <script src="js/telemetry.js"></script>
-    <script src="js/config.js"></script>
-</head>
-<body>
-
-<div class="app-layout">
-    
-    <!-- 1. LEFT SIDEBAR -->
-    <aside class="app-sidebar" id="sidebar">
-        <div class="app-brand">
-            <div class="brand-icon">N</div>
-            <h2>NEXUS</h2>
-        </div>
-        
-        <nav class="app-nav">
-            <a href="host-dashboard.html" class="app-nav-link" title="Home">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
-                <i class="fas fa-calendar-alt"></i> Fests
-            </a>
-            <a href="my-fests.html" class="app-nav-link" title="My Fests">
-                <i class="fas fa-list"></i> My Fests
-            </a>
-            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
-                <i class="fas fa-qrcode"></i> QR Scanner
-            </a>
-            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
-                <i class="fas fa-plus"></i> Create Fest
-            </a>
-            <a href="analytics.html" class="app-nav-link" title="Analytics">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
-            <a href="payouts.html" class="app-nav-link" title="Payouts">
-                <i class="fas fa-wallet"></i> Payouts
-            </a>
-        </nav>
-        
-        <div class="app-sidebar-footer">
-            <a href="#" class="app-nav-link" onclick="nexusLogout()" style="color: var(--fin-danger);">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
-
-    <!-- 2. MAIN CONTENT -->
-    <main class="app-main">
-        
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-title">
-                <h1>Create New Fest</h1>
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-secondary" onclick="saveDraft()">
-                    <i class="fas fa-save"></i> Save Draft
-                </button>
-            </div>
-        </header>
-
-        <!-- Form Container -->
-        <div class="form-container">
-            <form id="festForm" onsubmit="submitFest(event)">
-                
-                <div id="eventDetailsSection" style="margin-top: 20px;">
-                    <div class="wizard-header" style="margin-bottom: 30px;">
-                        
-                        <h2 id="dynamicDetailsTitle">Create House Party</h2>
-                    </div>
-
-                    <!-- Basic Info Section -->
-                    <section class="form-section">
-                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-                        
-                        <div class="form-grid">
-                            <div class="input-group full-width">
-                                <label class="input-label">Event Name *</label>
-                                <input type="text" class="input-field" name="festName" placeholder="e.g., TechFest 2025" required>
-                            </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Expected Attendance *</label>
-                            <input type="number" class="input-field" name="expectedAttendance" placeholder="e.g., 500" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Start Date *</label>
-                            <input type="date" class="input-field" name="startDate" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">End Date *</label>
-                            <input type="date" class="input-field" name="endDate" required>
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Description *</label>
-                            <textarea class="input-field textarea" name="description" rows="4" placeholder="Describe your fest, events, competitions..." required></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Banner Upload -->
-                <section class="form-section">
-                    <h2><i class="fas fa-image"></i> Fest Banner</h2>
-                    <div class="upload-area" onclick="document.getElementById('bannerInput').click()">
-                        <input type="file" id="bannerInput" accept="image/*" onchange="handleBannerUpload(this)" hidden>
-                        <div class="upload-placeholder" id="bannerPlaceholder">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click to upload banner image</p>
-                            <span>Recommended: 1200 x 600px, Max 5MB</span>
-                        </div>
-                        <div class="upload-preview" id="bannerPreview" style="display: none;">
-                            <img src="" alt="Banner Preview" id="bannerImg">
-                            <button type="button" class="remove-btn" onclick="removeBanner(event)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Ticket Settings -->
-                <section class="form-section">
-                    <h2><i class="fas fa-ticket-alt"></i> Ticket Settings</h2>
-
-                    <!-- Free/Paid Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Ticket Type</h4>
-                                <p id="ticketTypeDesc">This is a free event</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isPaid" onchange="toggleTicketType()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Price Input (Hidden by default) -->
-                        <div class="price-inputs" id="priceInputs" style="display: none;">
-                            <div class="input-group">
-                                <label class="input-label">Ticket Price (₹) *</label>
-                                <input type="number" class="input-field" name="ticketPrice" placeholder="e.g., 199" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">Early Bird Price (Optional)</label>
-                                <input type="number" class="input-field" name="earlyBirdPrice" placeholder="e.g., 149" min="1">
-                                <p class="input-hint">Leave empty if no early bird discount</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Limited/Infinite Seats Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Seat Availability</h4>
-                                <p id="seatsDesc">Limited seats available</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isUnlimited" onchange="toggleSeats()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Seats Input (Hidden when unlimited) -->
-                        <div class="seats-input" id="seatsInput">
-                            <div class="input-group">
-                                <label class="input-label">Total Seats *</label>
-                                <input type="number" class="input-field" name="totalSeats" placeholder="e.g., 500" min="1" value="500">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                
-
-                <!-- Contact Info -->
-                <section class="form-section">
-                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label class="input-label">Coordinator Name *</label>
-                            <input type="text" class="input-field" name="coordinatorName" placeholder="Primary contact person" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Phone Number *</label>
-                            <input type="tel" class="input-field" name="contactPhone" placeholder="+91 98765 43210" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Email *</label>
-                            <input type="email" class="input-field" name="contactEmail" placeholder="fest@college.edu" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">WhatsApp (Optional)</label>
-                            <input type="tel" class="input-field" name="whatsapp" placeholder="For queries">
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Venue/Location *</label>
-                            <input type="text" class="input-field" name="venue" placeholder="e.g., College Auditorium, Main Campus" required>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Terms & Submit -->
-                <section class="form-section">
-                    <div class="checkbox-group terms">
-                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                        <label for="agreeTerms">
-                            I confirm that all information provided is accurate. I have permission from my college to host this event. I agree to Nexus <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>.
-                        </label>
-                    </div>
-
-                    <div class="submit-actions">
-                        <button type="button" class="btn-secondary" onclick="previewFest()">
-                            <i class="fas fa-eye"></i>
-                            Preview
-                        </button>
-                        <button type="submit" class="btn-primary" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            Submit for Approval
-                        </button>
-                    </div>
-                </section>
-
-                </div> <!-- End STEP 2 DETAILS SECTION -->
-            </form>
-        </div>
-    </main>
-</div>
-
-    <!-- Preview Modal -->
-    <div class="modal" id="previewModal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h3>Fest Preview</h3>
-                <button class="modal-close" onclick="closePreview()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="preview-content" id="previewContent">
-                <!-- Preview injected via JS -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePreview()">Edit</button>
-                <button class="btn-primary" onclick="submitFromPreview()">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="success-animation">
-                <div class="checkmark">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <h3>Fest Submitted!</h3>
-            <p>Your fest has been submitted for approval. We'll review and get back to you within 24-48 hours.</p>
-            <button class="btn-primary" onclick="goToDashboard()">
-                Go to Dashboard
-            </button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <script src="js/create-fest.js"></script>
-</body>
-</html>
+    <script src="js/config.js"></script>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    <!-- 1. LEFT SIDEBAR -->
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
+        
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
+                <i class="fas fa-calendar-alt"></i> Fests
+            </a>
+            <a href="my-fests.html" class="app-nav-link" title="My Fests">
+                <i class="fas fa-list"></i> My Fests
+            </a>
+            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
+                <i class="fas fa-qrcode"></i> QR Scanner
+            </a>
+            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
+                <i class="fas fa-plus"></i> Create Fest
+            </a>
+            <a href="analytics.html" class="app-nav-link" title="Analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="payouts.html" class="app-nav-link" title="Payouts">
+                <i class="fas fa-wallet"></i> Payouts
+            </a>
+        </nav>
+        
+        <div class="app-sidebar-footer">
+            <a href="#" class="app-nav-link" onclick="nexusLogout()" style="color: var(--fin-danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN CONTENT -->
+    <main class="app-main">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-title">
+                <h1>Host Portal</h1>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="saveDraft()">
+                    <i class="fas fa-save"></i> Save Draft
+                </button>
+            </div>
+        </header>
+
+        <!-- Form Container -->
+        <div class="form-container" style="max-width: 800px; margin: 0 auto;">
+            <div class="viral-header">
+                <h1>Create a Vibe 🔥</h1>
+                <p>We are not collecting details, we are designing experiences.</p>
+            </div>
+            
+            <form id="festForm" onsubmit="submitFest(event)">
+                
+                <input type="hidden" id="festType" name="festType" value="houseparty">
+
+                <!-- 1. VIBE SETUP -->
+                <section class="form-section">
+                    <h2><i class="fas fa-fire"></i> 1. Vibe Setup</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Title (Keep it cool) *</label>
+                            <input type="text" class="input-field" name="festName" id="festName" placeholder="e.g. Neon Nights Rooftop" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 1.5rem;">
+                        <label class="input-label">What kind of party is this?</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="partyType" id="pt-house" value="House Party" class="vibe-radio" checked>
+                            <label for="pt-house" class="vibe-label">🏠 House Party</label>
+                            
+                            <input type="radio" name="partyType" id="pt-club" value="Club Night" class="vibe-radio">
+                            <label for="pt-club" class="vibe-label">🎧 Club Night</label>
+                            
+                            <input type="radio" name="partyType" id="pt-roof" value="Rooftop" class="vibe-radio">
+                            <label for="pt-roof" class="vibe-label">🌆 Rooftop</label>
+                            
+                            <input type="radio" name="partyType" id="pt-chill" value="Chill Meetup" class="vibe-radio">
+                            <label for="pt-chill" class="vibe-label">🍻 Chill Meetup</label>
+                            
+                            <input type="radio" name="partyType" id="pt-private" value="Private Afterparty" class="vibe-radio">
+                            <label for="pt-private" class="vibe-label">🔒 Private Afterparty</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 1.5rem;">
+                        <label class="input-label">Select Core Vibe 🔥 *</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="coreVibe" id="vibe-wild" value="Crazy/Wild" class="vibe-radio" checked>
+                            <label for="vibe-wild" class="vibe-label">🔥 Crazy / Wild</label>
+                            
+                            <input type="radio" name="coreVibe" id="vibe-chill" value="Chill/Cozy" class="vibe-radio">
+                            <label for="vibe-chill" class="vibe-label">💫 Chill / Cozy</label>
+                            
+                            <input type="radio" name="coreVibe" id="vibe-music" value="Music Heavy" class="vibe-radio">
+                            <label for="vibe-music" class="vibe-label">🎶 Music Heavy</label>
+                            
+                            <input type="radio" name="coreVibe" id="vibe-classy" value="Classy" class="vibe-radio">
+                            <label for="vibe-classy" class="vibe-label">🍷 Classy</label>
+                            
+                            <input type="radio" name="coreVibe" id="vibe-edm" value="Dance/EDM" class="vibe-radio">
+                            <label for="vibe-edm" class="vibe-label">💃 Dance / EDM</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 1.5rem;">
+                        <label class="input-label">The Hook (Description) *</label>
+                        <textarea class="input-field textarea" name="description" id="description" rows="3" placeholder="Get ready for the wildest rooftop party..."></textarea>
+                    </div>
+                </section>
+
+                <!-- 2. AUDIENCE TARGETING -->
+                <section class="form-section">
+                    <h2><i class="fas fa-users-viewfinder"></i> 2. The Crowd</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Age Group</label>
+                            <select class="input-field" id="ageGroup" name="ageGroup">
+                                <option value="18-22">18-22 (College)</option>
+                                <option value="21-26">21-26 (Young Pros)</option>
+                                <option value="25+">25+ (Mature)</option>
+                                <option value="Open">Open to All adults</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Couple Friendly?</label>
+                            <select class="input-field" id="coupleFriendly" name="coupleFriendly">
+                                <option value="Yes">Yes, heavily encouraged 💕</option>
+                                <option value="Neutral">Neutral</option>
+                                <option value="Singles Vibe">Singles Vibe 🕺</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label class="input-label">Entry Rules</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="entryRules" id="entry-open" value="Open" class="vibe-radio" checked>
+                            <label for="entry-open" class="vibe-label">Open</label>
+                            
+                            <input type="radio" name="entryRules" id="entry-approved" value="Approval Required" class="vibe-radio">
+                            <label for="entry-approved" class="vibe-label">🔒 Approval required</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group" style="margin-top: 15px; display: none;">
+                        <input type="number" id="expectedAttendance" value="50">
+                    </div>
+                </section>
+
+                <!-- 3. TIMELINE OF THE NIGHT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-clock"></i> 3. Flow of the Night</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Date *</label>
+                            <input type="date" class="input-field" name="startDate" id="startDate" required>
+                            <input type="hidden" name="endDate" id="endDate">
+                        </div>
+                    </div>
+                    
+                    <div class="time-group" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label class="input-label">Start Time</label>
+                            <input type="time" class="input-field" id="startTime" name="startTime">
+                        </div>
+                        <div class="input-group highlighted">
+                            <label class="input-label">Peak Time 🔥</label>
+                            <input type="time" class="input-field" id="peakTime" name="peakTime" style="font-weight: bold;">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">End Time</label>
+                            <input type="time" class="input-field" id="endTime" name="endTime">
+                        </div>
+                    </div>
+                    
+                </section>
+
+                <!-- 4. LOCATION -->
+                <section class="form-section">
+                    <h2><i class="fas fa-map-marker-alt"></i> 4. Location</h2>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Full Venue Address/Link *</label>
+                            <input type="text" class="input-field" name="venue" id="venue" placeholder="Secret location or exact address" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. SOCIAL LAYER & CONTENT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-share-nodes"></i> 5. Social Layer</h2>
+                    
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Spotify/Apple Music Playlist Link</label>
+                            <input type="url" class="input-field" id="playlistUrl" name="playlistUrl" placeholder="https://open.spotify.com/playlist/...">
+                        </div>
+                        <div class="input-group full-width">
+                            <label class="input-label">Dress Code 👗</label>
+                            <input type="text" class="input-field" id="dressCode" name="dressCode" placeholder="e.g. All Black, Neon, Smart Casual">
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-card" style="margin-top: 15px;">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>Plus Ones Allowed?</h4>
+                                <p>Allow guests to bring unverified +1s</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="allowPlusOnes" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="toggle-card" style="margin-top: 15px;">
+                        <div class="toggle-header">
+                            <div>
+                                <h4>Dynamic Price Scaling 📈</h4>
+                                <p>Automatically increase price as slots fill</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="dynamicPricing" name="dynamicPricing">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 6. REQUIRED FIELDS FOR BACKEND -->
+                <section class="form-section" style="display: none;">
+                    <input type="text" id="coordinatorName" value="Host">
+                    <input type="text" id="contactPhone" value="9999999999">
+                    <input type="text" id="contactEmail" value="host@nexus.com">
+                </section>
+
+                <!-- Terms & Submit -->
+                <section class="form-section">
+                    <div class="submit-actions">
+                        <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%; font-size: 1.1rem; padding: 16px;">
+                            Launch this Experience 🚀
+                        </button>
+                    </div>
+                </section>
+
+            </form>
+        </div>
+    </main>
+</div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-animation">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h3>Vibe Submitted! 🔥</h3>
+            <p>Your experience is being reviewed by the Nexus team. Get ready to go viral!</p>
+            <button class="btn-primary" onclick="window.location.href='host-dashboard.html'">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/create-houseparty.js"></script>
+</body>
+</html>
