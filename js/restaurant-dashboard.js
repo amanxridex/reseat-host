@@ -56,10 +56,15 @@ async function loadStats() {
         const restaurants = resData.data || [];
         
         const liveRests = restaurants.length;
-        // Keep mocked metrics for views/clicks/funnel since the database doesn't track these specifically per restaurant yet
-        const views = "0";
-        const clicks = "0";
-        const funnel = "Tracking...";
+        
+        // Aggregate real metrics from all owned restaurants
+        const totalImpressions = restaurants.reduce((sum, r) => sum + parseInt(r.impressions_count || 0), 0);
+        const totalClicks = restaurants.reduce((sum, r) => sum + parseInt(r.clicks_count || 0), 0);
+        
+        const views = totalImpressions.toLocaleString();
+        const clicks = totalClicks.toLocaleString();
+        const ctr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100).toFixed(1) + '%' : "0%";
+        const funnel = `Avg CTR: ${ctr}`;
 
         document.getElementById('statTotalLive').textContent = liveRests;
         document.getElementById('statTotalViews').textContent = views;
@@ -84,9 +89,8 @@ async function loadStats() {
             
             restaurants.forEach((rest, index) => {
                 const bgClass = backgrounds[index % backgrounds.length];
-                const revenue = "0"; // Mock revenue metric per location
-                
-                const imgHTML = ``;
+                const viewsStr = (rest.impressions_count || 0).toLocaleString();
+                const clicksStr = (rest.clicks_count || 0).toLocaleString();
 
                 html += `
                     <div class="color-chunk ${bgClass}">
@@ -98,9 +102,15 @@ async function loadStats() {
                             <small>Status: ${rest.status.toUpperCase()}</small>
                             <h4>${rest.name}</h4>
                         </div>
-                        <div class="chunk-bot">
-                            <h2 class="amount">${revenue.toLocaleString()}₹</h2>
-                            ${imgHTML}
+                        <div class="chunk-bot" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                            <div>
+                                <small style="opacity:0.8;">Views</small>
+                                <h3 style="margin:0;">${viewsStr}</h3>
+                            </div>
+                            <div style="text-align:right;">
+                                <small style="opacity:0.8;">Clicks</small>
+                                <h3 style="margin:0;">${clicksStr}</h3>
+                            </div>
                         </div>
                     </div>
                 `;
