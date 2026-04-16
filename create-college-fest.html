@@ -1,361 +1,674 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Create Fest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="css/nexus-fintech.css">
-    <link rel="stylesheet" href="css/create-fest.css">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Nexus Host">
-    <meta name="theme-color" content="#0b0e14">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="nexushostlogo.png">
-    <script src="js/telemetry.js"></script>
-    <script src="js/config.js"></script>
-</head>
-<body>
-
-<div class="app-layout">
-    
-    <!-- 1. LEFT SIDEBAR -->
-    <aside class="app-sidebar" id="sidebar">
-        <div class="app-brand">
-            <div class="brand-icon">N</div>
-            <h2>NEXUS</h2>
-        </div>
-        
-        <nav class="app-nav">
-            <a href="host-dashboard.html" class="app-nav-link" title="Home">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
-                <i class="fas fa-calendar-alt"></i> Fests
-            </a>
-            <a href="my-fests.html" class="app-nav-link" title="My Fests">
-                <i class="fas fa-list"></i> My Fests
-            </a>
-            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
-                <i class="fas fa-qrcode"></i> QR Scanner
-            </a>
-            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
-                <i class="fas fa-plus"></i> Create Fest
-            </a>
-            <a href="analytics.html" class="app-nav-link" title="Analytics">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
-            <a href="payouts.html" class="app-nav-link" title="Payouts">
-                <i class="fas fa-wallet"></i> Payouts
-            </a>
-        </nav>
-        
-        <div class="app-sidebar-footer">
-            <a href="#" class="app-nav-link" onclick="nexusLogout()" style="color: var(--fin-danger);">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
-
-    <!-- 2. MAIN CONTENT -->
-    <main class="app-main">
-        
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-title">
-                <h1>Create New Fest</h1>
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-secondary" onclick="saveDraft()">
-                    <i class="fas fa-save"></i> Save Draft
-                </button>
-            </div>
-        </header>
-
-        <!-- Form Container -->
-        <div class="form-container">
-            <form id="festForm" onsubmit="submitFest(event)">
-                
-                <div id="eventDetailsSection" style="margin-top: 20px;">
-                    <div class="wizard-header" style="margin-bottom: 30px;">
-                        
-                        <h2 id="dynamicDetailsTitle">Create College Fest</h2>
-                    </div>
-
-                    <!-- Basic Info Section -->
-                    <section class="form-section">
-                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-                        
-                        <div class="form-grid">
-                            <div class="input-group full-width">
-                                <label class="input-label">Event Name *</label>
-                                <input type="text" class="input-field" name="festName" placeholder="e.g., TechFest 2025" required>
-                            </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Expected Attendance *</label>
-                            <input type="number" class="input-field" name="expectedAttendance" placeholder="e.g., 500" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Start Date *</label>
-                            <input type="date" class="input-field" name="startDate" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">End Date *</label>
-                            <input type="date" class="input-field" name="endDate" required>
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Description *</label>
-                            <textarea class="input-field textarea" name="description" rows="4" placeholder="Describe your fest, events, competitions..." required></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Banner Upload -->
-                <section class="form-section">
-                    <h2><i class="fas fa-image"></i> Fest Banner</h2>
-                    <div class="upload-area" onclick="document.getElementById('bannerInput').click()">
-                        <input type="file" id="bannerInput" accept="image/*" onchange="handleBannerUpload(this)" hidden>
-                        <div class="upload-placeholder" id="bannerPlaceholder">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click to upload banner image</p>
-                            <span>Recommended: 1200 x 600px, Max 5MB</span>
-                        </div>
-                        <div class="upload-preview" id="bannerPreview" style="display: none;">
-                            <img src="" alt="Banner Preview" id="bannerImg">
-                            <button type="button" class="remove-btn" onclick="removeBanner(event)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Ticket Settings -->
-                <section class="form-section">
-                    <h2><i class="fas fa-ticket-alt"></i> Ticket Settings</h2>
-
-                    <!-- Free/Paid Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Ticket Type</h4>
-                                <p id="ticketTypeDesc">This is a free event</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isPaid" onchange="toggleTicketType()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Price Input (Hidden by default) -->
-                        <div class="price-inputs" id="priceInputs" style="display: none;">
-                            <div class="input-group">
-                                <label class="input-label">Ticket Price (₹) *</label>
-                                <input type="number" class="input-field" name="ticketPrice" placeholder="e.g., 199" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">Early Bird Price (Optional)</label>
-                                <input type="number" class="input-field" name="earlyBirdPrice" placeholder="e.g., 149" min="1">
-                                <p class="input-hint">Leave empty if no early bird discount</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Limited/Infinite Seats Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Seat Availability</h4>
-                                <p id="seatsDesc">Limited seats available</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isUnlimited" onchange="toggleSeats()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Seats Input (Hidden when unlimited) -->
-                        <div class="seats-input" id="seatsInput">
-                            <div class="input-group">
-                                <label class="input-label">Total Seats *</label>
-                                <input type="number" class="input-field" name="totalSeats" placeholder="e.g., 500" min="1" value="500">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Audience Settings -->
-                <section class="form-section">
-                    <h2><i class="fas fa-users"></i> Audience Settings</h2>
-
-                    <!-- Same/Outside College Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Who can attend?</h4>
-                                <p id="audienceDesc">Only students from my college</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="allowOutside" onchange="toggleAudience()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Outside College Options -->
-                        <div class="outside-options" id="outsideOptions" style="display: none;">
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="otherColleges" name="otherColleges">
-                                <label for="otherColleges">Allow students from other colleges</label>
-                            </div>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="generalPublic" name="generalPublic">
-                                <label for="generalPublic">Allow general public</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ID Card Required Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>ID Verification Required</h4>
-                                <p>Ask for college ID during registration</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="idRequired" name="idRequired" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- ID Fields Selection -->
-                        <div class="id-fields" id="idFields">
-                            <p class="field-label">Required ID Information:</p>
-                            <div class="checkbox-grid">
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="idCardNumber" name="idFields" value="idNumber" checked>
-                                    <label for="idCardNumber">ID Card Number</label>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="rollNumber" name="idFields" value="rollNumber" checked>
-                                    <label for="rollNumber">Roll/Registration Number</label>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="department" name="idFields" value="department">
-                                    <label for="department">Department/Branch</label>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="year" name="idFields" value="year">
-                                    <label for="year">Year of Study</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Contact Info -->
-                <section class="form-section">
-                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label class="input-label">Coordinator Name *</label>
-                            <input type="text" class="input-field" name="coordinatorName" placeholder="Primary contact person" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Phone Number *</label>
-                            <input type="tel" class="input-field" name="contactPhone" placeholder="+91 98765 43210" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Email *</label>
-                            <input type="email" class="input-field" name="contactEmail" placeholder="fest@college.edu" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">WhatsApp (Optional)</label>
-                            <input type="tel" class="input-field" name="whatsapp" placeholder="For queries">
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Venue/Location *</label>
-                            <input type="text" class="input-field" name="venue" placeholder="e.g., College Auditorium, Main Campus" required>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Terms & Submit -->
-                <section class="form-section">
-                    <div class="checkbox-group terms">
-                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                        <label for="agreeTerms">
-                            I confirm that all information provided is accurate. I have permission from my college to host this event. I agree to Nexus <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>.
-                        </label>
-                    </div>
-
-                    <div class="submit-actions">
-                        <button type="button" class="btn-secondary" onclick="previewFest()">
-                            <i class="fas fa-eye"></i>
-                            Preview
-                        </button>
-                        <button type="submit" class="btn-primary" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            Submit for Approval
-                        </button>
-                    </div>
-                </section>
-
-                </div> <!-- End STEP 2 DETAILS SECTION -->
-            </form>
-        </div>
-    </main>
-</div>
-
-    <!-- Preview Modal -->
-    <div class="modal" id="previewModal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h3>Fest Preview</h3>
-                <button class="modal-close" onclick="closePreview()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="preview-content" id="previewContent">
-                <!-- Preview injected via JS -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePreview()">Edit</button>
-                <button class="btn-primary" onclick="submitFromPreview()">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="success-animation">
-                <div class="checkmark">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <h3>Fest Submitted!</h3>
-            <p>Your fest has been submitted for approval. We'll review and get back to you within 24-48 hours.</p>
-            <button class="btn-primary" onclick="goToDashboard()">
-                Go to Dashboard
-            </button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <script src="js/create-fest.js"></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create College Fest 🚀</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/nexus-fintech.css">
+    <link rel="stylesheet" href="css/create-fest.css">
+    
+    <style>
+        .viral-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .viral-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .viral-header p {
+            color: var(--fin-text-secondary);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .pill-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .vibe-radio, .vibe-checkbox {
+            display: none;
+        }
+        .vibe-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--fin-bg-light);
+            border: 1px solid var(--fin-border);
+            border-radius: 30px;
+            color: var(--fin-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .vibe-radio:checked + .vibe-label, .vibe-checkbox:checked + .vibe-label {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3B82F6;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .ai-gen-btn {
+            background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        .ai-gen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Dynamic Events logic */
+        .dynamic-events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .dynamic-event-row {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--fin-border);
+            border-radius: 12px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        @media (max-width: 768px) {
+            .dynamic-event-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .btn-add-event {
+            background: transparent;
+            color: #10B981;
+            border: 1px solid #10B981;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .btn-remove-event {
+            background: transparent;
+            color: #EF4444;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Timeline / Day Wise Plan */
+        .timeline-container {
+            margin-top: 15px;
+        }
+        .timeline-day {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .timeline-day-label {
+            background: #2D3748;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .slider-container { width: 100%; margin-top: 15px; }
+        .split-labels { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; color: #fff; }
+        .styled-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #10B981 0%, #3B82F6 100%);
+            outline: none;
+        }
+        .styled-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        select.input-field option { background-color: #0b0e14; color: #ffffff; }
+
+        /* Instagram card preview */
+        .insta-preview-card {
+            background: #ffffff;
+            color: #000;
+            border-radius: 12px;
+            width: 320px;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .insta-header {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            gap: 10px;
+        }
+        .insta-avatar {
+            width: 32px;
+            height: 32px;
+            background: #eee;
+            border-radius: 50%;
+        }
+        .insta-body img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+        .insta-footer {
+            padding: 12px;
+        }
+        .insta-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        .insta-text strong {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home"><i class="fas fa-home"></i> Home</a>
+            <a href="fest-dashboard.html" class="app-nav-link" title="Fests"><i class="fas fa-calendar-alt"></i> Fests</a>
+            <a href="create-fest.html" class="app-nav-link active" title="Create Fest"><i class="fas fa-plus"></i> Create Fest</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+        <header class="app-header">
+            <div class="header-title">
+                <h1>Host Portal</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+            </div>
+        </header>
+
+        <div class="form-container" style="max-width: 900px; margin: 0 auto;">
+            <div class="viral-header">
+                <h1>Create your Fest Experience 🚀</h1>
+                <p>Not just another boring form. Build an electrifying college festival page.</p>
+            </div>
+            
+            <form id="festForm" onsubmit="submitFest(event)">
+                
+                <input type="hidden" id="festType" name="festType" value="college">
+
+                <!-- 1. FEST IDENTITY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-crown"></i> STEP 1: Fest Identity</h2>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Fest Name *</label>
+                            <input type="text" class="input-field" name="festName" id="festName" placeholder="e.g., TechFest 2025" required>
+                        </div>
+                        <div class="input-group full-width">
+                            <label class="input-label">Tagline (NEW 🔥) *</label>
+                            <input type="text" class="input-field" id="tagline" placeholder="e.g., India's biggest student tech showdown" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Fest Type</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="typeTags" id="t-tech" value="Tech" class="vibe-checkbox" checked>
+                            <label for="t-tech" class="vibe-label">⚙️ Tech</label>
+                            <input type="checkbox" name="typeTags" id="t-cult" value="Cultural" class="vibe-checkbox">
+                            <label for="t-cult" class="vibe-label">🎭 Cultural</label>
+                            <input type="checkbox" name="typeTags" id="t-sports" value="Sports" class="vibe-checkbox">
+                            <label for="t-sports" class="vibe-label">🏆 Sports</label>
+                            <input type="checkbox" name="typeTags" id="t-mixed" value="Mixed" class="vibe-checkbox">
+                            <label for="t-mixed" class="vibe-label">🎉 Mixed</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Select Vibe (IMPORTANT) 🔥</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="coreVibe" id="v-energetic" value="Energetic" class="vibe-radio" checked>
+                            <label for="v-energetic" class="vibe-label">🔥 Energetic</label>
+                            <input type="radio" name="coreVibe" id="v-musical" value="Musical" class="vibe-radio">
+                            <label for="v-musical" class="vibe-label">🎶 Musical</label>
+                            <input type="radio" name="coreVibe" id="v-intel" value="Intellectual" class="vibe-radio">
+                            <label for="v-intel" class="vibe-label">🧠 Intellectual</label>
+                            <input type="radio" name="coreVibe" id="v-party" value="Party" class="vibe-radio">
+                            <label for="v-party" class="vibe-label">🎉 Party</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. WHAT'S HAPPENING INSIDE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-bolt"></i> STEP 2: What's Happening Inside</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom: 15px;">Replace boring descriptions with structured, punchy content.</p>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Highlights (Select or Add)</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="highlights" id="h-hack" value="Hackathon" class="vibe-checkbox" checked>
+                            <label for="h-hack" class="vibe-label">💻 Hackathon</label>
+                            <input type="checkbox" name="highlights" id="h-dj" value="DJ Night" class="vibe-checkbox">
+                            <label for="h-dj" class="vibe-label">🎧 DJ Night</label>
+                            <input type="checkbox" name="highlights" id="h-standup" value="Standup" class="vibe-checkbox">
+                            <label for="h-standup" class="vibe-label">🎤 Standup</label>
+                            <input type="checkbox" name="highlights" id="h-comp" value="Competitions" class="vibe-checkbox">
+                            <label for="h-comp" class="vibe-label">🏁 Competitions</label>
+                            <input type="checkbox" name="highlights" id="h-work" value="Workshops" class="vibe-checkbox">
+                            <label for="h-work" class="vibe-label">📚 Workshops</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 25px;">
+                        <label class="input-label">Dynamic Events Sub-Roster</label>
+                        <div class="dynamic-events-container" id="eventsContainer">
+                            <!-- Default event row -->
+                            <div class="dynamic-event-row">
+                                <input type="text" class="input-field evt-name" placeholder="Event Name (e.g. Robo Wars)">
+                                <input type="time" class="input-field evt-time">
+                                <input type="number" class="input-field evt-prize" placeholder="Prize (₹)">
+                                <select class="input-field evt-type">
+                                    <option value="Free">Free</option>
+                                    <option value="Paid">Paid</option>
+                                </select>
+                                <button type="button" class="btn-remove-event" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-event" onclick="addEventRow()">
+                            <i class="fas fa-plus"></i> Add Sub-Event
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 3. AUDIENCE & ACCESS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-users-viewfinder"></i> STEP 3: Audience & Access</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Who can attend?</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="audience" id="a-mycollege" value="Only my college" class="vibe-radio">
+                            <label for="a-mycollege" class="vibe-label">🏫 Only my college</label>
+                            <input type="radio" name="audience" id="a-allcollege" value="All colleges" class="vibe-radio" checked>
+                            <label for="a-allcollege" class="vibe-label">🎓 All colleges</label>
+                            <input type="radio" name="audience" id="a-public" value="Open public" class="vibe-radio">
+                            <label for="a-public" class="vibe-label">🌍 Open public</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 20px;">
+                        <label class="input-label">Expected Attendance 🔥</label>
+                        <div class="slider-container">
+                            <div class="split-labels">
+                                <span>100</span>
+                                <span id="attendanceVal">5000</span>
+                                <span>10,000+</span>
+                            </div>
+                            <input type="range" id="attendanceSlider" min="100" max="10000" step="100" value="5000" class="styled-slider" oninput="document.getElementById('attendanceVal').innerText = this.value">
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 20px;">
+                        <div class="input-group">
+                            <label class="input-label">Outstation crowd expected?</label>
+                            <select class="input-field" id="outstation">
+                                <option value="Yes">Yes</option>
+                                <option value="No" selected>No</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">ID Verification Required?</label>
+                            <select class="input-field" id="requireID" onchange="toggleIDFields(this.value)">
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" id="idFieldsContainer" style="margin-top: 15px;">
+                        <label class="input-label">If YES, require:</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="idFields" id="idf-num" value="ID Card Number" class="vibe-checkbox" checked>
+                            <label for="idf-num" class="vibe-label">💳 ID Card Number</label>
+                            <input type="checkbox" name="idFields" id="idf-col" value="College Name" class="vibe-checkbox" checked>
+                            <label for="idf-col" class="vibe-label">🏫 College Name</label>
+                            <input type="checkbox" name="idFields" id="idf-yr" value="Year" class="vibe-checkbox">
+                            <label for="idf-yr" class="vibe-label">📅 Year</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. FEST TIMELINE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-calendar-week"></i> STEP 4: Fest Timeline</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Start Date *</label>
+                            <input type="date" class="input-field" id="startDate" name="startDate" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">End Date *</label>
+                            <input type="date" class="input-field" id="endDate" name="endDate" required onchange="generateTimeline()">
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 20px;">
+                        <label class="input-label">Day-wise Plan (IMPORTANT🔥)</label>
+                        <p style="color:#aaa; font-size:0.85rem; margin-bottom: 15px;">Set your dates to generate timeline rows. E.g. Day 1: Opening, Day 2: DJ Night</p>
+                        <div class="timeline-container" id="timelineContainer">
+                            <!-- Populated by JS -->
+                            <div style="color:var(--fin-text-secondary); font-style: italic;">Select Start and End dates to build timeline.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. VENUE EXPERIENCE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-map-marker-alt"></i> STEP 5: Venue Experience</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Venue Name *</label>
+                            <input type="text" class="input-field" id="venueName" placeholder="e.g. SRM Main Campus" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">City/Location *</label>
+                            <input type="text" class="input-field" name="venue" id="venue" placeholder="e.g. Chennai" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Venue Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="venueType" id="vt-camp" value="Campus" class="vibe-radio" checked>
+                            <label for="vt-camp" class="vibe-label">🏫 Campus</label>
+                            <input type="radio" name="venueType" id="vt-aud" value="Auditorium" class="vibe-radio">
+                            <label for="vt-aud" class="vibe-label">🎭 Auditorium</label>
+                            <input type="radio" name="venueType" id="vt-open" value="Open Ground" class="vibe-radio">
+                            <label for="vt-open" class="vibe-label">🌳 Open Ground</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Facilities (NEW 🔥)</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="facilities" id="f-food" value="Food Stalls" class="vibe-checkbox" checked>
+                            <label for="f-food" class="vibe-label">🍔 Food stalls</label>
+                            <input type="checkbox" name="facilities" id="f-park" value="Parking" class="vibe-checkbox" checked>
+                            <label for="f-park" class="vibe-label">🚗 Parking</label>
+                            <input type="checkbox" name="facilities" id="f-acc" value="Accommodation" class="vibe-checkbox">
+                            <label for="f-acc" class="vibe-label">🛏️ Accommodation</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. TICKETS & PASSES -->
+                <section class="form-section">
+                    <h2><i class="fas fa-ticket-alt"></i> STEP 6: Tickets & Passes</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Entry Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="entryType" id="et-free" value="Free" class="vibe-radio" onchange="toggleTicketLogic()">
+                            <label for="et-free" class="vibe-label">🆓 Free</label>
+                            <input type="radio" name="entryType" id="et-paid" value="Paid" class="vibe-radio" checked onchange="toggleTicketLogic()">
+                            <label for="et-paid" class="vibe-label">💳 Paid</label>
+                            <input type="radio" name="entryType" id="et-pass" value="Pass-based" class="vibe-radio" onchange="toggleTicketLogic()">
+                            <label for="et-pass" class="vibe-label">🎟️ Pass-based</label>
+                        </div>
+                    </div>
+
+                    <div id="paidTicketSection" style="margin-top: 20px;">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label class="input-label">Ticket Price (₹)</label>
+                                <input type="number" class="input-field" id="ticketPrice" value="499">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Early Bird Price (₹)</label>
+                                <input type="number" class="input-field" id="earlyP" value="299">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Total Seats / Passes</label>
+                                <input type="number" class="input-field" id="totalSeats" value="2000">
+                            </div>
+                        </div>
+
+                        <div class="input-group full-width" style="margin-top: 20px;">
+                            <label class="input-label">Pricing Type (NEW SMART 🔥)</label>
+                            <div class="pill-grid">
+                                <input type="radio" name="pricingType" id="pt-fix" value="Fixed" class="vibe-radio" checked>
+                                <label for="pt-fix" class="vibe-label">Fixed</label>
+                                <input type="radio" name="pricingType" id="pt-dyn" value="Dynamic" class="vibe-radio">
+                                <label for="pt-dyn" class="vibe-label">📈 Dynamic (price rises as seats fill 🔥)</label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. MEDIA & VIRALITY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-camera"></i> STEP 7: Media & Virality</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Promo Video URL (NEW 🔥) - Builds Instant Trust</label>
+                        <input type="url" class="input-field" id="promoVideo" placeholder="https://youtube.com/shorts/... or Insta Reel link">
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label class="input-label">Instagram Handle</label>
+                            <input type="text" class="input-field" id="instaHandle" placeholder="@techfest_official">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Upload Fest Banner *</label>
+                            <input type="file" id="bannerInput" class="input-field" accept="image/*" style="padding: 10px;" onchange="handleBannerUpload(this)">
+                            <img id="bannerPlaceholder" style="display:none; max-height: 150px; margin-top: 10px; border-radius: 8px;" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. HYPE BUILDER (AI FEATURE) -->
+                <section class="form-section">
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> STEP 8: Hype Builder (AI)</h2>
+                    <p style="color:#aaa; font-size:0.9rem;">Ditch the boring textareas. Let AI write an electrifying pitch.</p>
+                    
+                    <button type="button" class="ai-gen-btn" onclick="generateAIDescription()">
+                        <i class="fas fa-robot"></i> Generate Fest Description
+                    </button>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <textarea class="input-field textarea" name="description" id="description" rows="5" placeholder="Your generated description will appear here..." required></textarea>
+                    </div>
+                </section>
+
+                <!-- 9. SOCIAL & DISCOVERY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-globe"></i> STEP 9: Social & Discovery</h2>
+                    <div class="input-group full-width">
+                        <label class="input-label">Best for:</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="bestFor" id="bf-net" value="Networking" class="vibe-checkbox" checked>
+                            <label for="bf-net" class="vibe-label">🤝 Networking</label>
+                            <input type="checkbox" name="bestFor" id="bf-fun" value="Fun" class="vibe-checkbox" checked>
+                            <label for="bf-fun" class="vibe-label">🎉 Fun</label>
+                            <input type="checkbox" name="bestFor" id="bf-comp" value="Competitions" class="vibe-checkbox">
+                            <label for="bf-comp" class="vibe-label">🏆 Competitions</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label class="input-label">Allow Group Registrations?</label>
+                            <select class="input-field" id="groupReg">
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Friends Attending feature</label>
+                            <select class="input-field" id="friendsAttending" disabled>
+                                <option value="Yes" selected>Enabled (Coming Soon)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. CONTACT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-address-book"></i> STEP 10: Logistics & Contact</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Coordinator Name *</label>
+                            <input type="text" class="input-field" id="coordinatorName" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Phone *</label>
+                            <input type="text" class="input-field" id="contactPhone" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Email *</label>
+                            <input type="email" class="input-field" id="contactEmail" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">WhatsApp</label>
+                            <input type="text" class="input-field" id="contactWhatsApp">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. TRUST & FINAL -->
+                <section class="form-section">
+                    <h2><i class="fas fa-shield-alt"></i> STEP 11: Trust & Confirmation</h2>
+                    <div class="pill-grid" style="flex-direction: column;">
+                        <label style="display:flex; align-items:center; gap: 10px; color: #fff; margin-bottom: 10px;">
+                            <input type="checkbox" required style="width:20px; height:20px;">
+                            ✔ I confirm this fest is officially approved by the college/organization
+                        </label>
+                        <label style="display:flex; align-items:center; gap: 10px; color: #fff;">
+                            <input type="checkbox" required style="width:20px; height:20px;">
+                            ✔ I agree to Nexus Host Guidelines
+                        </label>
+                    </div>
+
+                    <div class="submit-actions" style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" style="flex:1;" onclick="buildLivePreview()">
+                            <i class="fas fa-eye"></i> LIVE PREVIEW
+                        </button>
+                        <button type="submit" class="btn-primary" id="submitBtn" style="flex:2; font-size: 1.1rem;">
+                            Launch Experience 🚀
+                        </button>
+                    </div>
+                </section>
+
+            </form>
+        </div>
+    </main>
+</div>
+
+    <!-- LIVE PREVIEW MODAL -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content" style="max-width: 400px; background: transparent; border: none; box-shadow: none;">
+            <div class="insta-preview-card" id="instaCard">
+                <div class="insta-header">
+                    <div class="insta-avatar"></div>
+                    <strong style="color:#000;" id="prevInsta">@nexus_fest</strong>
+                </div>
+                <div class="insta-body">
+                    <img id="prevImg" src="https://placehold.co/400x400/10B981/ffffff?text=College+Fest" />
+                </div>
+                <div class="insta-footer">
+                    <div class="insta-actions">
+                        <i class="far fa-heart"></i>
+                        <i class="far fa-comment"></i>
+                        <i class="far fa-paper-plane"></i>
+                    </div>
+                    <div class="insta-text">
+                        <span id="prevName" style="font-weight: bold;">TechFest 2025</span> - <span id="prevTagline" style="color:#555;">India's biggest tech showdown</span><br>
+                        <span style="color:#888; font-size:0.85em;" id="prevHighlights">Hackathon • DJ Night</span><br>
+                        <div style="margin-top:8px; padding:8px; background:#f0f0f0; border-radius:8px; text-align:center; font-weight:bold; color:#10B981;">
+                            <span id="prevTicket">Tickets from ₹499 | Register Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align:center; margin-top: 20px;">
+                <button class="btn-secondary" onclick="document.getElementById('previewModal').classList.remove('active')" style="background: #222; color: #fff;">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-animation">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h3>Experience Created! 🚀</h3>
+            <p>Your college fest has been submitted to Admin. Prepare for the hype!</p>
+            <button class="btn-primary" onclick="window.location.href='host-dashboard.html'">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/create-college-fest.js"></script>
+</body>
+</html>
