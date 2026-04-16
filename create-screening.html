@@ -605,14 +605,14 @@
     <script>
         // Inline UI logic for sliders and cheer meter
         function updateTeamSplit(val) {
-            const teamA = 100 - val;
-            const teamB = val;
+            const teamA = val;
+            const teamB = 100 - val;
             document.getElementById('teamALabel').innerText = `Team A: ${teamA}%`;
             document.getElementById('teamBLabel').innerText = `Team B: ${teamB}%`;
             
             // update gradient
             const slider = document.getElementById('teamSplitSlider');
-            slider.style.background = `linear-gradient(90deg, #3B82F6 ${100-val}%, #EF4444 ${100-val}%)`;
+            slider.style.background = `linear-gradient(90deg, #3B82F6 ${val}%, #EF4444 ${val}%)`;
         }
 
         let cheersA = 0;
