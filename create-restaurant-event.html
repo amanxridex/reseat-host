@@ -1,295 +1,516 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Create Fest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="css/nexus-fintech.css">
-    <link rel="stylesheet" href="css/create-fest.css">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Nexus Host">
-    <meta name="theme-color" content="#0b0e14">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="nexushostlogo.png">
-    <script src="js/telemetry.js"></script>
-    <script src="js/config.js"></script>
-</head>
-<body>
-
-<div class="app-layout">
-    
-    <!-- 1. LEFT SIDEBAR -->
-    <aside class="app-sidebar" id="sidebar">
-        <div class="app-brand">
-            <div class="brand-icon">N</div>
-            <h2>NEXUS</h2>
-        </div>
-        
-        <nav class="app-nav">
-            <a href="host-dashboard.html" class="app-nav-link" title="Home">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
-                <i class="fas fa-calendar-alt"></i> Fests
-            </a>
-            <a href="my-fests.html" class="app-nav-link" title="My Fests">
-                <i class="fas fa-list"></i> My Fests
-            </a>
-            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
-                <i class="fas fa-qrcode"></i> QR Scanner
-            </a>
-            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
-                <i class="fas fa-plus"></i> Create Fest
-            </a>
-            <a href="analytics.html" class="app-nav-link" title="Analytics">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
-            <a href="payouts.html" class="app-nav-link" title="Payouts">
-                <i class="fas fa-wallet"></i> Payouts
-            </a>
-        </nav>
-        
-        <div class="app-sidebar-footer">
-            <a href="#" class="app-nav-link" onclick="nexusLogout()" style="color: var(--fin-danger);">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
-
-    <!-- 2. MAIN CONTENT -->
-    <main class="app-main">
-        
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-title">
-                <h1>Create New Fest</h1>
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-secondary" onclick="saveDraft()">
-                    <i class="fas fa-save"></i> Save Draft
-                </button>
-            </div>
-        </header>
-
-        <!-- Form Container -->
-        <div class="form-container">
-            <form id="festForm" onsubmit="submitFest(event)">
-                
-                <div id="eventDetailsSection" style="margin-top: 20px;">
-                    <div class="wizard-header" style="margin-bottom: 30px;">
-                        
-                        <h2 id="dynamicDetailsTitle">Create Restaurant Event</h2>
-                    </div>
-
-                    <!-- Basic Info Section -->
-                    <section class="form-section">
-                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-                        
-                        <div class="form-grid">
-                            <div class="input-group full-width">
-                                <label class="input-label">Event Name *</label>
-                                <input type="text" class="input-field" name="festName" placeholder="e.g., TechFest 2025" required>
-                            </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Expected Attendance *</label>
-                            <input type="number" class="input-field" name="expectedAttendance" placeholder="e.g., 500" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Start Date *</label>
-                            <input type="date" class="input-field" name="startDate" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">End Date *</label>
-                            <input type="date" class="input-field" name="endDate" required>
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Description *</label>
-                            <textarea class="input-field textarea" name="description" rows="4" placeholder="Describe your fest, events, competitions..." required></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Banner Upload -->
-                <section class="form-section">
-                    <h2><i class="fas fa-image"></i> Fest Banner</h2>
-                    <div class="upload-area" onclick="document.getElementById('bannerInput').click()">
-                        <input type="file" id="bannerInput" accept="image/*" onchange="handleBannerUpload(this)" hidden>
-                        <div class="upload-placeholder" id="bannerPlaceholder">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click to upload banner image</p>
-                            <span>Recommended: 1200 x 600px, Max 5MB</span>
-                        </div>
-                        <div class="upload-preview" id="bannerPreview" style="display: none;">
-                            <img src="" alt="Banner Preview" id="bannerImg">
-                            <button type="button" class="remove-btn" onclick="removeBanner(event)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Ticket Settings -->
-                <section class="form-section">
-                    <h2><i class="fas fa-ticket-alt"></i> Ticket Settings</h2>
-
-                    <!-- Free/Paid Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Ticket Type</h4>
-                                <p id="ticketTypeDesc">This is a free event</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isPaid" onchange="toggleTicketType()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Price Input (Hidden by default) -->
-                        <div class="price-inputs" id="priceInputs" style="display: none;">
-                            <div class="input-group">
-                                <label class="input-label">Ticket Price (₹) *</label>
-                                <input type="number" class="input-field" name="ticketPrice" placeholder="e.g., 199" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">Early Bird Price (Optional)</label>
-                                <input type="number" class="input-field" name="earlyBirdPrice" placeholder="e.g., 149" min="1">
-                                <p class="input-hint">Leave empty if no early bird discount</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Limited/Infinite Seats Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Seat Availability</h4>
-                                <p id="seatsDesc">Limited seats available</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isUnlimited" onchange="toggleSeats()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Seats Input (Hidden when unlimited) -->
-                        <div class="seats-input" id="seatsInput">
-                            <div class="input-group">
-                                <label class="input-label">Total Seats *</label>
-                                <input type="number" class="input-field" name="totalSeats" placeholder="e.g., 500" min="1" value="500">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                
-
-                <!-- Contact Info -->
-                <section class="form-section">
-                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label class="input-label">Coordinator Name *</label>
-                            <input type="text" class="input-field" name="coordinatorName" placeholder="Primary contact person" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Phone Number *</label>
-                            <input type="tel" class="input-field" name="contactPhone" placeholder="+91 98765 43210" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Email *</label>
-                            <input type="email" class="input-field" name="contactEmail" placeholder="fest@college.edu" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">WhatsApp (Optional)</label>
-                            <input type="tel" class="input-field" name="whatsapp" placeholder="For queries">
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Venue/Location *</label>
-                            <input type="text" class="input-field" name="venue" placeholder="e.g., College Auditorium, Main Campus" required>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Terms & Submit -->
-                <section class="form-section">
-                    <div class="checkbox-group terms">
-                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                        <label for="agreeTerms">
-                            I confirm that all information provided is accurate. I have permission from my college to host this event. I agree to Nexus <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>.
-                        </label>
-                    </div>
-
-                    <div class="submit-actions">
-                        <button type="button" class="btn-secondary" onclick="previewFest()">
-                            <i class="fas fa-eye"></i>
-                            Preview
-                        </button>
-                        <button type="submit" class="btn-primary" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            Submit for Approval
-                        </button>
-                    </div>
-                </section>
-
-                </div> <!-- End STEP 2 DETAILS SECTION -->
-            </form>
-        </div>
-    </main>
-</div>
-
-    <!-- Preview Modal -->
-    <div class="modal" id="previewModal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h3>Fest Preview</h3>
-                <button class="modal-close" onclick="closePreview()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="preview-content" id="previewContent">
-                <!-- Preview injected via JS -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePreview()">Edit</button>
-                <button class="btn-primary" onclick="submitFromPreview()">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="success-animation">
-                <div class="checkmark">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <h3>Fest Submitted!</h3>
-            <p>Your fest has been submitted for approval. We'll review and get back to you within 24-48 hours.</p>
-            <button class="btn-primary" onclick="goToDashboard()">
-                Go to Dashboard
-            </button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <script src="js/create-fest.js"></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create Restaurant Experience 🍽️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/nexus-fintech.css">
+    <link rel="stylesheet" href="css/create-fest.css">
+    
+    <style>
+        .viral-header { margin-bottom: 2rem; text-align: center; }
+        .viral-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .viral-header p { color: var(--fin-text-secondary); font-size: 1.1rem; margin-top: 0.5rem; }
+        
+        .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .vibe-radio, .vibe-checkbox { display: none; }
+        .vibe-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 18px; background: var(--fin-bg-light); border: 1px solid var(--fin-border);
+            border-radius: 30px; color: var(--fin-text-secondary); cursor: pointer;
+            transition: all 0.3s ease; font-weight: 500; font-size: 0.95rem;
+        }
+        .vibe-radio:checked + .vibe-label, .vibe-checkbox:checked + .vibe-label {
+            background: rgba(245, 158, 11, 0.1); border-color: #F59E0B;
+            color: #ffffff; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .ai-gen-btn {
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            color: white; border: none; padding: 10px 20px; border-radius: 20px;
+            cursor: pointer; font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; margin-top: 15px;
+        }
+        .ai-gen-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+
+        /* Dynamic Slots Logic */
+        .dynamic-events-container { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .dynamic-event-row {
+            background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--fin-border);
+            border-radius: 12px; padding: 15px; display: grid; grid-template-columns: 1fr 1fr auto;
+            gap: 10px; align-items: center;
+        }
+        .btn-add-event {
+            background: transparent; color: #F59E0B; border: 1px solid #F59E0B;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; width: fit-content;
+        }
+        .btn-remove-event { background: transparent; color: #EF4444; border: none; padding: 5px 10px; cursor: pointer; font-size: 1.2rem; }
+
+        /* Menu layout */
+        .menu-builder { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        
+        select.input-field option { background-color: #0b0e14; color: #ffffff; }
+
+        /* Zomato-style Preview Card */
+        .zomato-preview-card {
+            background: #ffffff; color: #000; border-radius: 16px; width: 340px; margin: 0 auto;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            text-align: left;
+        }
+        .zomato-img { width: 100%; height: 200px; object-fit: cover; display: block; position: relative; }
+        .zomato-badge { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .zomato-body { padding: 15px; }
+        .zomato-title { font-size: 1.25rem; font-weight: 700; color: #1c1c1c; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;}
+        .zomato-rating { background: #24963f; color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; height: fit-content; }
+        .zomato-subtitle { color: #666; font-size: 0.9rem; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .zomato-meta { color: #888; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+        .zomato-cta { width: 100%; background: #EF4f5f; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .dynamic-event-row, .menu-builder { grid-template-columns: 1fr; }
+            .viral-header h1 { font-size: 1.8rem; }
+            .submit-actions { flex-direction: column; }
+            .zomato-preview-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home"><i class="fas fa-home"></i> Home</a>
+            <a href="fest-dashboard.html" class="app-nav-link" title="Fests"><i class="fas fa-calendar-alt"></i> Fests</a>
+            <a href="create-fest.html" class="app-nav-link active" title="Create Fest"><i class="fas fa-plus"></i> Create Fest</a>
+        </nav>
+    </aside>
+
+    <main class="app-main">
+        <header class="app-header">
+            <div class="header-title"><h1>Host Portal</h1></div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+            </div>
+        </header>
+
+        <div class="form-container" style="max-width: 900px; margin: 0 auto;">
+            <div class="viral-header">
+                <h1>Food Experience Booking 🍽️</h1>
+                <p>Don't just list your restaurant. Sell an immersive dining experience.</p>
+            </div>
+            
+            <form id="festForm" onsubmit="submitFest(event)">
+                <input type="hidden" id="festType" name="festType" value="restaurant">
+
+                <!-- 1. EXPERIENCE TYPE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-utensils"></i> STEP 1: Experience Type</h2>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Event Title *</label>
+                            <input type="text" class="input-field" id="festName" placeholder="e.g., Italian Wine & Jazz Night" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Event Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="eventTypeTags" id="t-foodfest" value="Food Festival" class="vibe-radio">
+                            <label for="t-foodfest" class="vibe-label">🍔 Food Festival</label>
+                            <input type="radio" name="eventTypeTags" id="t-them" value="Themed Dinner" class="vibe-radio" checked>
+                            <label for="t-them" class="vibe-label">🍷 Themed Dinner</label>
+                            <input type="radio" name="eventTypeTags" id="t-live" value="Live Music Dining" class="vibe-radio">
+                            <label for="t-live" class="vibe-label">🎶 Live Music Dining</label>
+                            <input type="radio" name="eventTypeTags" id="t-chef" value="Chef Special Night" class="vibe-radio">
+                            <label for="t-chef" class="vibe-label">👨‍🍳 Chef Special</label>
+                            <input type="radio" name="eventTypeTags" id="t-pop" value="Pop-up Experience" class="vibe-radio">
+                            <label for="t-pop" class="vibe-label">🔥 Pop-up</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Cuisine Type</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="cuisineType" id="c-it" value="Italian" class="vibe-checkbox" checked>
+                            <label for="c-it" class="vibe-label">🍝 Italian</label>
+                            <input type="checkbox" name="cuisineType" id="c-in" value="Indian" class="vibe-checkbox">
+                            <label for="c-in" class="vibe-label">🍛 Indian</label>
+                            <input type="checkbox" name="cuisineType" id="c-as" value="Asian" class="vibe-checkbox">
+                            <label for="c-as" class="vibe-label">🍜 Asian</label>
+                            <input type="checkbox" name="cuisineType" id="c-mul" value="Multi-cuisine" class="vibe-checkbox">
+                            <label for="c-mul" class="vibe-label">🌍 Multi-cuisine</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. USP BUILDER -->
+                <section class="form-section">
+                    <h2><i class="fas fa-gem"></i> STEP 2: What Makes It Special (USP)</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom: 15px;">Stop writing basic descriptions. Hook your customers instantly.</p>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Highlight Experience</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="highlights" id="h-buf" value="Unlimited Buffet" class="vibe-checkbox">
+                            <label for="h-buf" class="vibe-label">🍽️ Unlimited Buffet</label>
+                            <input type="checkbox" name="highlights" id="h-cook" value="Live Cooking" class="vibe-checkbox">
+                            <label for="h-cook" class="vibe-label">👨‍🍳 Live Cooking</label>
+                            <input type="checkbox" name="highlights" id="h-wine" value="Wine Pairing" class="vibe-checkbox" checked>
+                            <label for="h-wine" class="vibe-label">🍷 Wine Pairing</label>
+                            <input type="checkbox" name="highlights" id="h-dj" value="DJ + Dining" class="vibe-checkbox">
+                            <label for="h-dj" class="vibe-label">🎧 DJ + Dining</label>
+                            <input type="checkbox" name="highlights" id="h-roof" value="Rooftop Dining" class="vibe-checkbox">
+                            <label for="h-roof" class="vibe-label">🌆 Rooftop Dining</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Special Hook 🔥</label>
+                        <input type="text" class="input-field" id="specialHook" placeholder="e.g., 5-course meal curated by celebrity chef" required>
+                    </div>
+                </section>
+
+                <!-- 3. VENUE & AMBIENCE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-map-marker-alt"></i> STEP 3: Venue & Ambience</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Restaurant Name *</label>
+                            <input type="text" class="input-field" id="venueName" placeholder="e.g. The Olive Grove" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Location / City *</label>
+                            <input type="text" class="input-field" id="venue" placeholder="e.g. Bandra, Mumbai" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Ambience Type</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="ambienceType" id="a-rom" value="Romantic" class="vibe-checkbox" checked>
+                            <label for="a-rom" class="vibe-label">💕 Romantic</label>
+                            <input type="checkbox" name="ambienceType" id="a-party" value="Party" class="vibe-checkbox">
+                            <label for="a-party" class="vibe-label">🎉 Party</label>
+                            <input type="checkbox" name="ambienceType" id="a-fam" value="Family" class="vibe-checkbox">
+                            <label for="a-fam" class="vibe-label">👨‍👩‍👧 Family</label>
+                            <input type="checkbox" name="ambienceType" id="a-lux" value="Luxury" class="vibe-checkbox" checked>
+                            <label for="a-lux" class="vibe-label">✨ Luxury</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Seating Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="seatingType" id="s-table" value="Table booking" class="vibe-radio" checked>
+                            <label for="s-table" class="vibe-label">🪑 Table booking</label>
+                            <input type="radio" name="seatingType" id="s-open" value="Open seating" class="vibe-radio">
+                            <label for="s-open" class="vibe-label">🎪 Open seating</label>
+                            <input type="radio" name="seatingType" id="s-priv" value="Private tables" class="vibe-radio">
+                            <label for="s-priv" class="vibe-label">🍷 Private tables</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. TIMING & SLOTS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-clock"></i> STEP 4: Timing & Slots</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Event Date *</label>
+                            <input type="date" class="input-field" id="startDate" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 25px;">
+                        <label class="input-label">Time Slots (Key for Restaurants 🔥)</label>
+                        <div class="dynamic-events-container" id="slotsContainer">
+                            <div class="dynamic-event-row">
+                                <input type="time" class="input-field slot-start" required>
+                                <input type="time" class="input-field slot-end" required>
+                                <button type="button" class="btn-remove-event" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-event" onclick="addSlotRow()">
+                            <i class="fas fa-plus"></i> Add Time Slot
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 5. PRICING MODEL -->
+                <section class="form-section">
+                    <h2><i class="fas fa-ticket-alt"></i> STEP 5: Pricing Model</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Entry Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="entryType" id="et-free" value="Free entry" class="vibe-radio" onchange="toggleTicketLogic()">
+                            <label for="et-free" class="vibe-label">🆓 Free entry</label>
+                            <input type="radio" name="entryType" id="et-cover" value="Cover charge" class="vibe-radio" onchange="toggleTicketLogic()">
+                            <label for="et-cover" class="vibe-label">🥂 Cover charge</label>
+                            <input type="radio" name="entryType" id="et-full" value="Full package" class="vibe-radio" checked onchange="toggleTicketLogic()">
+                            <label for="et-full" class="vibe-label">🍽️ Full package</label>
+                        </div>
+                    </div>
+
+                    <div id="paidTicketSection" style="margin-top: 20px;">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label class="input-label">Price per person (₹)</label>
+                                <input type="number" class="input-field" id="ticketPrice" value="1999">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Couple Entry (Optional) 💕</label>
+                                <input type="number" class="input-field" id="couplePrice" placeholder="e.g. 3500">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Group Discount (%)</label>
+                                <input type="number" class="input-field" id="groupDiscount" placeholder="e.g. 10">
+                            </div>
+                        </div>
+
+                        <div class="input-group full-width" style="margin-top: 20px;">
+                            <label class="input-label">Includes food in price?</label>
+                            <select class="input-field" id="includesFood">
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No (A la carte separately)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. MENU PREVIEW (GAME CHANGER) -->
+                <section class="form-section">
+                    <h2><i class="fas fa-book-open"></i> STEP 6: Menu Preview</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom: 15px;">A sample menu converts browsers into buyers instantly.</p>
+                    
+                    <div class="menu-builder">
+                        <div class="input-group">
+                            <label class="input-label">Starter</label>
+                            <input type="text" class="input-field" id="menuStarter" placeholder="e.g. Truffle Bruschetta">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Main Course</label>
+                            <input type="text" class="input-field" id="menuMain" placeholder="e.g. Risotto al Funghi">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Dessert</label>
+                            <input type="text" class="input-field" id="menuDessert" placeholder="e.g. Classic Tiramisu">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Or Upload Menu PDF / Image URL</label>
+                        <input type="url" class="input-field" id="menuLink" placeholder="https://drive.google.com/...">
+                    </div>
+                </section>
+
+                <!-- 7. VISUAL CONTENT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-camera"></i> STEP 7: Visual Content</h2>
+                    <div class="input-group full-width">
+                        <label class="input-label">Short Reel / Ambience Video (URL) 🔥</label>
+                        <input type="url" class="input-field" id="promoVideo" placeholder="Link to Instagram Reel / YouTube Short">
+                    </div>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="input-group full-width">
+                            <label class="input-label">Upload Master Image (HD Food/Ambience) *</label>
+                            <input type="file" id="bannerInput" class="input-field" accept="image/*" style="padding: 10px;" onchange="handleBannerUpload(this)">
+                            <img id="bannerPlaceholder" style="display:none; max-height: 200px; margin-top: 10px; border-radius: 12px;" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. EXPERIENCE ADD-ONS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-music"></i> STEP 8: Experience Add-Ons</h2>
+                    <div class="pill-grid">
+                        <input type="checkbox" name="addons" id="add-live" value="Live Music 🎸" class="vibe-checkbox" checked>
+                        <label for="add-live" class="vibe-label">🎸 Live Music</label>
+                        <input type="checkbox" name="addons" id="add-dj" value="DJ 🎧" class="vibe-checkbox">
+                        <label for="add-dj" class="vibe-label">🎧 DJ</label>
+                        <input type="checkbox" name="addons" id="add-dance" value="Dance Floor 💃" class="vibe-checkbox">
+                        <label for="add-dance" class="vibe-label">💃 Dance Floor</label>
+                        <input type="checkbox" name="addons" id="add-perf" value="Special Performances 🎤" class="vibe-checkbox">
+                        <label for="add-perf" class="vibe-label">🎤 Special Performances</label>
+                    </div>
+                </section>
+
+                <!-- 9. AUDIENCE SETTINGS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-user-friends"></i> STEP 9: Audience Settings</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Age Restriction</label>
+                            <select class="input-field" id="ageRes">
+                                <option value="All Ages" selected>All Ages</option>
+                                <option value="18+">18+ Only</option>
+                                <option value="21+">21+ Only</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Couple Friendly?</label>
+                            <select class="input-field" id="coupleFriendly">
+                                <option value="Yes" selected>Yes (Recommended)</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. AI HYPE GENERATOR -->
+                <section class="form-section">
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> STEP 10: AI Hype Generator</h2>
+                    <button type="button" class="ai-gen-btn" onclick="generateAIDescription()">
+                        <i class="fas fa-robot"></i> Generate Event Description
+                    </button>
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <textarea class="input-field textarea" id="description" rows="4" placeholder="Your curated dining pitch will appear here..." required></textarea>
+                    </div>
+                </section>
+
+                <!-- 11. SOCIAL & DISCOVERY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-globe"></i> STEP 11: Social & Discovery</h2>
+                    <div class="input-group full-width">
+                        <label class="input-label">Best for:</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="bestFor" id="bf-date" value="Date Night" class="vibe-checkbox" checked>
+                            <label for="bf-date" class="vibe-label">💕 Date Night</label>
+                            <input type="checkbox" name="bestFor" id="bf-hang" value="Friends Hangout" class="vibe-checkbox">
+                            <label for="bf-hang" class="vibe-label">🍻 Friends Hangout</label>
+                            <input type="checkbox" name="bf-net" id="bf-net" value="Networking" class="vibe-checkbox">
+                            <label for="bf-net" class="vibe-label">🤝 Networking</label>
+                        </div>
+                    </div>
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Allow group bookings?</label>
+                        <select class="input-field" id="groupBookings">
+                            <option value="Yes" selected>Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- 12. LOGISTICS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-address-book"></i> STEP 12: Contact</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Host Name *</label>
+                            <input type="text" class="input-field" id="coordinatorName" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Phone *</label>
+                            <input type="text" class="input-field" id="contactPhone" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Email</label>
+                            <input type="email" class="input-field" id="contactEmail" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. RULES & SUBMIT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-shield-alt"></i> STEP 13: Rules & Confirmation</h2>
+                    <div class="form-grid" style="margin-bottom: 20px;">
+                        <div class="input-group">
+                            <label class="input-label">Dress Code</label>
+                            <input type="text" class="input-field" id="dressCode" placeholder="e.g. Smart Casuals">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Table Visualizer</label>
+                            <input type="text" class="input-field" disabled placeholder="Feature coming soon 🚀">
+                        </div>
+                    </div>
+
+                    <div class="pill-grid" style="flex-direction: column;">
+                        <label style="display:flex; align-items:center; gap: 10px; color: #fff;">
+                            <input type="checkbox" required style="width:20px; height:20px;">
+                            ✔ I confirm this restaurant event complies with local laws and Nexus terms.
+                        </label>
+                    </div>
+
+                    <div class="submit-actions flex-wrap-mobile" style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" style="flex:1;" onclick="buildLivePreview()">
+                            <i class="fas fa-eye"></i> LIVE PREVIEW
+                        </button>
+                        <button type="submit" class="btn-primary" id="submitBtn" style="flex:2; font-size: 1.1rem;">
+                            Publish Experience 🚀
+                        </button>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </main>
+</div>
+
+    <!-- ZOMATO-STYLE PREVIEW MODAL -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content" style="max-width: 400px; background: transparent; border: none; box-shadow: none;">
+            <div class="zomato-preview-card">
+                <img id="prevImg" class="zomato-img" src="https://placehold.co/400x300/333/fff?text=Restaurant+Images" />
+                <div class="zomato-badge" id="prevBadge">Premium Dining</div>
+                <div class="zomato-body">
+                    <div class="zomato-title">
+                        <span id="prevName">Italian Wine Night</span>
+                        <div class="zomato-rating">4.8 <i class="fas fa-star" style="font-size:10px;"></i></div>
+                    </div>
+                    <div class="zomato-subtitle" id="prevSubtitle">Bandra, Mumbai • Italian, Wine</div>
+                    <div class="zomato-meta">
+                        <i class="fas fa-clock" style="color: #F59E0B"></i> <span id="prevTime">Slots from 7:00 PM</span>
+                        <i class="fas fa-rupee-sign" style="margin-left: 10px; color: #F59E0B"></i> <span id="prevCost">₹1999 p.p</span>
+                    </div>
+                    
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="font-weight: 600; color: #b45309; font-size: 0.85rem; margin-bottom:4px;"><i class="fas fa-utensils"></i> Highlight Menu</p>
+                        <p style="font-size: 0.8rem; color: #555;" id="prevMenu">Truffle Bruschetta • Risotto • Tiramisu</p>
+                    </div>
+
+                    <button class="zomato-cta">Book Experience</button>
+                </div>
+            </div>
+            
+            <div style="text-align:center; margin-top: 20px;">
+                <button class="btn-secondary" onclick="document.getElementById('previewModal').classList.remove('active')" style="background: #222; color: #fff;">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-animation">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h3>Experience Listed! 🚀</h3>
+            <p>Your immersive restaurant event has been sent to Admin for approval.</p>
+            <button class="btn-primary" onclick="window.location.href='host-dashboard.html'">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/create-restaurant-event.js"></script>
+</body>
+</html>
