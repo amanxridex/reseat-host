@@ -1,295 +1,533 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Create Fest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="css/nexus-fintech.css">
-    <link rel="stylesheet" href="css/create-fest.css">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Nexus Host">
-    <meta name="theme-color" content="#0b0e14">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="nexushostlogo.png">
-    <script src="js/telemetry.js"></script>
-    <script src="js/config.js"></script>
-</head>
-<body>
-
-<div class="app-layout">
-    
-    <!-- 1. LEFT SIDEBAR -->
-    <aside class="app-sidebar" id="sidebar">
-        <div class="app-brand">
-            <div class="brand-icon">N</div>
-            <h2>NEXUS</h2>
-        </div>
-        
-        <nav class="app-nav">
-            <a href="host-dashboard.html" class="app-nav-link" title="Home">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="fest-dashboard.html" class="app-nav-link" title="Fests">
-                <i class="fas fa-calendar-alt"></i> Fests
-            </a>
-            <a href="my-fests.html" class="app-nav-link" title="My Fests">
-                <i class="fas fa-list"></i> My Fests
-            </a>
-            <a href="qr-scanner.html" class="app-nav-link" title="QR Scanner">
-                <i class="fas fa-qrcode"></i> QR Scanner
-            </a>
-            <a href="create-fest.html" class="app-nav-link active" title="Create Fest">
-                <i class="fas fa-plus"></i> Create Fest
-            </a>
-            <a href="analytics.html" class="app-nav-link" title="Analytics">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
-            <a href="payouts.html" class="app-nav-link" title="Payouts">
-                <i class="fas fa-wallet"></i> Payouts
-            </a>
-        </nav>
-        
-        <div class="app-sidebar-footer">
-            <a href="#" class="app-nav-link" onclick="nexusLogout()" style="color: var(--fin-danger);">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
-
-    <!-- 2. MAIN CONTENT -->
-    <main class="app-main">
-        
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-title">
-                <h1>Create New Fest</h1>
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-secondary" onclick="saveDraft()">
-                    <i class="fas fa-save"></i> Save Draft
-                </button>
-            </div>
-        </header>
-
-        <!-- Form Container -->
-        <div class="form-container">
-            <form id="festForm" onsubmit="submitFest(event)">
-                
-                <div id="eventDetailsSection" style="margin-top: 20px;">
-                    <div class="wizard-header" style="margin-bottom: 30px;">
-                        
-                        <h2 id="dynamicDetailsTitle">Create Concert / Live Music</h2>
-                    </div>
-
-                    <!-- Basic Info Section -->
-                    <section class="form-section">
-                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-                        
-                        <div class="form-grid">
-                            <div class="input-group full-width">
-                                <label class="input-label">Event Name *</label>
-                                <input type="text" class="input-field" name="festName" placeholder="e.g., TechFest 2025" required>
-                            </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Expected Attendance *</label>
-                            <input type="number" class="input-field" name="expectedAttendance" placeholder="e.g., 500" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Start Date *</label>
-                            <input type="date" class="input-field" name="startDate" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">End Date *</label>
-                            <input type="date" class="input-field" name="endDate" required>
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Description *</label>
-                            <textarea class="input-field textarea" name="description" rows="4" placeholder="Describe your fest, events, competitions..." required></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Banner Upload -->
-                <section class="form-section">
-                    <h2><i class="fas fa-image"></i> Fest Banner</h2>
-                    <div class="upload-area" onclick="document.getElementById('bannerInput').click()">
-                        <input type="file" id="bannerInput" accept="image/*" onchange="handleBannerUpload(this)" hidden>
-                        <div class="upload-placeholder" id="bannerPlaceholder">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click to upload banner image</p>
-                            <span>Recommended: 1200 x 600px, Max 5MB</span>
-                        </div>
-                        <div class="upload-preview" id="bannerPreview" style="display: none;">
-                            <img src="" alt="Banner Preview" id="bannerImg">
-                            <button type="button" class="remove-btn" onclick="removeBanner(event)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Ticket Settings -->
-                <section class="form-section">
-                    <h2><i class="fas fa-ticket-alt"></i> Ticket Settings</h2>
-
-                    <!-- Free/Paid Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Ticket Type</h4>
-                                <p id="ticketTypeDesc">This is a free event</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isPaid" onchange="toggleTicketType()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Price Input (Hidden by default) -->
-                        <div class="price-inputs" id="priceInputs" style="display: none;">
-                            <div class="input-group">
-                                <label class="input-label">Ticket Price (₹) *</label>
-                                <input type="number" class="input-field" name="ticketPrice" placeholder="e.g., 199" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">Early Bird Price (Optional)</label>
-                                <input type="number" class="input-field" name="earlyBirdPrice" placeholder="e.g., 149" min="1">
-                                <p class="input-hint">Leave empty if no early bird discount</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Limited/Infinite Seats Toggle -->
-                    <div class="toggle-card">
-                        <div class="toggle-header">
-                            <div>
-                                <h4>Seat Availability</h4>
-                                <p id="seatsDesc">Limited seats available</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="isUnlimited" onchange="toggleSeats()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <!-- Seats Input (Hidden when unlimited) -->
-                        <div class="seats-input" id="seatsInput">
-                            <div class="input-group">
-                                <label class="input-label">Total Seats *</label>
-                                <input type="number" class="input-field" name="totalSeats" placeholder="e.g., 500" min="1" value="500">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                
-
-                <!-- Contact Info -->
-                <section class="form-section">
-                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label class="input-label">Coordinator Name *</label>
-                            <input type="text" class="input-field" name="coordinatorName" placeholder="Primary contact person" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Phone Number *</label>
-                            <input type="tel" class="input-field" name="contactPhone" placeholder="+91 98765 43210" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Email *</label>
-                            <input type="email" class="input-field" name="contactEmail" placeholder="fest@college.edu" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">WhatsApp (Optional)</label>
-                            <input type="tel" class="input-field" name="whatsapp" placeholder="For queries">
-                        </div>
-
-                        <div class="input-group full-width">
-                            <label class="input-label">Venue/Location *</label>
-                            <input type="text" class="input-field" name="venue" placeholder="e.g., College Auditorium, Main Campus" required>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Terms & Submit -->
-                <section class="form-section">
-                    <div class="checkbox-group terms">
-                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                        <label for="agreeTerms">
-                            I confirm that all information provided is accurate. I have permission from my college to host this event. I agree to Nexus <a href="#">Terms of Service</a> and <a href="#">Host Guidelines</a>.
-                        </label>
-                    </div>
-
-                    <div class="submit-actions">
-                        <button type="button" class="btn-secondary" onclick="previewFest()">
-                            <i class="fas fa-eye"></i>
-                            Preview
-                        </button>
-                        <button type="submit" class="btn-primary" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            Submit for Approval
-                        </button>
-                    </div>
-                </section>
-
-                </div> <!-- End STEP 2 DETAILS SECTION -->
-            </form>
-        </div>
-    </main>
-</div>
-
-    <!-- Preview Modal -->
-    <div class="modal" id="previewModal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h3>Fest Preview</h3>
-                <button class="modal-close" onclick="closePreview()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="preview-content" id="previewContent">
-                <!-- Preview injected via JS -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePreview()">Edit</button>
-                <button class="btn-primary" onclick="submitFromPreview()">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="success-animation">
-                <div class="checkmark">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <h3>Fest Submitted!</h3>
-            <p>Your fest has been submitted for approval. We'll review and get back to you within 24-48 hours.</p>
-            <button class="btn-primary" onclick="goToDashboard()">
-                Go to Dashboard
-            </button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <script src="js/create-fest.js"></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Create Concert Experience 🎧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/nexus-fintech.css">
+    <link rel="stylesheet" href="css/create-fest.css">
+    
+    <style>
+        .viral-header { margin-bottom: 2rem; text-align: center; }
+        .viral-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .viral-header p { color: var(--fin-text-secondary); font-size: 1.1rem; margin-top: 0.5rem; }
+        
+        .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .vibe-radio, .vibe-checkbox { display: none; }
+        .vibe-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 18px; background: var(--fin-bg-light); border: 1px solid var(--fin-border);
+            border-radius: 30px; color: var(--fin-text-secondary); cursor: pointer;
+            transition: all 0.3s ease; font-weight: 500; font-size: 0.95rem;
+        }
+        .vibe-radio:checked + .vibe-label, .vibe-checkbox:checked + .vibe-label {
+            background: rgba(168, 85, 247, 0.15); border-color: #a855f7;
+            color: #ffffff; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .ai-gen-btn {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white; border: none; padding: 12px 25px; border-radius: 30px;
+            cursor: pointer; font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; margin-top: 15px;
+            letter-spacing: 0.5px;
+        }
+        .ai-gen-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5); }
+
+        .slider-container { width: 100%; margin-top: 15px; }
+        .split-labels { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; color: #fff; }
+        .styled-slider {
+            -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px;
+            background: linear-gradient(90deg, #3b82f6 0%, #ec4899 50%, #f43f5e 100%); outline: none;
+        }
+        .styled-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 24px; height: 24px;
+            border-radius: 50%; background: #fff; cursor: pointer; box-shadow: 0 0 15px rgba(236, 72, 153, 0.8);
+        }
+
+        .dynamic-events-container, .ticket-tiers-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .dynamic-event-row {
+            background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(168, 85, 247, 0.5);
+            border-radius: 12px; padding: 15px; display: grid; grid-template-columns: 2fr 1fr auto;
+            gap: 10px; align-items: center;
+        }
+        .ticket-tier-row {
+            background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(59, 130, 246, 0.5);
+            border-radius: 12px; padding: 15px; display: grid; grid-template-columns: 1.5fr 1fr 1fr auto;
+            gap: 10px; align-items: center;
+        }
+
+        .btn-add-lineup, .btn-add-ticket {
+            background: transparent; border: 1px solid currentColor; padding: 8px 15px; border-radius: 20px;
+            cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; width: fit-content;
+        }
+        .btn-add-lineup { color: #a855f7; }
+        .btn-add-ticket { color: #3b82f6; }
+        .btn-remove-row { background: transparent; color: #ef4444; border: none; padding: 5px 10px; cursor: pointer; font-size: 1.2rem; }
+
+        select.input-field option { background-color: #0b0e14; color: #ffffff; }
+
+        /* NEON PREVIEW CARD */
+        .neon-preview-card {
+            background: #0b0e14; color: #fff; border-radius: 20px; width: 340px; margin: 0 auto;
+            overflow: hidden; box-shadow: 0 0 40px rgba(168, 85, 247, 0.3); font-family: 'Space Grotesk', sans-serif;
+            border: 1px solid rgba(168, 85, 247, 0.2); position: relative;
+        }
+        .neon-preview-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: rgba(168, 85, 247, 0.4); filter: blur(60px); border-radius: 50%; z-index: 0; pointer-events: none;
+        }
+        .neon-img { width: 100%; height: 220px; object-fit: cover; display: block; position: relative; z-index: 1; border-bottom: 2px solid #a855f7; }
+        .neon-body { padding: 20px; position: relative; z-index: 1; }
+        .neon-title { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; text-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+        .neon-tagline { color: #a855f7; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+        .neon-lineup { margin-bottom: 15px; font-size: 0.9rem; color: #ccc; }
+        .neon-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; font-size: 0.85rem; color: #aaa; }
+        .neon-meta i { color: #ec4899; width: 20px; }
+        
+        .hype-meter { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border: 1px solid rgba(236,72,153,0.3); }
+        .hype-fire { font-size: 1.2rem; display: flex; gap: 4px; }
+        .hype-text { font-size: 0.8rem; font-weight: 600; color: #ec4899; }
+        
+        .neon-cta { width: 100%; background: linear-gradient(90deg, #a855f7, #ec4899); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
+
+        @media (max-width: 768px) {
+            .dynamic-event-row, .ticket-tier-row { grid-template-columns: 1fr; }
+            .viral-header h1 { font-size: 1.8rem; }
+            .submit-actions { flex-direction: column; }
+            .neon-preview-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    <aside class="app-sidebar" id="sidebar">
+        <div class="app-brand">
+            <div class="brand-icon">N</div>
+            <h2>NEXUS</h2>
+        </div>
+        <nav class="app-nav">
+            <a href="host-dashboard.html" class="app-nav-link" title="Home"><i class="fas fa-home"></i> Home</a>
+            <a href="fest-dashboard.html" class="app-nav-link" title="Fests"><i class="fas fa-calendar-alt"></i> Fests</a>
+            <a href="create-fest.html" class="app-nav-link active" title="Create Fest"><i class="fas fa-plus"></i> Create Fest</a>
+        </nav>
+    </aside>
+
+    <main class="app-main">
+        <header class="app-header">
+            <div class="header-title"><h1>Host Portal</h1></div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+            </div>
+        </header>
+
+        <div class="form-container" style="max-width: 900px; margin: 0 auto;">
+            <div class="viral-header">
+                <h1>Build a Live Music Experience 🎧</h1>
+                <p>Not just tickets. Emotion, hype, and raw crowd energy.</p>
+            </div>
+            
+            <form id="festForm" onsubmit="submitFest(event)">
+                <input type="hidden" id="festType" name="festType" value="concert">
+
+                <!-- 1. EVENT IDENTITY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-microphone-alt"></i> STEP 1: Event Identity (Hype First)</h2>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label class="input-label">Event Name *</label>
+                            <input type="text" class="input-field" id="festName" placeholder="e.g., Summer Sonic Oasis" required>
+                        </div>
+                        <div class="input-group full-width">
+                            <label class="input-label">Tagline (NEW 🔥) *</label>
+                            <input type="text" class="input-field" id="tagline" placeholder="e.g., The wildest EDM night in Delhi" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Event Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="eventTypeTags" id="t-concert" value="Concert" class="vibe-radio" checked>
+                            <label for="t-concert" class="vibe-label">🎤 Concert</label>
+                            <input type="radio" name="eventTypeTags" id="t-dj" value="DJ Night" class="vibe-radio">
+                            <label for="t-dj" class="vibe-label">🎧 DJ Night</label>
+                            <input type="radio" name="eventTypeTags" id="t-open" value="Open Mic" class="vibe-radio">
+                            <label for="t-open" class="vibe-label">🎙️ Open Mic</label>
+                            <input type="radio" name="eventTypeTags" id="t-band" value="Band Performance" class="vibe-radio">
+                            <label for="t-band" class="vibe-label">🎸 Band</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. ARTIST LINEUP -->
+                <section class="form-section">
+                    <h2><i class="fas fa-star"></i> STEP 2: Artist Lineup</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom: 15px;">Who is running the night? Build the roster.</p>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Mainhead / Headline Artist *</label>
+                            <input type="text" class="input-field" id="mainArtist" placeholder="e.g. KSHMR" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Artist Instagram (Trust + Hype)</label>
+                            <input type="text" class="input-field" id="artistInsta" placeholder="@kshmr">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Core Genre</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="genre" id="g-edm" value="EDM" class="vibe-checkbox" checked>
+                            <label for="g-edm" class="vibe-label">🎛️ EDM</label>
+                            <input type="checkbox" name="genre" id="g-bolly" value="Bollywood" class="vibe-checkbox">
+                            <label for="g-bolly" class="vibe-label">🎬 Bollywood</label>
+                            <input type="checkbox" name="genre" id="g-HH" value="Hip Hop" class="vibe-checkbox">
+                            <label for="g-HH" class="vibe-label">🔥 Hip Hop</label>
+                            <input type="checkbox" name="genre" id="g-indie" value="Indie" class="vibe-checkbox">
+                            <label for="g-indie" class="vibe-label">🎸 Indie</label>
+                            <input type="checkbox" name="genre" id="g-techno" value="Techno" class="vibe-checkbox">
+                            <label for="g-techno" class="vibe-label">🔊 Techno</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 25px;">
+                        <label class="input-label">Supporting Artists / Openers</label>
+                        <div class="dynamic-events-container" id="lineupContainer">
+                            <div class="dynamic-event-row">
+                                <input type="text" class="input-field support-name" placeholder="Artist Name">
+                                <input type="time" class="input-field support-time" placeholder="Set Time">
+                                <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-lineup" onclick="addSupportArtist()">
+                            <i class="fas fa-plus"></i> Add Supporting Artist
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 3. VIBE & ENERGY -->
+                <section class="form-section">
+                    <h2><i class="fas fa-fire"></i> STEP 3: Vibe & Energy (The Experience Edge)</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Select Vibe</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="concertVibe" id="v-hard" value="Hardcore Party" class="vibe-radio" checked>
+                            <label for="v-hard" class="vibe-label">🔥 Hardcore party</label>
+                            <input type="radio" name="concertVibe" id="v-chill" value="Chill music" class="vibe-radio">
+                            <label for="v-chill" class="vibe-label">🎶 Chill music</label>
+                            <input type="radio" name="concertVibe" id="v-dance" value="Dance" class="vibe-radio">
+                            <label for="v-dance" class="vibe-label">💃 Dance</label>
+                            <input type="radio" name="concertVibe" id="v-under" value="Underground" class="vibe-radio">
+                            <label for="v-under" class="vibe-label">🌌 Underground</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 20px;">
+                        <label class="input-label">Crowd Energy Level 🔥</label>
+                        <div class="slider-container">
+                            <div class="split-labels">
+                                <span>😌 Chill</span>
+                                <span id="energyVal">High Energy</span>
+                                <span>🔥🔥🔥🔥🔥 Absolute Riot</span>
+                            </div>
+                            <input type="range" id="energySlider" min="1" max="5" step="1" value="4" class="styled-slider" oninput="updateEnergyLabel(this.value)">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. VENUE EXPERIENCE -->
+                <section class="form-section">
+                    <h2><i class="fas fa-building"></i> STEP 4: Venue Experience</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Venue Name *</label>
+                            <input type="text" class="input-field" id="venueName" placeholder="e.g. Kitty Su" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Location / City *</label>
+                            <input type="text" class="input-field" id="venue" placeholder="e.g. New Delhi" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Venue Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="venueType" id="vt-club" value="Club" class="vibe-radio" checked>
+                            <label for="vt-club" class="vibe-label">🎧 Club</label>
+                            <input type="radio" name="venueType" id="vt-open" value="Open Air" class="vibe-radio">
+                            <label for="vt-open" class="vibe-label">🌆 Open Air</label>
+                            <input type="radio" name="venueType" id="vt-stad" value="Stadium" class="vibe-radio">
+                            <label for="vt-stad" class="vibe-label">🏟️ Stadium</label>
+                            <input type="radio" name="venueType" id="vt-roof" value="Rooftop" class="vibe-radio">
+                            <label for="vt-roof" class="vibe-label">🌃 Rooftop</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Maximum Capacity</label>
+                        <div class="slider-container">
+                            <div class="split-labels">
+                                <span>50</span>
+                                <span id="capVal">500</span>
+                                <span>10,000+</span>
+                            </div>
+                            <input type="range" id="capSlider" min="50" max="10000" step="50" value="500" class="styled-slider" oninput="document.getElementById('capVal').innerText = this.value">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. EVENT FLOW -->
+                <section class="form-section">
+                    <h2><i class="fas fa-hourglass-half"></i> STEP 5: Event Flow</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom: 15px;">Pacing is crucial. Tell them exactly when the drop hits.</p>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Date *</label>
+                            <input type="date" class="input-field" id="startDate" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Ends *</label>
+                            <input type="time" class="input-field" id="endTime" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Doors Open / Entry</label>
+                            <input type="time" class="input-field" id="doorsArray">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Main Show Starts</label>
+                            <input type="time" class="input-field" id="showTime">
+                        </div>
+                        <div class="input-group full-width">
+                            <label class="input-label" style="color: #ef4444;">Peak Time / Beat Drop 🔥</label>
+                            <input type="time" class="input-field" id="peakTime" placeholder="e.g. midnight madness">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. TICKETS (SMART SYSTEM) -->
+                <section class="form-section">
+                    <h2><i class="fas fa-ticket-alt"></i> STEP 6: Smart Ticketing</h2>
+                    
+                    <div class="input-group full-width">
+                        <label class="input-label">Entry Type</label>
+                        <div class="pill-grid">
+                            <input type="radio" name="entryType" id="et-free" value="Free" class="vibe-radio" onchange="toggleTicketLogic()">
+                            <label for="et-free" class="vibe-label">🆓 Free / Guestlist</label>
+                            <input type="radio" name="entryType" id="et-paid" value="Paid" class="vibe-radio" checked onchange="toggleTicketLogic()">
+                            <label for="et-paid" class="vibe-label">💳 Paid Tiers</label>
+                        </div>
+                    </div>
+
+                    <div id="paidTicketSection" style="margin-top: 20px;">
+                        <label class="input-label">Pricing Phases (Dynamic pricing 🔥)</label>
+                        <div class="ticket-tiers-container" id="ticketContainer">
+                            <div class="ticket-tier-row">
+                                <input type="text" class="input-field tier-name" placeholder="Phase Name (e.g. Early Bird)" value="Early Bird">
+                                <input type="number" class="input-field tier-price" placeholder="Price (₹)">
+                                <input type="number" class="input-field tier-qty" placeholder="Cap (e.g. 100)">
+                                <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="ticket-tier-row">
+                                <input type="text" class="input-field tier-name" placeholder="Phase Name" value="Phase 1">
+                                <input type="number" class="input-field tier-price" placeholder="Price (₹)">
+                                <input type="number" class="input-field tier-qty" placeholder="Cap (e.g. 500)">
+                                <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-ticket" onclick="addTicketTier()">
+                            <i class="fas fa-plus"></i> Add VIP / Table Tier
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 7 & 8. EXPERIENCE + MUSIC PREVIEW -->
+                <section class="form-section">
+                    <h2><i class="fas fa-headphones"></i> STEP 7 & 8: Sounds & Add-ons</h2>
+                    
+                    <div class="input-group full-width" style="margin-bottom: 20px;">
+                        <label class="input-label">Listen before you book (Pre-game playlist)</label>
+                        <input type="url" class="input-field" id="musicPreview" placeholder="Spotify Playlist Link / Sample Track URL">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label class="input-label">Experience Add-Ons</label>
+                        <div class="pill-grid">
+                            <input type="checkbox" name="addons" id="add-table" value="Table Booking" class="vibe-checkbox">
+                            <label for="add-table" class="vibe-label">🍾 Table booking</label>
+                            <input type="checkbox" name="addons" id="add-vip" value="VIP Lounge" class="vibe-checkbox">
+                            <label for="add-vip" class="vibe-label">✨ VIP lounge</label>
+                            <input type="checkbox" name="addons" id="add-back" value="Backstage Pass" class="vibe-checkbox">
+                            <label for="add-back" class="vibe-label">🎤 Backstage pass</label>
+                            <input type="checkbox" name="addons" id="add-drinks" value="Drinks Included" class="vibe-checkbox">
+                            <label for="add-drinks" class="vibe-label">🍺 Drinks included</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. VISUAL CONTENT -->
+                <section class="form-section">
+                    <h2><i class="fas fa-camera-retro"></i> STEP 9: Visual Layout</h2>
+                    <div class="input-group full-width">
+                        <label class="input-label">Crowd/Artist Promo URL (Reel / YouTube) 🔥</label>
+                        <input type="url" class="input-field" id="promoVideo" placeholder="This is what sells tickets...">
+                    </div>
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <label class="input-label">Upload Master Flyer/Banner *</label>
+                        <input type="file" id="bannerInput" class="input-field" accept="image/*" style="padding: 10px;" onchange="handleBannerUpload(this)">
+                        <img id="bannerPlaceholder" style="display:none; max-height: 250px; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(168,85,247,0.5);" />
+                    </div>
+                </section>
+
+                <!-- 10. CROWD FILTERING -->
+                <section class="form-section">
+                    <h2><i class="fas fa-users-viewfinder"></i> STEP 10: Crowd Filtering</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Age Restriction</label>
+                            <select class="input-field" id="ageRes">
+                                <option value="18+ Only">18+ Only</option>
+                                <option value="21+ Only (Drinking)">21+ Only (Drinking Age)</option>
+                                <option value="All Ages">All Ages</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Couple Entry?</label>
+                            <select class="input-field" id="coupleEntry">
+                                <option value="Mandatory">Mandatory / Preferred</option>
+                                <option value="Optional" selected>Optional</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Stag Allowed?</label>
+                            <select class="input-field" id="stagAllowed">
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No (Couples/Groups only)</option>
+                                <option value="Cover Charge">Yes, with heavy cover charge</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. AI HYPE GENERATOR -->
+                <section class="form-section">
+                    <h2><i class="fas fa-bolt"></i> STEP 11: AI Hype Generator</h2>
+                    <p style="color:#aaa; font-size:0.9rem;">The pitch has to hit hard. Let Nexus AI write it.</p>
+                    <button type="button" class="ai-gen-btn" onclick="generateAIDescription()">
+                        <i class="fas fa-brain"></i> Generate Sick Lineup Hype
+                    </button>
+                    <div class="input-group full-width" style="margin-top: 15px;">
+                        <textarea class="input-field textarea" id="description" rows="5" placeholder="Your venue will sell out fast with the right wording..." required></textarea>
+                    </div>
+                </section>
+
+                <!-- 12, 13, 14. SOCIAL, RULES, LOGISTICS -->
+                <section class="form-section">
+                    <h2><i class="fas fa-clipboard-check"></i> STEP 12-14: Rules & Contact</h2>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Allow "X people already going" badge?</label>
+                            <select class="input-field" id="socialFOMO">
+                                <option value="Yes" selected>Yes (Boosts Trust)</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Dress Code</label>
+                            <input type="text" class="input-field" id="dressCode" placeholder="e.g. Smart, No Sandals">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Organizer Name *</label>
+                            <input type="text" class="input-field" id="coordinatorName" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Support Phone *</label>
+                            <input type="tel" class="input-field" id="contactPhone" required>
+                        </div>
+                    </div>
+
+                    <div class="submit-actions" style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" style="flex:1;" onclick="buildLivePreview()">
+                            <i class="fas fa-eye"></i> PREVIEW NEON
+                        </button>
+                        <button type="submit" class="btn-primary" id="submitBtn" style="flex:2; font-size: 1.1rem; background: linear-gradient(90deg, #a855f7, #ec4899); border:none; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);">
+                            Feel The Night (Publish) 🚀
+                        </button>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </main>
+</div>
+
+    <!-- NEON PREVIEW MODAL -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content" style="max-width: 400px; background: transparent; border: none; box-shadow: none;">
+            
+            <div class="neon-preview-card">
+                <img id="prevImg" class="neon-img" src="https://placehold.co/400x300/1e1b4b/fff?text=Concert+Image" />
+                <div class="neon-body">
+                    
+                    <div class="hype-meter">
+                        <div class="hype-fire">🔥🔥🔥</div>
+                        <div class="hype-text">92% Hyped</div>
+                    </div>
+
+                    <div class="neon-title" id="prevName">DJ Night ft. KSHMR</div>
+                    <div class="neon-tagline" id="prevTagline">The wildest EDM night in Delhi</div>
+                    
+                    <div class="neon-lineup" id="prevLineup">Supporting: Opening Act, Local DJ</div>
+
+                    <div class="neon-meta">
+                        <div><i class="fas fa-map-marker-alt"></i> <span id="prevVenue">Kitty Su, New Delhi</span></div>
+                        <div><i class="fas fa-clock"></i> <span>Beat drop at <span style="color:#ec4899; font-weight:bold;" id="prevDrop">12:15 AM</span></span></div>
+                        <div><i class="fas fa-ticket-alt"></i> <span id="prevTicket">Tickets from ₹999</span></div>
+                    </div>
+
+                    <button class="neon-cta">Get Your Pass</button>
+                </div>
+            </div>
+            
+            <div style="text-align:center; margin-top: 20px;">
+                <button class="btn-secondary" onclick="document.getElementById('previewModal').classList.remove('active')" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">Close Experience</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-animation">
+                <div class="checkmark" style="background: linear-gradient(135deg, #a855f7, #ec4899);">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h3>Concert Dropped! 🎧</h3>
+            <p>Your live music experience is queued for launch.</p>
+            <button class="btn-primary" onclick="window.location.href='host-dashboard.html'" style="background: #a855f7;">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/create-concert.js"></script>
+</body>
+</html>
