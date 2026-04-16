@@ -858,3 +858,8 @@ input:checked + .slider::before {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* Global Dropdown Fix */
+select.input-field option {
+    background-color: var(--bg-dark, #0b0e14);
+    color: #ffffff;
+}
