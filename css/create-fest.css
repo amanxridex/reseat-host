@@ -738,7 +738,7 @@ input:checked + .slider::before {
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 10px;
-    color: #0b0e14;
+    color: #ffffff;
 }
 
 .wizard-header p {
@@ -801,7 +801,7 @@ input:checked + .slider::before {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 5px;
-    color: #0b0e14;
+    color: #ffffff;
 }
 
 .event-info p {

@@ -262,14 +262,14 @@ function collectFormData() {
         }
     });
 
-    data.isPaid = formState.isPaid;
-    data.isUnlimited = formState.isUnlimited;
-    data.allowOutside = formState.allowOutside;
+    data.isPaid = document.getElementById('isPaid') ? document.getElementById('isPaid').checked : false;
+    data.isUnlimited = document.getElementById('isUnlimited') ? document.getElementById('isUnlimited').checked : false;
+    data.allowOutside = document.getElementById('allowOutside') ? document.getElementById('allowOutside').checked : true;
     data.bannerImage = formState.bannerImage;
-    data.idRequired = document.getElementById('idRequired').checked;
+    data.idRequired = document.getElementById('idRequired') ? document.getElementById('idRequired').checked : false;
     data.idFields = Array.from(document.querySelectorAll('input[name="idFields"]:checked')).map(cb => cb.value);
-    data.otherColleges = document.getElementById('otherColleges').checked;
-    data.generalPublic = document.getElementById('generalPublic').checked;
+    data.otherColleges = document.getElementById('otherColleges') ? document.getElementById('otherColleges').checked : false;
+    data.generalPublic = document.getElementById('generalPublic') ? document.getElementById('generalPublic').checked : true;
 
     return data;
 }
@@ -286,25 +286,25 @@ function populateForm(data) {
         }
     });
 
-    if (data.isPaid) {
+    if (data.isPaid && document.getElementById('isPaid')) {
         document.getElementById('isPaid').checked = true;
         toggleTicketType();
     }
-    if (data.isUnlimited) {
+    if (data.isUnlimited && document.getElementById('isUnlimited')) {
         document.getElementById('isUnlimited').checked = true;
         toggleSeats();
     }
-    if (data.allowOutside) {
+    if (data.allowOutside && document.getElementById('allowOutside')) {
         document.getElementById('allowOutside').checked = true;
         toggleAudience();
     }
-    if (data.otherColleges) {
+    if (data.otherColleges && document.getElementById('otherColleges')) {
         document.getElementById('otherColleges').checked = true;
     }
-    if (data.generalPublic) {
+    if (data.generalPublic && document.getElementById('generalPublic')) {
         document.getElementById('generalPublic').checked = true;
     }
-    if (data.idRequired !== false) {
+    if (data.idRequired !== false && document.getElementById('idRequired')) {
         document.getElementById('idRequired').checked = true;
     }
 
@@ -555,28 +555,20 @@ function setupEventListeners() {
         launchBtn.addEventListener('click', () => {
             if (!launchBtn.classList.contains('ready')) return;
             
-            const selectedTitle = document.querySelector('.event-card.active h4').innerText;
             const type = festTypeInput.value;
             
-            // Hide wizard, show details slowly
-            document.getElementById('wizardHeader').style.display = 'none';
-            document.getElementById('eventSelectionGrid').style.display = 'none';
-            
-            const detailsSection = document.getElementById('eventDetailsSection');
-            detailsSection.style.display = 'block';
-            
-            document.getElementById('dynamicDetailsTitle').innerText = selectedTitle + ' Configuration';
-            
-            // Smart Form Tuning Based on Type
-            if (type !== 'college') {
-                // Not a college fest, hide student-specific requirement toggles safely
-                // E.g., 'Audience Settings' and 'ID requirements' aren't strictly for restaurants
-                // Setting outside default allow
-                const outsideToggle = document.getElementById('allowOutside');
-                if (outsideToggle && !outsideToggle.checked) {
-                    outsideToggle.checked = true;
-                    toggleAudience();
-                }
+            if (type === 'college') {
+                window.location.href = 'create-college-fest.html';
+            } else if (type === 'concert') {
+                window.location.href = 'create-concert.html';
+            } else if (type === 'restaurant') {
+                window.location.href = 'create-restaurant-event.html';
+            } else if (type === 'screening') {
+                window.location.href = 'create-screening.html';
+            } else if (type === 'houseparty') {
+                window.location.href = 'create-houseparty.html';
+            } else {
+                window.location.href = 'create-other.html';
             }
         });
     }
