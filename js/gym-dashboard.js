@@ -238,7 +238,7 @@ function showToast(message) {
 // Open Gym
 function openGym(gymId) {
     sessionStorage.setItem('nexus_current_gym', gymId);
-    window.location.href = 'gym-details.html?id=' + gymId;
+    showToast("Gym Details coming soon in Phase 2!");
 }
 
 // Close modal on outside click

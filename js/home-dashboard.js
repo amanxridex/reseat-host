@@ -73,11 +73,11 @@ function updateUI(hostData) {
 
 // Load stats (cookie automatically sent)
 async function loadStats(hostData) {
-    // TODO: Replace with real stats API call
-    document.getElementById('totalPropertys').textContent = '0';
-    document.getElementById('totalTickets').textContent = '0';
-    document.getElementById('totalRevenue').textContent = '₹0';
-    document.getElementById('totalAttendees').textContent = '0';
+    // Simulated stats load (Backend TODO)
+    document.getElementById('totalPropertys').textContent = '1';
+    document.getElementById('totalTickets').textContent = '42';
+    document.getElementById('totalRevenue').textContent = '₹12,400';
+    document.getElementById('totalAttendees').textContent = '42';
     
     loadPropertys();
     loadActivities();
@@ -86,7 +86,7 @@ async function loadStats(hostData) {
 // Load propertys from backend (cookie automatically sent)
 async function loadPropertys() {
     try {
-        // TODO: Replace with real endpoint when available
+        // Simulated endpoint (Backend TODO)
         // const res = await fetch(`${API_URL}/host/propertys`, {
         //     credentials: 'include', // ✅ Cookie sent
         //     headers: { 'Content-Type': 'application/json' }
@@ -98,7 +98,7 @@ async function loadPropertys() {
                 <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
                 <h3>No Propertys Yet</h3>
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first college property!</p>
-                <a href="create-property.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
+                <a href="add-property.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
                     Create Property
                 </a>
             </div>
@@ -192,7 +192,7 @@ function showToast(message) {
 // Open Property
 function openProperty(propertyId) {
     sessionStorage.setItem('nexus_current_property', propertyId);
-    window.location.href = 'property-details.html?id=' + propertyId;
+    showToast("Property Details coming soon in Phase 2!");
 }
 
 // Close modal on outside click

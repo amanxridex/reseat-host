@@ -389,7 +389,7 @@ async function confirmDelete() {
     if (!selectedFestId) return;
     
     try {
-        // TODO: Add delete endpoint to backend
+        // Simulated delete endpoint (Backend TODO)
         // const response = await fetch(`${API_URL}/fest/${selectedFestId}`, {
         //     method: 'DELETE',
         //     credentials: 'include', // ✅ Cookie sent
